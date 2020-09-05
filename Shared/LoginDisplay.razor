@@ -1,0 +1,40 @@
+﻿@using Microsoft.AspNetCore.Authentication.AzureADB2C.UI
+@using Microsoft.Extensions.Options
+@inject IOptionsMonitor<AzureADB2COptions> AzureADB2COptions
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<AuthorizeView>
+    <Authorized>
+        @if (canEditProfile)
+        {
+            <a href="AzureADB2C/Account/EditProfile">Hello, @FirstName!</a>
+        }
+        else
+        {
+            <text>Hello, @FirstName!</text>
+        }
+        <a href="AzureADB2C/Account/SignOut">Log out</a>
+    </Authorized>
+    <NotAuthorized>
+        <a href="AzureADB2C/Account/SignIn">Log in</a>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private bool canEditProfile;
+    string FirstName = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var options = AzureADB2COptions.Get(AzureADB2CDefaults.AuthenticationScheme);
+        canEditProfile = !string.IsNullOrEmpty(options.EditProfilePolicyId);
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        var user = authState.User;
+        if (user.Identity.IsAuthenticated)
+        {
+            FirstName = user.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname")?.Value;
+        }
+    }
+}
