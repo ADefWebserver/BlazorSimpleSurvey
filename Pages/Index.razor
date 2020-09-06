@@ -8,12 +8,12 @@
 
 <AuthorizeView>
     <Authorized>
-        <p>FirstName: @FirstName</p>
+        <p>Identity Provider: @identityprovider</p>
  
     </Authorized>
 </AuthorizeView>
 @code {
-    private string FirstName;
+    private string identityprovider;
 
     protected override async Task OnInitializedAsync()
     {
@@ -22,7 +22,7 @@
         var user = authState.User;
         if (user.Identity.IsAuthenticated)
         {
-            FirstName = user.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname")?.Value;
+            identityprovider = user.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/identityprovider")?.Value;
         }
     }
 }

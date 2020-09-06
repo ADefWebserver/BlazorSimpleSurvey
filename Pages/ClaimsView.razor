@@ -2,11 +2,10 @@
 @using System.Security.Claims
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<h1>Hello, world!</h1>
+<h4>Your Authentication Information</h4>
 
 <AuthorizeView>
     <Authorized>
-        <p>objID: @objID</p>
         <table class="table">
             <thead>
                 <tr>
@@ -25,11 +24,12 @@
             </tbody>
         </table>
     </Authorized>
+    <NotAuthorized>
+        <b>You are not logged in.</b>
+    </NotAuthorized>
 </AuthorizeView>
 @code {
-
     private int countClaim;
-    private string objID;
 
     protected override async Task OnInitializedAsync()
     {
@@ -38,7 +38,6 @@
         if (user.Identity.IsAuthenticated)
         {
             countClaim = user.Claims.Count();
-            objID = user.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
         }
     }
 }
