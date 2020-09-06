@@ -2,43 +2,27 @@
 @using System.Security.Claims
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<h1>Hello, world!</h1>
+<h1>Blazor Simple Survey</h1>
+
+<img src="images/BlazorSimpleSurveyLogo_Large.png" />
 
 <AuthorizeView>
     <Authorized>
-        <p>objID: @objID</p>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Claim Type</th>
-                    <th>Value</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in context.User.Claims)
-                {
-                    <tr>
-                        <td>@item.Type</td>
-                        <td>@item.Value</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <p>FirstName: @FirstName</p>
+ 
     </Authorized>
 </AuthorizeView>
 @code {
-
-    private int countClaim;
-    private string objID;
+    private string FirstName;
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
         var user = authState.User;
         if (user.Identity.IsAuthenticated)
         {
-            countClaim = user.Claims.Count();
-            objID = user.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
+            FirstName = user.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname")?.Value;
         }
     }
 }

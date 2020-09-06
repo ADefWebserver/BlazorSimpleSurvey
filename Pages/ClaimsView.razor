@@ -1,0 +1,44 @@
+﻿@page "/claimsview"
+@using System.Security.Claims
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<h1>Hello, world!</h1>
+
+<AuthorizeView>
+    <Authorized>
+        <p>objID: @objID</p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Claim Type</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in context.User.Claims)
+                {
+                    <tr>
+                        <td>@item.Type</td>
+                        <td>@item.Value</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </Authorized>
+</AuthorizeView>
+@code {
+
+    private int countClaim;
+    private string objID;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity.IsAuthenticated)
+        {
+            countClaim = user.Claims.Count();
+            objID = user.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
+        }
+    }
+}
