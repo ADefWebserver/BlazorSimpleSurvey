@@ -8,49 +8,61 @@
 @foreach (var item in items)
 {
     <div>
-        <span>@item.ItemLabel :</span>
+        <span><b>@item.ItemLabel</b></span>
+        <br />
         @if (item.ItemType == "TextBox")
         {
-        <RadzenTextBox Value="@item.ItemValue" />
+            <RadzenTextBox @bind-Value="@item.ItemValue" MaxLength="4000" />
         }
         @if (item.ItemType == "TextArea")
         {
-        <RadzenTextArea Value="@item.ItemValue" />
+            <RadzenTextArea @bind-Value="@item.ItemValue" MaxLength="4000" />
         }
         @if (item.ItemType == "Date")
         {
-        <RadzenDatePicker TValue="DateTime?" @bind-Value="@item.ItemDateValue" ShowTime="true" />
+            <RadzenDatePicker DateFormat="d" TValue="DateTime?" @bind-Value="@item.ItemDateValue" ShowTime="false" />
+        }
+        @if (item.ItemType == "DateTime")
+        {
+            <RadzenDatePicker TValue="DateTime?" @bind-Value="@item.ItemDateValue" ShowTime="true" />
         }
         @if (item.ItemType == "Dropdown")
         {
-        <RadzenDropDown AllowClear="true" TValue="string"
-                        Data="@multipleValues"
-                        Style="margin-bottom: 20px"
-                        @bind-Value="@item.ItemValue" />
+            <RadzenDropDown AllowClear="true" TValue="string"
+                            Data="@multipleValues"
+                            @bind-Value="@item.ItemValue" />
         }
     </div>
-    <br />
+    <br />    
 }
-<br />
+@if (@items.Count > 0)
+{
+<RadzenButton Click="SubmitForm" ButtonStyle="ButtonStyle.Primary" Text="Submit" />
+}
+<br /><br /><br /><hr />
 <h4>Add Form Item</h4>
-<span>
-    Label: <RadzenTextBox @bind-Value="@newItemLabel" />
-</span>
+<div>
+    <span><b>Item Label</b></span>
+    <br />
+    <RadzenTextBox @bind-Value="@newItemLabel" />
+</div>
+<div>
+    <span><b>Item Type</b></span>
+    <br />
+    <RadzenDropDown AllowClear="true" TValue="string"
+                                            Data="@multipleValues"
+                                            @bind-Value="newItemType" />
+</div>
 <br />
-<span>
-    Item Type: <RadzenDropDown AllowClear="true" TValue="string"
-                               Data="@multipleValues"
-                               Style="margin-bottom: 20px"
-                               @bind-Value="newItemType" />
-</span>
-<br />
-<button @onclick="AddItem">Add Item</button>
+<RadzenButton Click="AddItem" ButtonStyle="ButtonStyle.Success" Text="Add Item" />
 
 @code {
     private IList<SurveyItem> items = new List<SurveyItem>();
     private string newItemLabel;
     private string newItemType = "TextBox";
-    IEnumerable<string> multipleValues = new string[] { "TextBox", "TextArea", "Date", "Dropdown" };
+
+    IEnumerable<string> multipleValues =
+        new string[] { "TextBox", "TextArea", "Date", "DateTime", "Dropdown" };
 
     private void AddItem()
     {
@@ -66,6 +78,16 @@
 
             items.Add(NewFormItem);
             newItemLabel = string.Empty;
+        }
+    }
+
+    private void SubmitForm()
+    {
+        foreach (var item in items)
+        {
+            var CurrentName = item.ItemLabel;
+            var CurrentValue = item.ItemValue;
+            var CurrentDateValue = item.ItemDateValue;
         }
     }
 }
