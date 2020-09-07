@@ -1,46 +1,71 @@
 ﻿@page "/displaysurvey"
+@using BlazorSimpleSurvey.Data
+
 <h3>Display Survey</h3>
 
 <h4>Items: (@items.Count)</h4>
 
 @foreach (var item in items)
 {
-    if (item.ItemType == "TextBox")
-    {
-        <RadzenTextBox Value="@item.Title" Style="margin-bottom: 20px" />
-    }
-    if (item.ItemType == "Button")
-    {
-        <RadzenButton Text="@item.Title" Style="margin-bottom: 20px; width: 150px" />
-    }
+    <div>
+        <span>@item.ItemLabel :</span>
+        @if (item.ItemType == "TextBox")
+        {
+        <RadzenTextBox Value="@item.ItemValue" />
+        }
+        @if (item.ItemType == "TextArea")
+        {
+        <RadzenTextArea Value="@item.ItemValue" />
+        }
+        @if (item.ItemType == "Date")
+        {
+        <RadzenDatePicker TValue="DateTime?" @bind-Value="@item.ItemDateValue" ShowTime="true" />
+        }
+        @if (item.ItemType == "Dropdown")
+        {
+        <RadzenDropDown AllowClear="true" TValue="string"
+                        Data="@multipleValues"
+                        Style="margin-bottom: 20px"
+                        @bind-Value="@item.ItemValue" />
+        }
+    </div>
     <br />
 }
-
-<input placeholder="Item Value" @bind="newItem" /><br />
-<RadzenDropDown AllowClear="true" TValue="string"
-                Data="@multipleValues"
-                Style="margin-bottom: 20px" 
-                @bind-Value="newType"/><br />
+<br />
+<h4>Add Form Item</h4>
+<span>
+    Label: <RadzenTextBox @bind-Value="@newItemLabel" />
+</span>
+<br />
+<span>
+    Item Type: <RadzenDropDown AllowClear="true" TValue="string"
+                               Data="@multipleValues"
+                               Style="margin-bottom: 20px"
+                               @bind-Value="newItemType" />
+</span>
+<br />
 <button @onclick="AddItem">Add Item</button>
 
 @code {
-    private IList<FormItem> items = new List<FormItem>();
-    private string newItem;
-    private string newType;
-    IEnumerable<string> multipleValues = new string[] { "TextBox", "Button" };
+    private IList<SurveyItem> items = new List<SurveyItem>();
+    private string newItemLabel;
+    private string newItemType = "TextBox";
+    IEnumerable<string> multipleValues = new string[] { "TextBox", "TextArea", "Date", "Dropdown" };
 
     private void AddItem()
     {
-        if (!string.IsNullOrWhiteSpace(newItem))
+        if (!string.IsNullOrWhiteSpace(newItemLabel))
         {
-            items.Add(new FormItem { Title = newItem, ItemType = newType });
-            newItem = string.Empty;
-        }
-    }
+            var NewFormItem =
+                new SurveyItem
+                {
+                    ItemLabel = newItemLabel,
+                    ItemType = newItemType,
+                    Required = true
+                };
 
-    public class FormItem
-    {
-        public string Title { get; set; }
-        public string ItemType { get; set; }
+            items.Add(NewFormItem);
+            newItemLabel = string.Empty;
+        }
     }
 }
