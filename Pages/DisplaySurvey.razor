@@ -1,0 +1,46 @@
+﻿@page "/displaysurvey"
+<h3>Display Survey</h3>
+
+<h4>Items: (@items.Count)</h4>
+
+@foreach (var item in items)
+{
+    if (item.ItemType == "TextBox")
+    {
+        <RadzenTextBox Value="@item.Title" Style="margin-bottom: 20px" />
+    }
+    if (item.ItemType == "Button")
+    {
+        <RadzenButton Text="@item.Title" Style="margin-bottom: 20px; width: 150px" />
+    }
+    <br />
+}
+
+<input placeholder="Item Value" @bind="newItem" /><br />
+<RadzenDropDown AllowClear="true" TValue="string"
+                Data="@multipleValues"
+                Style="margin-bottom: 20px" 
+                @bind-Value="newType"/><br />
+<button @onclick="AddItem">Add Item</button>
+
+@code {
+    private IList<FormItem> items = new List<FormItem>();
+    private string newItem;
+    private string newType;
+    IEnumerable<string> multipleValues = new string[] { "TextBox", "Button" };
+
+    private void AddItem()
+    {
+        if (!string.IsNullOrWhiteSpace(newItem))
+        {
+            items.Add(new FormItem { Title = newItem, ItemType = newType });
+            newItem = string.Empty;
+        }
+    }
+
+    public class FormItem
+    {
+        public string Title { get; set; }
+        public string ItemType { get; set; }
+    }
+}
