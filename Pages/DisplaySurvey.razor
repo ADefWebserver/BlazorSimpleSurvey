@@ -39,7 +39,7 @@
 }
 @if (@items.Count > 0)
 {
-    <RadzenButton Click="SubmitForm" ButtonStyle="ButtonStyle.Primary" Text="Submit" />
+    <RadzenButton Click="OpenResultsPopup" ButtonStyle="ButtonStyle.Primary" Text="Submit" />
 }
 <br />
 <br />
@@ -83,18 +83,67 @@
                     <ul style="list-style-type:none;">
                         @foreach (var option in newOptions)
                         {
-                        <li>
-                            <input @bind="option.OptionLabel" />
-                            <button type="button" class="btn btn-link"
-                                    @onclick="(() => RemoveOption(option))">
-                                [Delete]
-                            </button>
-                        </li>
+                            <li>
+                                <input @bind="option.OptionLabel" />
+                                <button type="button" class="btn btn-link"
+                                        @onclick="(() => RemoveOption(option))">
+                                    [Delete]
+                                </button>
+                            </li>
                         }
                     </ul>
 
                     <input @bind="newOption" />
                     <button @onclick="AddOption">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@if (ShowResultsPopup)
+{
+    <div class="modal" tabindex="-1" style="display:block;background-color:gainsboro" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Form Results</h3>
+                    <!-- Button to close the popup -->
+                    <button type="button" class="close"
+                            @onclick="CloseResultsPopup">
+                        <span aria-hidden="true">X</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <ul style="list-style-type:none;">
+                        @foreach (var item in items)
+                        {
+                        <li>
+                            <p><b>@item.ItemLabel</b></p>
+                            @if (@item.ItemDateValue.HasValue)
+                            {
+                                @if (@item.ItemType == "Date")
+                                {
+                                    <p>@item.ItemDateValue.Value.ToShortDateString()</p>
+                                }
+                                else
+                                {
+                                    <p>@item.ItemDateValue.Value.ToShortDateString() @item.ItemDateValue.Value.ToShortTimeString()</p>
+                                }
+                            }
+                            else
+                            {
+                                @if (@item.ItemType == "Dropdown")
+                                {
+                                    <p>@item.SurveyItemOptions.Where(x => x.SurveyItemOptionId == item.ItemValue).FirstOrDefault().OptionLabel</p>
+                                }
+                                else
+                                {
+                                    <p>@item.ItemValue</p>
+                                }                                
+                            }
+                        </li>
+                        }
+                    </ul>
                 </div>
             </div>
         </div>
@@ -108,9 +157,9 @@
     List<SurveyItemOption> newOptions = new List<SurveyItemOption>();
 
     bool ShowPopup = false;
+    bool ShowResultsPopup = false;
 
-    IEnumerable<string> FormTypes =
-        new string[] { "TextBox", "TextArea", "Date", "DateTime", "Dropdown" };
+    IEnumerable<string> FormTypes = new string[] { "TextBox", "TextArea", "Date", "DateTime", "Dropdown" };
 
     private void AddItem()
     {
@@ -132,16 +181,6 @@
         }
     }
 
-    private void SubmitForm()
-    {
-        foreach (var item in items)
-        {
-            var CurrentName = item.ItemLabel;
-            var CurrentValue = item.ItemValue;
-            var CurrentDateValue = item.ItemDateValue;
-        }
-    }
-
     void OpenPopup()
     {
         // Open Popup
@@ -160,7 +199,7 @@
         {
             Guid newGuid = Guid.NewGuid();
 
-            newOptions.Add(new SurveyItemOption {  OptionLabel = newOption, SurveyItemOptionId = newGuid.ToString() });
+            newOptions.Add(new SurveyItemOption { OptionLabel = newOption, SurveyItemOptionId = newGuid.ToString() });
             newOption = string.Empty;
         }
     }
@@ -171,4 +210,15 @@
         newOptions.Remove(paramSurveyItemOption);
     }
 
+    void OpenResultsPopup()
+    {
+        // Open Popup
+        ShowResultsPopup = true;
+    }
+
+    void CloseResultsPopup()
+    {
+        // Close Popup
+        ShowResultsPopup = false;
+    }
 }
