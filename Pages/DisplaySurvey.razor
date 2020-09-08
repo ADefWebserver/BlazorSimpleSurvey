@@ -29,17 +29,22 @@
         @if (item.ItemType == "Dropdown")
         {
             <RadzenDropDown AllowClear="true" TValue="string"
-                            Data="@multipleValues"
+                            Data="@item.SurveyItemOptions"
+                            TextProperty="OptionLabel" ValueProperty="SurveyItemOptionId"
                             @bind-Value="@item.ItemValue" />
         }
     </div>
-    <br />    
+    <br />
+
 }
 @if (@items.Count > 0)
 {
-<RadzenButton Click="SubmitForm" ButtonStyle="ButtonStyle.Primary" Text="Submit" />
+    <RadzenButton Click="SubmitForm" ButtonStyle="ButtonStyle.Primary" Text="Submit" />
 }
-<br /><br /><br /><hr />
+<br />
+<br />
+<br />
+<hr />
 <h4>Add Form Item</h4>
 <div>
     <span><b>Item Label</b></span>
@@ -50,18 +55,61 @@
     <span><b>Item Type</b></span>
     <br />
     <RadzenDropDown AllowClear="true" TValue="string"
-                                            Data="@multipleValues"
-                                            @bind-Value="newItemType" />
+                    Data="@FormTypes"
+                    @bind-Value="newItemType" />
+    @if (newItemType == "Dropdown")
+    {
+        <button type="button" class="btn btn-link" @onclick="OpenPopup">[Edit Options]</button>
+    }
 </div>
 <br />
 <RadzenButton Click="AddItem" ButtonStyle="ButtonStyle.Success" Text="Add Item" />
 
+@if (ShowPopup)
+{
+    <div class="modal" tabindex="-1" style="display:block;background-color:gainsboro" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Edit Options</h3>
+                    <!-- Button to close the popup -->
+                    <button type="button" class="close"
+                            @onclick="ClosePopup">
+                        <span aria-hidden="true">X</span>
+                    </button>
+                </div>
+                <!-- Edit form for the current Category -->
+                <div class="modal-body">
+                    <ul style="list-style-type:none;">
+                        @foreach (var option in newOptions)
+                        {
+                        <li>
+                            <input @bind="option.OptionLabel" />
+                            <button type="button" class="btn btn-link"
+                                    @onclick="(() => RemoveOption(option))">
+                                [Delete]
+                            </button>
+                        </li>
+                        }
+                    </ul>
+
+                    <input @bind="newOption" />
+                    <button @onclick="AddOption">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 @code {
     private IList<SurveyItem> items = new List<SurveyItem>();
     private string newItemLabel;
     private string newItemType = "TextBox";
+    private string newOption;
+    List<SurveyItemOption> newOptions = new List<SurveyItemOption>();
 
-    IEnumerable<string> multipleValues =
+    bool ShowPopup = false;
+
+    IEnumerable<string> FormTypes =
         new string[] { "TextBox", "TextArea", "Date", "DateTime", "Dropdown" };
 
     private void AddItem()
@@ -73,11 +121,14 @@
                 {
                     ItemLabel = newItemLabel,
                     ItemType = newItemType,
+                    SurveyItemOptions = newOptions,
                     Required = true
                 };
 
             items.Add(NewFormItem);
+
             newItemLabel = string.Empty;
+            newOptions = new List<SurveyItemOption>();
         }
     }
 
@@ -90,4 +141,34 @@
             var CurrentDateValue = item.ItemDateValue;
         }
     }
+
+    void OpenPopup()
+    {
+        // Open Popup
+        ShowPopup = true;
+    }
+
+    void ClosePopup()
+    {
+        // Close Popup
+        ShowPopup = false;
+    }
+
+    private void AddOption()
+    {
+        if (!string.IsNullOrWhiteSpace(newOption))
+        {
+            Guid newGuid = Guid.NewGuid();
+
+            newOptions.Add(new SurveyItemOption {  OptionLabel = newOption, SurveyItemOptionId = newGuid.ToString() });
+            newOption = string.Empty;
+        }
+    }
+
+    private void RemoveOption(SurveyItemOption paramSurveyItemOption)
+    {
+        // Remove the option from the collection
+        newOptions.Remove(paramSurveyItemOption);
+    }
+
 }

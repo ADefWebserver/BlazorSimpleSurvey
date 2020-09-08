@@ -7,12 +7,13 @@ namespace BlazorSimpleSurvey.Data
 {
     public class SurveyItem
     {
-        private int _SurveyDataItemID;
+        private int _SurveyItemId;
         private string _ItemLabel;
         private string _ItemType;
         private string _ItemValue;
         private DateTime? _ItemDateValue;
         private bool _Required = false;
+        private List<SurveyItemOption> _SurveyItemOptions;
 
         //  initialization
         public SurveyItem()
@@ -68,15 +69,15 @@ namespace BlazorSimpleSurvey.Data
             }
         }
 
-        public int SurveyDataItemID
+        public int SurveyItemId
         {
             get
             {
-                return _SurveyDataItemID;
+                return _SurveyItemId;
             }
             set
             {
-                _SurveyDataItemID = value;
+                _SurveyItemId = value;
             }
         }
 
@@ -91,5 +92,22 @@ namespace BlazorSimpleSurvey.Data
                 _Required = value;
             }
         }
+
+        public List<SurveyItemOption> SurveyItemOptions
+        {
+            get
+            {
+                return _SurveyItemOptions;
+            }
+            set
+            {
+                _SurveyItemOptions = value;
+            }
+        }
+    }
+    public class SurveyItemOption
+    {
+        public string SurveyItemOptionId { get; set; }
+        public string OptionLabel { get; set; }
     }
 }
