@@ -17,10 +17,91 @@ namespace BlazorSimpleSurvey.Data
         {
         }
 
+        public virtual DbSet<Logs> Logs { get; set; }
+        public virtual DbSet<SurveyAnswer> SurveyAnswer { get; set; }
+        public virtual DbSet<SurveyItem> SurveyItem { get; set; }
+        public virtual DbSet<SurveyItemOption> SurveyItemOption { get; set; }
         public virtual DbSet<Users> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Logs>(entity =>
+            {
+                entity.HasKey(e => e.LogId);
+
+                entity.HasIndex(e => e.LogType)
+                    .HasName("IX_Logs");
+
+                entity.Property(e => e.LogDate).HasColumnType("datetime");
+
+                entity.Property(e => e.LogDetail)
+                    .IsRequired()
+                    .HasMaxLength(4000);
+
+                entity.Property(e => e.LogIpaddress)
+                    .IsRequired()
+                    .HasColumnName("LogIPAddress")
+                    .HasMaxLength(500);
+
+                entity.Property(e => e.LogType)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasOne(d => d.LogUser)
+                    .WithMany(p => p.Logs)
+                    .HasForeignKey(d => d.LogUserId)
+                    .HasConstraintName("FK_Logs_Users");
+            });
+
+            modelBuilder.Entity<SurveyAnswer>(entity =>
+            {
+                entity.Property(e => e.AnswerValue)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.HasOne(d => d.SurveyItem)
+                    .WithMany(p => p.SurveyAnswer)
+                    .HasForeignKey(d => d.SurveyItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SurveyAnswer_SurveyItem");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.SurveyAnswer)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("FK_SurveyAnswer_Users");
+            });
+
+            modelBuilder.Entity<SurveyItem>(entity =>
+            {
+                entity.Property(e => e.ItemDateValue).HasColumnType("datetime");
+
+                entity.Property(e => e.ItemLabel)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.ItemType)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.ItemValue).HasMaxLength(50);
+
+                entity.Property(e => e.Required)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasOne(d => d.SurveyChoice)
+                    .WithMany(p => p.SurveyItem)
+                    .HasForeignKey(d => d.SurveyChoiceId)
+                    .HasConstraintName("FK_SurveyItem_SurveyItemOption");
+            });
+
+            modelBuilder.Entity<SurveyItemOption>(entity =>
+            {
+                entity.Property(e => e.OptionLabel)
+                    .IsRequired()
+                    .HasMaxLength(500);
+            });
+
             modelBuilder.Entity<Users>(entity =>
             {
                 entity.Property(e => e.AuthenticationType)

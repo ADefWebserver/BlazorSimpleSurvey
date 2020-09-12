@@ -150,7 +150,7 @@
     </div>
 }
 @code {
-    private IList<SurveyItem> items = new List<SurveyItem>();
+    private IList<DTOSurveyItem> items = new List<DTOSurveyItem>();
     private string newItemLabel;
     private string newItemType = "TextBox";
     private string newOption;
@@ -166,7 +166,7 @@
         if (!string.IsNullOrWhiteSpace(newItemLabel))
         {
             var NewFormItem =
-                new SurveyItem
+                new DTOSurveyItem
                 {
                     ItemLabel = newItemLabel,
                     ItemType = newItemType,

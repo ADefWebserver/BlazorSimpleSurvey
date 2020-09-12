@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace BlazorSimpleSurvey.Data
 {
-    public class SurveyItem
+    public class DTOSurveyItem
     {
         private int _SurveyItemId;
         private string _ItemLabel;
@@ -16,7 +16,7 @@ namespace BlazorSimpleSurvey.Data
         private List<SurveyItemOption> _SurveyItemOptions;
 
         //  initialization
-        public SurveyItem()
+        public DTOSurveyItem()
         {
         }
 

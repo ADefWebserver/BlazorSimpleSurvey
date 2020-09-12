@@ -6,6 +6,12 @@ namespace BlazorSimpleSurvey.Models
 {
     public partial class Users
     {
+        public Users()
+        {
+            Logs = new HashSet<Logs>();
+            SurveyAnswer = new HashSet<SurveyAnswer>();
+        }
+
         public int Id { get; set; }
         public string UserName { get; set; }
         public string DisplayName { get; set; }
@@ -21,5 +27,8 @@ namespace BlazorSimpleSurvey.Models
         public DateTime? CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
         public string LastidpAccessToken { get; set; }
+
+        public virtual ICollection<Logs> Logs { get; set; }
+        public virtual ICollection<SurveyAnswer> SurveyAnswer { get; set; }
     }
 }

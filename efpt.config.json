@@ -14,6 +14,22 @@
    "Tables": [
       {
          "HasPrimaryKey": true,
+         "Name": "[dbo].[Logs]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[SurveyAnswer]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[SurveyItem]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[SurveyItemOption]"
+      },
+      {
+         "HasPrimaryKey": true,
          "Name": "[dbo].[Users]"
       }
    ],
