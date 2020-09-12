@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Security.Claims;
