@@ -39,6 +39,7 @@ namespace BlazorSimpleSurvey
 
             services.AddAuthentication(AzureADB2CDefaults.AuthenticationScheme)
                 .AddAzureADB2C(options => Configuration.Bind("AzureAdB2C", options));
+
             // This is where you wire up to events to detect when a user logs in
             services.Configure<OpenIdConnectOptions>(AzureADB2CDefaults.OpenIdScheme, options =>
             {
