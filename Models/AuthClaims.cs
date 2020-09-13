@@ -11,7 +11,7 @@ namespace BlazorSimpleSurvey.Models
     public class AuthClaims
     {
         public string DisplayName { get; set; }
-        public string NameIdentifier { get; set; }
+        public string Objectidentifier { get; set; }
         public string AzureB2CFlow { get; set; }
         public string EmailAddress { get; set; }
         public string FirstName { get; set; }

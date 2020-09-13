@@ -140,10 +140,6 @@ namespace BlazorSimpleSurvey.Data
                 entity.Property(e => e.SignupMethod).HasMaxLength(500);
 
                 entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.UserName)
-                    .IsRequired()
-                    .HasMaxLength(1000);
             });
 
             OnModelCreatingPartial(modelBuilder);
