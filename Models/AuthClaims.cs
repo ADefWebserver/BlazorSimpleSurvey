@@ -10,14 +10,14 @@ namespace BlazorSimpleSurvey.Models
 {
     public class AuthClaims
     {
-        public string UserName { get; set; }
-        public string nameidentifier { get; set; }
-        public string authnclassreference { get; set; }
-        public string emailaddress { get; set; }
-        public string givenname { get; set; }
-        public string surname { get; set; }
-        public string identityprovider { get; set; }
-        public string tenantid { get; set; }
+        public string DisplayName { get; set; }
+        public string NameIdentifier { get; set; }
+        public string AzureB2CFlow { get; set; }
+        public string EmailAddress { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string IdentityProvider { get; set; }
+        public string TenantId { get; set; }
         public string auth_time { get; set; }
         public string idp_access_token { get; set; }
     }

@@ -81,7 +81,6 @@ IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Us
 BEGIN
 CREATE TABLE [dbo].[Users](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[UserName] [nvarchar](1000) NOT NULL,
 	[DisplayName] [nvarchar](1000) NULL,
 	[FirstName] [nvarchar](500) NULL,
 	[LastName] [nvarchar](500) NULL,
