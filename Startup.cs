@@ -97,19 +97,19 @@ namespace BlazorSimpleSurvey
                             // Google login
                             if (objAuthClaims.IdentityProvider.ToLower().Contains("google"))
                             {
-                                objAuthClaims.IdentityProvider = "Google";
+                                objAuthClaims.AuthenticationType = "Google";
                             }
 
                             // Microsoft account login
                             if (objAuthClaims.IdentityProvider.ToLower().Contains("live"))
                             {
-                                objAuthClaims.IdentityProvider = "Microsoft";
+                                objAuthClaims.AuthenticationType = "Microsoft";
                             }
 
                             // Twitter login
                             if (objAuthClaims.IdentityProvider.ToLower().Contains("twitter"))
                             {
-                                objAuthClaims.IdentityProvider = "Twitter";
+                                objAuthClaims.AuthenticationType = "Twitter";
                             }
 
                             // Azure Active Directory login
@@ -119,26 +119,131 @@ namespace BlazorSimpleSurvey
                             // for an example that does that
                             if (objAuthClaims.idp_access_token != null)
                             {
-                                objAuthClaims.IdentityProvider = "Azure Active Directory";
+                                objAuthClaims.AuthenticationType = "Azure Active Directory";
 
                                 try
                                 {
                                     var token = new System.IdentityModel.Tokens.Jwt.JwtSecurityToken(objAuthClaims.idp_access_token);
+                                    objAuthClaims.EmailAddress = token.Claims.FirstOrDefault(c => c.Type == "upn")?.Value;
                                 }
                                 catch (System.Exception)
                                 {
-                                    // Could not decode - do nothing - Log it
+                                    // Could not decode - do nothing 
                                 }
                             }
+
+                            var request = ctxt.HttpContext.Request;
+                            var host = request.Host.ToUriComponent();
 
                             // Insert into Database
                             var optionsBuilder = new DbContextOptionsBuilder<SimpleSurveyContext>();
                             optionsBuilder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
-                            SimpleSurveyContext simpleSurveyContext = new SimpleSurveyContext(optionsBuilder.Options);
+                            SimpleSurveyContext _context = new SimpleSurveyContext(optionsBuilder.Options);
 
-                            var ExistingUser = simpleSurveyContext.Users
+                            var ExistingUser = _context.Users
                             .Where(x => x.Objectidentifier == objAuthClaims.Objectidentifier)
                             .FirstOrDefault();
+
+                            if (ExistingUser == null)
+                            {
+                                // New User
+
+                                // Create User object
+                                var objUser = new Users();
+
+                                try
+                                {
+                                    objUser.Objectidentifier = objAuthClaims.Objectidentifier;
+                                    objUser.AuthenticationType = objAuthClaims.AuthenticationType;
+                                    objUser.IdentityProvider = objAuthClaims.IdentityProvider;
+                                    objUser.SigninMethod = objAuthClaims.AzureB2CFlow;
+                                    objUser.DisplayName = objAuthClaims.DisplayName;
+                                    objUser.Email = objAuthClaims.EmailAddress;
+                                    objUser.FirstName = objAuthClaims.FirstName;
+                                    objUser.LastName = objAuthClaims.LastName;
+                                    objUser.LastAuthTime = Convert.ToInt32(objAuthClaims.auth_time);
+                                    objUser.LastidpAccessToken = objAuthClaims.idp_access_token;
+                                    objUser.LastIpaddress = host;
+                                    objUser.CreatedDate = DateTime.Now;
+
+                                    _context.Users.Add(objUser);
+                                    _context.SaveChanges();
+
+                                    // Write to Log
+                                    var objLogs = new Logs();
+
+                                    objLogs.LogType = "Login";
+                                    objLogs.LogDate = DateTime.Now;
+                                    objLogs.LogDetail = "New User";
+                                    objLogs.LogUserId = objUser.Id;
+                                    objLogs.LogIpaddress = host;
+
+                                    _context.Logs.Add(objLogs);
+                                    _context.SaveChanges();
+                                }
+                                catch (Exception ex)
+                                {
+                                    // Write to Log
+                                    var objLogs = new Logs();
+
+                                    objLogs.LogType = "Login Error - New User";
+                                    objLogs.LogDate = DateTime.Now;
+                                    objLogs.LogDetail = String.Format($"User: {objUser.DisplayName} Objectidentifier: {objUser.Objectidentifier} Message: {ex.GetBaseException().Message}");
+                                    objLogs.LogIpaddress = host;
+
+                                    _context.Logs.Add(objLogs);
+                                    _context.SaveChanges();
+                                }
+                            }
+                            else
+                            {
+                                // Update Existing User
+
+                                try
+                                {
+                                    ExistingUser.AuthenticationType = objAuthClaims.AuthenticationType;
+                                    ExistingUser.IdentityProvider = objAuthClaims.IdentityProvider;
+                                    ExistingUser.SigninMethod = objAuthClaims.AzureB2CFlow;
+                                    ExistingUser.DisplayName = objAuthClaims.DisplayName;
+                                    ExistingUser.Email = objAuthClaims.EmailAddress;
+                                    ExistingUser.FirstName = objAuthClaims.FirstName;
+                                    ExistingUser.LastName = objAuthClaims.LastName;
+                                    ExistingUser.LastAuthTime = Convert.ToInt32(objAuthClaims.auth_time);
+                                    ExistingUser.LastidpAccessToken = objAuthClaims.idp_access_token;
+                                    ExistingUser.LastIpaddress = host;
+                                    ExistingUser.UpdatedDate = DateTime.Now;
+
+                                    _context.SaveChanges();
+
+                                    // Write to Log
+
+                                    var objLogs = new Logs();
+
+                                    objLogs.LogType = "Login";
+                                    objLogs.LogDate = DateTime.Now;
+                                    objLogs.LogDetail = "Existing User";
+                                    objLogs.LogUserId = ExistingUser.Id;
+                                    objLogs.LogIpaddress = host;
+
+                                    _context.Logs.Add(objLogs);
+                                    _context.SaveChanges();
+                                }
+                                catch (Exception ex)
+                                {
+                                    // Write to Log
+                                    var objLogs = new Logs();
+
+                                    objLogs.LogType = "Login Error - Existing User";
+                                    objLogs.LogDate = DateTime.Now;
+                                    objLogs.LogUserId = ExistingUser.Id;
+                                    objLogs.LogDetail = ex.GetBaseException().Message;
+                                    objLogs.LogIpaddress = host;
+
+                                    _context.Logs.Add(objLogs);
+                                    _context.SaveChanges();
+                                }
+                            }
+
                         }
 
                         await Task.Yield();

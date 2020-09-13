@@ -17,6 +17,7 @@ namespace BlazorSimpleSurvey.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string IdentityProvider { get; set; }
+        public string AuthenticationType { get; set; }
         public string TenantId { get; set; }
         public string auth_time { get; set; }
         public string idp_access_token { get; set; }

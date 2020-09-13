@@ -137,7 +137,7 @@ namespace BlazorSimpleSurvey.Data
                     .IsRequired()
                     .HasMaxLength(500);
 
-                entity.Property(e => e.SignupMethod).HasMaxLength(500);
+                entity.Property(e => e.SigninMethod).HasMaxLength(500);
 
                 entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
             });

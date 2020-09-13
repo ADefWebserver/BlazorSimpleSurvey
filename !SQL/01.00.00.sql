@@ -88,11 +88,11 @@ CREATE TABLE [dbo].[Users](
 	[IdentityProvider] [nvarchar](500) NOT NULL,
 	[AuthenticationType] [nvarchar](50) NOT NULL,
 	[Objectidentifier] [nvarchar](500) NOT NULL,
-	[SignupMethod] [nvarchar](500) NULL,
+	[SigninMethod] [nvarchar](500) NULL,
 	[LastIPAddress] [nvarchar](50) NOT NULL,
 	[LastAuth_time] [int] NOT NULL,
-	[CreatedDate] [datetime] NULL,
-	[UpdatedDate] [datetime] NOT NULL,
+	[CreatedDate] [datetime] NOT NULL,
+	[UpdatedDate] [datetime] NULL,
 	[Lastidp_access_token] [nvarchar](4000) NULL,
  CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED 
 (

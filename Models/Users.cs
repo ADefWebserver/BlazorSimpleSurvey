@@ -20,11 +20,11 @@ namespace BlazorSimpleSurvey.Models
         public string IdentityProvider { get; set; }
         public string AuthenticationType { get; set; }
         public string Objectidentifier { get; set; }
-        public string SignupMethod { get; set; }
+        public string SigninMethod { get; set; }
         public string LastIpaddress { get; set; }
         public int LastAuthTime { get; set; }
-        public DateTime? CreatedDate { get; set; }
-        public DateTime UpdatedDate { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime? UpdatedDate { get; set; }
         public string LastidpAccessToken { get; set; }
 
         public virtual ICollection<Logs> Logs { get; set; }
