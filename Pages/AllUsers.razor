@@ -4,9 +4,23 @@
 @using Newtonsoft.Json.Linq;
 @inject IConfiguration _configuration
 @inject ProtectedApiCallHelper ProtectedApiCallHelper
+@inject AuthenticationStateProvider AuthenticationStateProvider
 <h3>All Users</h3>
 @strError
 <br />
+<p>Administration Group: <b>@AdministrationGroup</b></p>
+<p><b>Groups of current user:</b></p>
+<ul class="list-group">
+    @foreach (var group in colGroups)
+    {
+        <li class="list-group-item">
+            <p>Group Name: @group.displayName</p>
+            <p>Id: @group.id</p>
+        </li>
+    }
+</ul>
+<br />
+<p><b>All Users:</b></p>
 <ul class="list-group">
     @foreach (var user in colGraphUsers.OrderBy(x => x.displayName))
     {
@@ -19,13 +33,17 @@
 </ul>
 @code {
     string strError = "";
+    string AdministrationGroup;
     // Collection to hold all the Tasks
     List<GraphUser> colGraphUsers = new List<GraphUser>();
+    List<GraphGroup> colGroups = new List<GraphGroup>();
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
+            AdministrationGroup = _configuration["AzureAdB2CManagement:AdministrationGroup"];
+
             IConfidentialClientApplication confidentialClientApplication =
                 ConfidentialClientApplicationBuilder
                 .Create(_configuration["AzureAdB2CManagement:ClientId"])
@@ -35,7 +53,7 @@
 
             // With client credentials flows the scopes is ALWAYS of the shape
             // "resource/.default", as the
-            // application permissions need to be set statically 
+            // application permissions need to be set statically
             // (in the portal or by PowerShell),
             // and then granted by a tenant administrator
             string[] scopes = new string[] { "https://graph.microsoft.com/.default" };
@@ -53,6 +71,19 @@
                 result.AccessToken,
                 DisplayUsers
                 );
+
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+            var user = authState.User;
+
+            var UserID = user.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+
+            await apiCaller.CallWebApiAndProcessResultASync(
+                $"https://graph.microsoft.com/v1.0/users/{UserID}/memberOf",
+                result.AccessToken,
+                DisplayGroups
+                );
+
         }
         catch (Exception ex)
         {
@@ -69,6 +100,19 @@
             colGraphUsers.AddRange(
                 child.Value.ToObject<List<GraphUser>>()
                 );
+        }
+    }
+
+    private void DisplayGroups(JObject result)
+    {
+        colGroups = new List<GraphGroup>();
+
+        foreach (JProperty child in result.Properties()
+            .Where(p => !p.Name.StartsWith("@")))
+        {
+            colGroups.AddRange(
+            child.Value.ToObject<List<GraphGroup>>()
+            );
         }
     }
 }
