@@ -1,4 +1,10 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
+﻿@using Microsoft.Identity.Client;
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@inject IConfiguration _configuration
+@inject ProtectedApiCallHelper ProtectedApiCallHelper
+@inject AuthenticationStateProvider AuthenticationStateProvider
+<div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="">BlazorSimpleSurvey</a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
@@ -17,23 +23,103 @@
                 <span class="oi oi-plus" aria-hidden="true"></span> Survey
             </NavLink>
         </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="claimsview">
-                <span class="oi oi-plus" aria-hidden="true"></span> Auth Claims
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="allusers">
-                <span class="oi oi-plus" aria-hidden="true"></span> All Users
-            </NavLink>
-        </li>
-    </ul>
+        @if (UserID != null)
+        {
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="claimsview">
+                    <span class="oi oi-plus" aria-hidden="true"></span> Auth Claims
+                </NavLink>
+            </li>
+        }
+        @if (isAdmin)
+        {
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="administration">
+                    <span class="oi oi-plus" aria-hidden="true"></span> Administration
+                </NavLink>
+            </li>
+        }
+        </ul>
 </div>
 
 @code {
     private bool collapseNavMenu = true;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    string AdministrationGroup;
+    bool isAdmin = false;
+    string UserID = null;
+    // Collection to hold all the Tasks
+    List<GraphUser> colGraphUsers = new List<GraphUser>();
+    List<GraphGroup> colGroups = new List<GraphGroup>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            AdministrationGroup = _configuration["AzureAdB2CManagement:AdministrationGroup"];
+
+            IConfidentialClientApplication confidentialClientApplication =
+                ConfidentialClientApplicationBuilder
+                .Create(_configuration["AzureAdB2CManagement:ClientId"])
+                .WithTenantId(_configuration["AzureAdB2CManagement:Tenant"])
+                .WithClientSecret(_configuration["AzureAdB2CManagement:ClientSecret"])
+                .Build();
+
+            // With client credentials flows the scopes is ALWAYS of the shape
+            // "resource/.default", as the
+            // application permissions need to be set statically
+            // (in the portal or by PowerShell),
+            // and then granted by a tenant administrator
+            string[] scopes = new string[] { "https://graph.microsoft.com/.default" };
+
+            AuthenticationResult result = null;
+
+            result = await confidentialClientApplication.AcquireTokenForClient(scopes)
+                .ExecuteAsync();
+
+            var httpClient = new HttpClient();
+            var apiCaller = new ProtectedApiCallHelper(httpClient);
+
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+            var user = authState.User;
+
+            UserID = user.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+
+            if (UserID != null)
+            {
+                await apiCaller.CallWebApiAndProcessResultASync(
+                    $"https://graph.microsoft.com/v1.0/users/{UserID}/memberOf",
+                    result.AccessToken,
+                    DisplayGroups
+                    );
+            }
+        }
+        catch
+        {
+            // do nothing if this fails
+        }
+    }
+
+    private void DisplayGroups(JObject result)
+    {
+        colGroups = new List<GraphGroup>();
+
+        foreach (JProperty child in result.Properties()
+            .Where(p => !p.Name.StartsWith("@")))
+        {
+            colGroups.AddRange(
+            child.Value.ToObject<List<GraphGroup>>()
+            );
+        }
+
+        if (AdministrationGroup != "")
+        {
+            isAdmin = (colGroups.Where(x => x.displayName.ToLower() == AdministrationGroup.ToLower()).FirstOrDefault() != null);
+        }
+    }
 
     private void ToggleNavMenu()
     {

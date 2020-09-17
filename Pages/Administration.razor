@@ -1,39 +1,45 @@
-﻿@page "/allusers"
+﻿@page "/administration"
 @using Microsoft.Identity.Client;
 @using Newtonsoft.Json;
 @using Newtonsoft.Json.Linq;
 @inject IConfiguration _configuration
 @inject ProtectedApiCallHelper ProtectedApiCallHelper
 @inject AuthenticationStateProvider AuthenticationStateProvider
-<h3>All Users</h3>
+<h3>Administration</h3>
 @strError
-<br />
-<p>Administration Group: <b>@AdministrationGroup</b></p>
-<p><b>Groups of current user:</b></p>
-<ul class="list-group">
-    @foreach (var group in colGroups)
-    {
-        <li class="list-group-item">
-            <p>Group Name: @group.displayName</p>
-            <p>Id: @group.id</p>
-        </li>
-    }
-</ul>
-<br />
-<p><b>All Users:</b></p>
-<ul class="list-group">
-    @foreach (var user in colGraphUsers.OrderBy(x => x.displayName))
-    {
-        <li class="list-group-item">
-            <p>Display Name: @user.displayName</p>
-            <p>userPrincipalName: @user.userPrincipalName</p>
-            <p>id: @user.id</p>
-        </li>
-    }
-</ul>
+@if (isAdmin)
+{
+    <br />
+    <p>Administration Group: <b>@AdministrationGroup</b></p>
+    <p><b>Groups of current user:</b></p>
+    <ul class="list-group">
+        @foreach (var group in colGroups)
+        {
+            <li class="list-group-item">
+                <p>Group Name: @group.displayName</p>
+                <p>Id: @group.id</p>
+            </li>
+        }
+    </ul>
+    <br />
+    <p><b>All Users:</b></p>
+    <ul class="list-group">
+        @foreach (var user in colGraphUsers.OrderBy(x => x.displayName))
+        {
+            <li class="list-group-item">
+                <p>Display Name: @user.displayName</p>
+                <p>userPrincipalName: @user.userPrincipalName</p>
+                <p>id: @user.id</p>
+            </li>
+        }
+    </ul>
+}
+
 @code {
     string strError = "";
     string AdministrationGroup;
+    bool isAdmin = false;
+    string UserID = null;
     // Collection to hold all the Tasks
     List<GraphUser> colGraphUsers = new List<GraphUser>();
     List<GraphGroup> colGroups = new List<GraphGroup>();
@@ -78,11 +84,14 @@
 
             var UserID = user.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
 
-            await apiCaller.CallWebApiAndProcessResultASync(
-                $"https://graph.microsoft.com/v1.0/users/{UserID}/memberOf",
-                result.AccessToken,
-                DisplayGroups
-                );
+            if (UserID != null)
+            {
+                await apiCaller.CallWebApiAndProcessResultASync(
+                    $"https://graph.microsoft.com/v1.0/users/{UserID}/memberOf",
+                    result.AccessToken,
+                    DisplayGroups
+                    );
+            }
 
         }
         catch (Exception ex)
@@ -113,6 +122,11 @@
             colGroups.AddRange(
             child.Value.ToObject<List<GraphGroup>>()
             );
+        }
+
+        if (AdministrationGroup != "")
+        {
+            isAdmin = (colGroups.Where(x => x.displayName.ToLower() == AdministrationGroup.ToLower()).FirstOrDefault() != null);
         }
     }
 }
