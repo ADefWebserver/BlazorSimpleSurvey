@@ -9,34 +9,26 @@
 @strError
 @if (isAdmin)
 {
-    <br />
-    <p>Administration Group: <b>@AdministrationGroup</b></p>
-    <p><b>Groups of current user:</b></p>
-    <ul class="list-group">
-        @foreach (var group in colGroups)
-        {
-            <li class="list-group-item">
-                <p>Group Name: @group.displayName</p>
-                <p>Id: @group.id</p>
-            </li>
-        }
-    </ul>
-    <br />
-    <p><b>All Users:</b></p>
-    <ul class="list-group">
-        @foreach (var user in colGraphUsers.OrderBy(x => x.displayName))
-        {
-            <li class="list-group-item">
-                <p>Display Name: @user.displayName</p>
-                <p>userPrincipalName: @user.userPrincipalName</p>
-                <p>id: @user.id</p>
-            </li>
-        }
-    </ul>
+    <p><b>Microsoft Graph:</b></p>
+    <RadzenTextBox Placeholder="Search Text..." @bind-Value="strSearch" Style="margin-bottom: 20px; width: 150px" />
+    <RadzenButton Click="Search" Text="Search" Style="margin-bottom: 20px; width: 150px" />
+    <RadzenGrid AllowFiltering="false" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowPaging="false" PageSize="5"
+                AllowSorting="false" Data="@colGraphUsers.OrderBy(x => x.displayName)" TItem="GraphUser" ColumnWidth="200px">
+        <Columns>
+            <RadzenGridColumn TItem="GraphUser" Property="displayName" Title="DisplayName" />
+            <RadzenGridColumn TItem="GraphUser" Property="surname" Title="First Name" />
+            <RadzenGridColumn TItem="GraphUser" Property="givenName" Title="Last Name" />
+        </Columns>
+    </RadzenGrid>
 }
 
 @code {
+    HttpClient httpClient;
+    ProtectedApiCallHelper apiCaller;
+    AuthenticationResult result = null;
+
     string strError = "";
+    string strSearch = "";
     string AdministrationGroup;
     bool isAdmin = false;
     string UserID = null;
@@ -64,13 +56,13 @@
             // and then granted by a tenant administrator
             string[] scopes = new string[] { "https://graph.microsoft.com/.default" };
 
-            AuthenticationResult result = null;
-
             result = await confidentialClientApplication.AcquireTokenForClient(scopes)
                 .ExecuteAsync();
 
-            var httpClient = new HttpClient();
-            var apiCaller = new ProtectedApiCallHelper(httpClient);
+            httpClient = new HttpClient();
+
+            apiCaller = new ProtectedApiCallHelper(httpClient);
+
             await apiCaller
                 .CallWebApiAndProcessResultASync(
                 "https://graph.microsoft.com/v1.0/users",
@@ -97,6 +89,26 @@
         catch (Exception ex)
         {
             strError = ex.GetBaseException().Message;
+        }
+    }
+
+    async Task Search()
+    {
+        if (strSearch.Trim() != "")
+        {
+            await apiCaller.CallWebApiAndProcessResultASync(
+                $"https://graph.microsoft.com/v1.0/users?$filter=startswith(displayName, '{strSearch}')",
+                result.AccessToken,
+                DisplayUsers
+                );
+        }
+        else
+        {
+            await apiCaller.CallWebApiAndProcessResultASync(
+                "https://graph.microsoft.com/v1.0/users",
+                result.AccessToken,
+                DisplayUsers
+                );
         }
     }
 
