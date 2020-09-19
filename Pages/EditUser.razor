@@ -42,12 +42,12 @@
 </RadzenCard>
 <div class="row">
     <div class="col-md-12">
-        <RadzenButton Click="@((args) => dialogService.Close(true))"
+        <RadzenButton Click="UpdateUser"
                       Text="Save" ButtonStyle="ButtonStyle.Success"
                       Style="margin-bottom: 10px; width: 150px" />
         @if (GraphUser.id != CurrentUserID)
         {
-            <RadzenButton Click="@((args) => dialogService.Close(false))"
+            <RadzenButton Click="DeleteUser"
                           ButtonStyle="ButtonStyle.Danger"
                           Text="Delete"
                           Style="margin-bottom: 10px; width: 150px" />
@@ -138,6 +138,11 @@
         {
             isAdmin = (colGroups.Where(x => x.displayName.ToLower() == AdministrationGroup.ToLower()).FirstOrDefault() != null);
         }
+
+        if(colGroups.Count == 0)
+        {
+            colGroups.Add(new GraphGroup { displayName = "[None]" });
+        }
     }
 
     async Task AddToAdminGroup()
@@ -148,6 +153,16 @@
     async Task RemoveFromAdminGroup()
     {
 
+    }
+
+    async Task UpdateUser()
+    {
+        dialogService.Close(true);
+    }
+
+    async Task DeleteUser()
+    {
+        dialogService.Close(true);
     }
 
 }
