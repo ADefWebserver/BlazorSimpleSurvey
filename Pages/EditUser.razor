@@ -8,7 +8,9 @@
 <RadzenCard Style="margin-bottom: 20px;">
     <div class="row">
         <div class="col-md-4">
-            <div>First Name:</div>
+            <div>Display Name:</div>
+            <RadzenTextBox @bind-Value="GraphUser.displayName" Style="width: 200px" />
+            <div style="margin-top:20px">First Name:</div>
             <RadzenTextBox @bind-Value="GraphUser.givenName" Style="width: 200px" />
             <div style="margin-top:20px">Last Name:</div>
             <RadzenTextBox @bind-Value="GraphUser.surname" Style="width: 200px" />
@@ -24,19 +26,33 @@
                     </li>
                 }
             </ul>
+            @if ((isAdmin != null) && (GraphUser.id != CurrentUserID))
+            {
+                @if (!isAdmin.Value)
+                {
+                    <RadzenButton Click="AddToAdminGroup" Text="Add To Admin Group" ButtonStyle="ButtonStyle.Success" Style="margin-top: 20px; width: 300px" />
+                }
+                else
+                {
+                    <RadzenButton Click="RemoveFromAdminGroup" Text="Remove From Admin Group" ButtonStyle="ButtonStyle.Danger" Style="margin-top: 20px; width: 300px" />
+                }
+            }
         </div>
     </div>
 </RadzenCard>
 <div class="row">
     <div class="col-md-12">
         <RadzenButton Click="@((args) => dialogService.Close(true))"
-                      Text="OK"
+                      Text="Save" ButtonStyle="ButtonStyle.Success"
                       Style="margin-bottom: 10px; width: 150px" />
-        <RadzenButton Click="@((args) => dialogService.Close(false))"
-                      ButtonStyle="ButtonStyle.Secondary"
-                      Text="Cancel"
-                      Style="margin-bottom: 10px; width: 150px" />
-    </div>
+        @if (GraphUser.id != CurrentUserID)
+        {
+            <RadzenButton Click="@((args) => dialogService.Close(false))"
+                          ButtonStyle="ButtonStyle.Danger"
+                          Text="Delete"
+                          Style="margin-bottom: 10px; width: 150px" />
+        }
+        </div>
     @strError
 </div>
 
@@ -44,6 +60,10 @@
     [Parameter] public GraphUser GraphUser { get; set; }
 
     string strError = "";
+    string AdministrationGroup;
+    bool? isAdmin = null;
+    System.Security.Claims.ClaimsPrincipal user;
+    string CurrentUserID;
 
     HttpClient httpClient;
     ProtectedApiCallHelper apiCaller;
@@ -55,12 +75,20 @@
     {
         try
         {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+            user = authState.User;
+
+            CurrentUserID = user.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+
+            AdministrationGroup = _configuration["AzureAdB2CManagement:AdministrationGroup"];
+
             IConfidentialClientApplication confidentialClientApplication =
-                ConfidentialClientApplicationBuilder
-                .Create(_configuration["AzureAdB2CManagement:ClientId"])
-                .WithTenantId(_configuration["AzureAdB2CManagement:Tenant"])
-                .WithClientSecret(_configuration["AzureAdB2CManagement:ClientSecret"])
-                .Build();
+            ConfidentialClientApplicationBuilder
+            .Create(_configuration["AzureAdB2CManagement:ClientId"])
+            .WithTenantId(_configuration["AzureAdB2CManagement:Tenant"])
+            .WithClientSecret(_configuration["AzureAdB2CManagement:ClientSecret"])
+            .Build();
 
             // With client credentials flows the scopes is ALWAYS of the shape
             // "resource/.default", as the
@@ -105,5 +133,21 @@
             child.Value.ToObject<List<GraphGroup>>()
             );
         }
+
+        if (AdministrationGroup != "")
+        {
+            isAdmin = (colGroups.Where(x => x.displayName.ToLower() == AdministrationGroup.ToLower()).FirstOrDefault() != null);
+        }
     }
+
+    async Task AddToAdminGroup()
+    {
+
+    }
+
+    async Task RemoveFromAdminGroup()
+    {
+
+    }
+
 }
