@@ -5,16 +5,24 @@
 @inject IConfiguration _configuration
 @inject ProtectedApiCallHelper ProtectedApiCallHelper
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject DialogService dialogService
 <h3>Administration</h3>
 @strError
 @if (isAdmin)
 {
-    <p><b>Microsoft Graph:</b></p>
     <RadzenTextBox Placeholder="Search Text..." @bind-Value="strSearch" Style="margin-bottom: 20px; width: 150px" />
     <RadzenButton Click="Search" Text="Search" Style="margin-bottom: 20px; width: 150px" />
     <RadzenGrid AllowFiltering="false" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowPaging="false" PageSize="5"
                 AllowSorting="false" Data="@colGraphUsers.OrderBy(x => x.displayName)" TItem="GraphUser" ColumnWidth="200px">
         <Columns>
+            <RadzenGridColumn TItem="GraphUser" Property="id" Width="75px" Title="">
+                <Template Context="GraphUser">
+                    <RadzenButton Text="Edit" Style="width: 100px" 
+                                  Click="@(args => dialogService.Open<EditUser>($"UserID {GraphUser.id}",
+                                           new Dictionary<string, object>() { { "GraphUser", GraphUser } },
+                                           new DialogOptions(){ Width = "700px", Height = "530px" }))" />
+                </Template>
+            </RadzenGridColumn>
             <RadzenGridColumn TItem="GraphUser" Property="displayName" Title="DisplayName" />
             <RadzenGridColumn TItem="GraphUser" Property="surname" Title="First Name" />
             <RadzenGridColumn TItem="GraphUser" Property="givenName" Title="Last Name" />
@@ -40,6 +48,9 @@
     {
         try
         {
+            dialogService.OnOpen += Open;
+            dialogService.OnClose += Close;
+
             AdministrationGroup = _configuration["AzureAdB2CManagement:AdministrationGroup"];
 
             IConfidentialClientApplication confidentialClientApplication =
@@ -90,6 +101,16 @@
         {
             strError = ex.GetBaseException().Message;
         }
+    }
+
+    void Open(string title, Type type, Dictionary<string, object> parameters, DialogOptions options)
+    {
+        StateHasChanged();
+    }
+
+    void Close(dynamic result)
+    {
+        StateHasChanged();
     }
 
     async Task Search()

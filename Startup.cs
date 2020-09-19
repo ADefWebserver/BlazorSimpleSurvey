@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using System.Security.Claims;
 using BlazorSimpleSurvey.Models;
 using System.Linq.Dynamic.Core;
+using Radzen;
 
 namespace BlazorSimpleSurvey
 {
@@ -254,6 +255,9 @@ namespace BlazorSimpleSurvey
 
             services.AddRazorPages();
             services.AddServerSideBlazor();
+
+            services.AddScoped<DialogService>();
+            services.AddScoped<NotificationService>();
 
             services.AddHttpClient<ProtectedApiCallHelper>();
         }

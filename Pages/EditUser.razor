@@ -1,0 +1,46 @@
+﻿@inject Radzen.DialogService dialogService
+
+<h1>Edit User</h1>
+
+<h3>UserID: @GraphUser.displayName</h3>
+<RadzenCard Style="margin-bottom: 20px;">
+    <div class="row">
+        <div class="col-md-6">
+            <div>Company:</div>
+            <b></b>
+            <div style="margin-top:20px">Employee:</div>
+            <b></b>
+            <br />
+        </div>
+        <div class="col-md-6">
+            <div>Freight:</div>
+            <b></b>
+            <div style="margin-top:20px">Ship country:</div>
+            <b></b>
+            <div style="margin-top:20px">Ship city:</div>
+            <b></b>
+            <div style="margin-top:20px">Ship name:</div>
+            <b></b>
+        </div>
+    </div>
+</RadzenCard>
+<div class="row">
+    <div class="col-md-12">
+        <RadzenButton Click="@((args) => dialogService.Close(true))" 
+                      Text="OK" 
+                      Style="margin-bottom: 10px; width: 150px" />
+        <RadzenButton Click="@((args) => dialogService.Close(false))" 
+                      ButtonStyle="ButtonStyle.Secondary" 
+                      Text="Cancel" 
+                      Style="margin-bottom: 10px; width: 150px" />
+    </div>
+</div>
+
+@code {
+    [Parameter] public GraphUser GraphUser { get; set; }
+
+    protected override void OnInitialized()
+    {
+
+    }
+}
