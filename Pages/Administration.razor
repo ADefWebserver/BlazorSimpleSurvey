@@ -18,9 +18,9 @@
             <RadzenGridColumn TItem="GraphUser" Property="id" Width="75px" Title="">
                 <Template Context="GraphUser">
                     <RadzenButton Text="Edit" Style="width: 100px" 
-                                  Click="@(args => dialogService.Open<EditUser>($"UserID {GraphUser.id}",
+                                  Click="@(args => dialogService.Open<EditUser>($"Edit {GraphUser.displayName}",
                                            new Dictionary<string, object>() { { "GraphUser", GraphUser } },
-                                           new DialogOptions(){ Width = "700px", Height = "530px" }))" />
+                                           new DialogOptions(){ Width = "700px", Height = "400px" }))" />
                 </Template>
             </RadzenGridColumn>
             <RadzenGridColumn TItem="GraphUser" Property="displayName" Title="DisplayName" />

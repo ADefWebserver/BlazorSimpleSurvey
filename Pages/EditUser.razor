@@ -1,46 +1,109 @@
-﻿@inject Radzen.DialogService dialogService
-
-<h1>Edit User</h1>
-
-<h3>UserID: @GraphUser.displayName</h3>
+﻿@using Microsoft.Identity.Client;
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@inject IConfiguration _configuration
+@inject ProtectedApiCallHelper ProtectedApiCallHelper
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject Radzen.DialogService dialogService
 <RadzenCard Style="margin-bottom: 20px;">
     <div class="row">
-        <div class="col-md-6">
-            <div>Company:</div>
-            <b></b>
-            <div style="margin-top:20px">Employee:</div>
-            <b></b>
+        <div class="col-md-4">
+            <div>First Name:</div>
+            <RadzenTextBox @bind-Value="GraphUser.givenName" Style="width: 200px" />
+            <div style="margin-top:20px">Last Name:</div>
+            <RadzenTextBox @bind-Value="GraphUser.surname" Style="width: 200px" />
             <br />
         </div>
-        <div class="col-md-6">
-            <div>Freight:</div>
-            <b></b>
-            <div style="margin-top:20px">Ship country:</div>
-            <b></b>
-            <div style="margin-top:20px">Ship city:</div>
-            <b></b>
-            <div style="margin-top:20px">Ship name:</div>
-            <b></b>
+        <div class="col-md-8">
+            <div>Groups:</div>
+            <ul class="list-group">
+                @foreach (var group in colGroups)
+                {
+                    <li class="list-group-item">
+                        <p>@group.displayName</p>
+                    </li>
+                }
+            </ul>
         </div>
     </div>
 </RadzenCard>
 <div class="row">
     <div class="col-md-12">
-        <RadzenButton Click="@((args) => dialogService.Close(true))" 
-                      Text="OK" 
+        <RadzenButton Click="@((args) => dialogService.Close(true))"
+                      Text="OK"
                       Style="margin-bottom: 10px; width: 150px" />
-        <RadzenButton Click="@((args) => dialogService.Close(false))" 
-                      ButtonStyle="ButtonStyle.Secondary" 
-                      Text="Cancel" 
+        <RadzenButton Click="@((args) => dialogService.Close(false))"
+                      ButtonStyle="ButtonStyle.Secondary"
+                      Text="Cancel"
                       Style="margin-bottom: 10px; width: 150px" />
     </div>
+    @strError
 </div>
 
 @code {
     [Parameter] public GraphUser GraphUser { get; set; }
 
-    protected override void OnInitialized()
-    {
+    string strError = "";
 
+    HttpClient httpClient;
+    ProtectedApiCallHelper apiCaller;
+    AuthenticationResult result = null;
+
+    List<GraphGroup> colGroups = new List<GraphGroup>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            IConfidentialClientApplication confidentialClientApplication =
+                ConfidentialClientApplicationBuilder
+                .Create(_configuration["AzureAdB2CManagement:ClientId"])
+                .WithTenantId(_configuration["AzureAdB2CManagement:Tenant"])
+                .WithClientSecret(_configuration["AzureAdB2CManagement:ClientSecret"])
+                .Build();
+
+            // With client credentials flows the scopes is ALWAYS of the shape
+            // "resource/.default", as the
+            // application permissions need to be set statically
+            // (in the portal or by PowerShell),
+            // and then granted by a tenant administrator
+            string[] scopes = new string[] { "https://graph.microsoft.com/.default" };
+
+            result = await confidentialClientApplication.AcquireTokenForClient(scopes)
+                .ExecuteAsync();
+
+            httpClient = new HttpClient();
+
+            apiCaller = new ProtectedApiCallHelper(httpClient);
+
+            var UserID = GraphUser.id;
+
+            if (UserID != null)
+            {
+                await apiCaller.CallWebApiAndProcessResultASync(
+                    $"https://graph.microsoft.com/v1.0/users/{UserID}/memberOf",
+                    result.AccessToken,
+                    DisplayGroups
+                    );
+            }
+
+        }
+        catch (Exception ex)
+        {
+            strError = ex.GetBaseException().Message;
+        }
+    }
+
+    private void DisplayGroups(JObject result)
+    {
+        colGroups = new List<GraphGroup>();
+
+        foreach (JProperty child in result.Properties()
+            .Where(p => !p.Name.StartsWith("@")))
+        {
+            colGroups.AddRange(
+            child.Value.ToObject<List<GraphGroup>>()
+            );
+        }
     }
 }
