@@ -97,7 +97,7 @@
         if (strSearch.Trim() != "")
         {
             await apiCaller.CallWebApiAndProcessResultASync(
-                $"https://graph.microsoft.com/v1.0/users?$filter=startswith(displayName, '{strSearch}')",
+                $"https://graph.microsoft.com/v1.0/users?$filter=startswith(displayName, '{strSearch}') or startswith(surname, '{strSearch}') or startswith(givenName, '{strSearch}')",
                 result.AccessToken,
                 DisplayUsers
                 );
