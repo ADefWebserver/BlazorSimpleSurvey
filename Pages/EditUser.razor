@@ -52,7 +52,7 @@
                           Text="Delete"
                           Style="margin-bottom: 10px; width: 150px" />
         }
-        </div>
+    </div>
     @strError
 </div>
 
@@ -139,30 +139,36 @@
             isAdmin = (colGroups.Where(x => x.displayName.ToLower() == AdministrationGroup.ToLower()).FirstOrDefault() != null);
         }
 
-        if(colGroups.Count == 0)
+        if (colGroups.Count == 0)
         {
             colGroups.Add(new GraphGroup { displayName = "[None]" });
         }
     }
 
-    async Task AddToAdminGroup()
+    void AddToAdminGroup()
     {
 
     }
 
-    async Task RemoveFromAdminGroup()
+    void RemoveFromAdminGroup()
     {
 
     }
 
-    async Task UpdateUser()
-    {
-        dialogService.Close(true);
-    }
-
-    async Task DeleteUser()
+    void UpdateUser()
     {
         dialogService.Close(true);
     }
+
+    async Task DeleteUser() => await dialogService.OpenAsync("Delete User", ds =>
+    @<RadzenCard Style="padding: 20px;">
+        <p Style="margin-bottom: 10px;">Confirm?</p>
+        <div class="row">
+            <div class="col-md-12">
+                <RadzenButton Text="Ok" Click="()=> ds.Close(true)" Style="margin-bottom: 10px; width: 150px" />
+                <RadzenButton Text="Cancel" Click="()=> ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" Style="margin-bottom: 10px; width: 150px" />
+            </div>
+        </div>
+    </RadzenCard>);
 
 }
