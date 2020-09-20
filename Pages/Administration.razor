@@ -15,12 +15,12 @@
     <RadzenGrid AllowFiltering="false" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowPaging="false" PageSize="5"
                 AllowSorting="false" Data="@colGraphUsers.OrderBy(x => x.displayName)" TItem="GraphUser" ColumnWidth="200px">
         <Columns>
-            <RadzenGridColumn TItem="GraphUser" Property="id" Width="75px" Title="">
+            <RadzenGridColumn TItem="GraphUser" Property="id" Width="50px" Title="">
                 <Template Context="GraphUser">
-                    <RadzenButton Text="Edit" Style="width: 100px" 
+                    <RadzenButton Text="Edit" Size="Radzen.ButtonSize.Small" 
                                   Click="@(args => dialogService.Open<EditUser>($"Edit {GraphUser.displayName}",
                                            new Dictionary<string, object>() { { "GraphUser", GraphUser } },
-                                           new DialogOptions(){ Width = "700px", Height = "400px" }))" />
+                                           new DialogOptions(){ Width = "700px", Height = "450px" }))" />
                 </Template>
             </RadzenGridColumn>
             <RadzenGridColumn TItem="GraphUser" Property="displayName" Title="DisplayName" />
