@@ -47,7 +47,7 @@
                       Style="margin-bottom: 10px; width: 150px" />
         @if (GraphUser.id != CurrentUserID)
         {
-            <RadzenButton Click="DeleteUser"
+            <RadzenButton Click="DeleteUserDialog"
                           ButtonStyle="ButtonStyle.Danger"
                           Text="Delete"
                           Style="margin-bottom: 10px; width: 150px" />
@@ -99,7 +99,7 @@
 
             // Create an authentication provider by passing in a client application and graph scopes.
             AuthenticationResult authenticationResult = await confidentialClientApplication.AcquireTokenForClient(scopes).ExecuteAsync();
-            
+
             ClientCredentialProvider authProvider = new ClientCredentialProvider(confidentialClientApplication);
 
             // Create a new instance of GraphServiceClient with the authentication provider.
@@ -172,15 +172,25 @@
         dialogService.Close(true);
     }
 
-    async Task DeleteUser() => await dialogService.OpenAsync("Delete User", ds =>
+    async Task DeleteUserDialog() => await dialogService.OpenAsync("Delete User", ds =>
     @<RadzenCard Style="padding: 20px;">
         <p Style="margin-bottom: 10px;">Confirm?</p>
         <div class="row">
             <div class="col-md-12">
-                <RadzenButton Text="Ok" Click="()=> ds.Close(true)" Style="margin-bottom: 10px; width: 150px" />
-                <RadzenButton Text="Cancel" Click="()=> ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" Style="margin-bottom: 10px; width: 150px" />
+                <RadzenButton Text="Yes" Click="DeleteUser" Style="margin-bottom: 10px; width: 150px" />
+                <RadzenButton Text="No" Click="()=> ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" Style="margin-bottom: 10px; width: 150px" />
             </div>
         </div>
     </RadzenCard>);
+
+    async Task DeleteUser()
+    {
+        await graphClient.Users[GraphUser.id]
+            .Request()
+            .DeleteAsync();
+
+        dialogService.Close(true);
+        dialogService.Close(true);
+    }
 
 }

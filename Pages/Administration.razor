@@ -47,8 +47,8 @@
     {
         try
         {
-            dialogService.OnOpen += Open;
-            dialogService.OnClose += Close;
+            // detect when a dialog has closed
+            dialogService.OnClose += DialogClose;
 
             AdministrationGroup = _configuration["AzureAdB2CManagement:AdministrationGroup"];
 
@@ -102,14 +102,16 @@
         }
     }
 
-    void Open(string title, Type type, Dictionary<string, object> parameters, DialogOptions options)
+    void DialogClose(dynamic result)
     {
-        StateHasChanged();
-    }
-
-    void Close(dynamic result)
-    {
-        StateHasChanged();
+        if (result != null)
+        {
+            if (result)
+            {
+                Task.Run(Search);
+            }
+            StateHasChanged();
+        }
     }
 
     async Task Search()
