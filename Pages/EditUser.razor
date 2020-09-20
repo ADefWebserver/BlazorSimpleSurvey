@@ -67,7 +67,7 @@
 
     HttpClient httpClient;
     ProtectedApiCallHelper apiCaller;
-    AuthenticationResult result = null;
+    GraphServiceClient graphClient;
 
     List<GraphGroup> colGroups = new List<GraphGroup>();
 
@@ -97,22 +97,25 @@
             // and then granted by a tenant administrator
             string[] scopes = new string[] { "https://graph.microsoft.com/.default" };
 
-            result = await confidentialClientApplication.AcquireTokenForClient(scopes)
-                .ExecuteAsync();
+            // Create an authentication provider by passing in a client application and graph scopes.
+            AuthenticationResult authenticationResult = await confidentialClientApplication.AcquireTokenForClient(scopes).ExecuteAsync();
+            
+            ClientCredentialProvider authProvider = new ClientCredentialProvider(confidentialClientApplication);
+
+            // Create a new instance of GraphServiceClient with the authentication provider.
+            graphClient = new GraphServiceClient(authProvider);
 
             httpClient = new HttpClient();
 
             apiCaller = new ProtectedApiCallHelper(httpClient);
 
-            var UserID = GraphUser.id;
-
-            if (UserID != null)
+            if (GraphUser.id != null)
             {
                 await apiCaller.CallWebApiAndProcessResultASync(
-                    $"https://graph.microsoft.com/v1.0/users/{UserID}/memberOf",
-                    result.AccessToken,
-                    DisplayGroups
-                    );
+                $"https://graph.microsoft.com/v1.0/users/{GraphUser.id}/memberOf",
+                authenticationResult.AccessToken,
+                DisplayGroups
+                );
             }
 
         }
@@ -155,8 +158,17 @@
 
     }
 
-    void UpdateUser()
+    async Task UpdateUser()
     {
+        var UpdateUser = new User
+        {
+            DisplayName = GraphUser.displayName,
+            Surname = GraphUser.surname,
+            GivenName = GraphUser.givenName
+        };
+
+        await graphClient.Users[GraphUser.id].Request().UpdateAsync(UpdateUser);
+
         dialogService.Close(true);
     }
 
