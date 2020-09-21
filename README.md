@@ -14,6 +14,12 @@
 ### Azure B2C Management Configuration
 Microsoft Graph allows you to manage many of the resources within your Azure AD B2C tenant. To configure this follow these directions:
 * [Register a Microsoft Graph application](https://docs.microsoft.com/en-us/azure/active-directory-b2c/microsoft-graph-get-started?tabs=app-reg-ga)
+* Ensure you add these permissions to the Azure Application you create:
+  * AuditLog.Read.All
+  * Directory.ReadWrite.All
+  * Policy.ReadWrite.TrustFramework
+  * User.Read
+  * User.ReadWrite.All
 * Copy the settings to the appsettings.json file (AzureAdB2CManagement section). 
 
 ### Azure B2C *Advanced Configuration* (optional)
