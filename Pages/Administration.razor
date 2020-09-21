@@ -10,17 +10,23 @@
 @strError
 @if (isAdmin)
 {
-    <RadzenTextBox Placeholder="Search Text..." @bind-Value="strSearch" Style="margin-bottom: 20px; width: 150px" />
+    <RadzenTextBox Placeholder="Search Text..." @bind-Value="strSearch" 
+                   Style="margin-bottom: 20px; width: 150px" />
     <RadzenButton Click="Search" Text="Search" Style="margin-bottom: 20px; width: 150px" />
-    <RadzenGrid AllowFiltering="false" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowPaging="false" PageSize="5"
-                AllowSorting="false" Data="@colGraphUsers.OrderBy(x => x.displayName)" TItem="GraphUser" ColumnWidth="200px">
+    <RadzenGrid AllowFiltering="false" 
+                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
+                AllowPaging="false" PageSize="5"
+                AllowSorting="false" Data="@colGraphUsers.OrderBy(x => x.displayName)" 
+                TItem="GraphUser" ColumnWidth="200px">
         <Columns>
             <RadzenGridColumn TItem="GraphUser" Property="id" Width="50px" Title="">
                 <Template Context="GraphUser">
                     <RadzenButton Text="Edit" Size="Radzen.ButtonSize.Small" 
-                                  Click="@(args => dialogService.Open<EditUser>($"Edit {GraphUser.displayName}",
+                                  Click="@(args => 
+                                           dialogService.Open<EditUser>($"Edit {GraphUser.displayName}",
                                            new Dictionary<string, object>() { { "GraphUser", GraphUser } },
-                                           new DialogOptions(){ Width = "700px", Height = "450px" }))" />
+                                           new DialogOptions(){ Width = "700px", Height = "450px" }))" 
+                                  />
                 </Template>
             </RadzenGridColumn>
             <RadzenGridColumn TItem="GraphUser" Property="displayName" Title="DisplayName" />
@@ -84,7 +90,11 @@
 
             var user = authState.User;
 
-            var UserID = user.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+            var UserID = 
+                user.Claims.FirstOrDefault(
+                    c => c.Type == 
+                    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?
+                    .Value;
 
             if (UserID != null)
             {
@@ -119,7 +129,10 @@
         if (strSearch.Trim() != "")
         {
             await apiCaller.CallWebApiAndProcessResultASync(
-                $"https://graph.microsoft.com/v1.0/users?$filter=startswith(displayName, '{strSearch}') or startswith(surname, '{strSearch}') or startswith(givenName, '{strSearch}')",
+                $"https://graph.microsoft.com/v1.0/users?" +
+                $"$filter=startswith(displayName,'{strSearch}') " +
+                $"or startswith(surname, '{strSearch}') " +
+                $"or startswith(givenName, '{strSearch}')",
                 result.AccessToken,
                 DisplayUsers
                 );
@@ -160,7 +173,10 @@
 
         if (AdministrationGroup != "")
         {
-            isAdmin = (colGroups.Where(x => x.displayName.ToLower() == AdministrationGroup.ToLower()).FirstOrDefault() != null);
+            isAdmin = 
+                (colGroups
+                .Where(x => x.displayName.ToLower() == AdministrationGroup.ToLower())
+                .FirstOrDefault() != null);
         }
     }
 }
