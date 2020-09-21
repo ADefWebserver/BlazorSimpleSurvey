@@ -36,3 +36,9 @@ You can get the sample Azure B2C Custom policy .xml files in the **!AzureB2CConf
 * If using **Google** login follow these steps: [Set up sign-in with a Google account using custom policies in Azure Active Directory B2C](https://docs.microsoft.com/en-us/azure/active-directory-b2c/identity-provider-google-custom?tabs=app-reg-ga)
 * If using **Twitter** login follow these steps: [Set up sign-in with a Twitter account using custom policies in Azure Active Directory B2C](https://docs.microsoft.com/en-us/azure/active-directory-b2c/identity-provider-twitter-custom?tabs=app-reg-ga)
 * If using **Microsoft Accounts** for login follow these steps: [Set up sign-in with a Microsoft account using custom policies in Azure Active Directory B2C](https://docs.microsoft.com/en-us/azure/active-directory-b2c/identity-provider-microsoft-account-custom?tabs=app-reg-ga)
+
+### Screen Shots
+
+![Image 001](https://user-images.githubusercontent.com/1857799/93725999-4cb01480-fb68-11ea-93b8-7e33c6899048.png)
+![Image 002](https://user-images.githubusercontent.com/1857799/93726000-4d48ab00-fb68-11ea-88ae-44e1cf4d5a98.png)
+![Image 003](https://user-images.githubusercontent.com/1857799/93726001-4de14180-fb68-11ea-8bf2-e847fd44ffee.png)
