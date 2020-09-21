@@ -50,7 +50,7 @@
     string AdministrationGroup;
     bool isAdmin = false;
     string UserID = null;
-    // Collection to hold all the Tasks
+
     List<GraphUser> colGraphUsers = new List<GraphUser>();
     List<GraphGroup> colGroups = new List<GraphGroup>();
 
@@ -86,7 +86,11 @@
 
             var user = authState.User;
 
-            UserID = user.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+            UserID = 
+                user.Claims.FirstOrDefault(
+                    c => c.Type == 
+                    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?
+                    .Value;
 
             if (UserID != null)
             {
@@ -117,7 +121,11 @@
 
         if (AdministrationGroup != "")
         {
-            isAdmin = (colGroups.Where(x => x.displayName.ToLower() == AdministrationGroup.ToLower()).FirstOrDefault() != null);
+            isAdmin = 
+                (colGroups
+                .Where(x => x.displayName.ToLower() == 
+                AdministrationGroup.ToLower())
+                .FirstOrDefault() != null);
         }
     }
 
