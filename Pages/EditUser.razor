@@ -30,11 +30,17 @@
             {
                 @if (!isAdmin.Value)
                 {
-                    <RadzenButton Click="AddToAdminGroup" Text="Add To Admin Group" ButtonStyle="ButtonStyle.Success" Style="margin-top: 20px; width: 300px" />
+                    <RadzenButton Click="AddToAdminGroup" 
+                                  Text="Add To Admin Group" 
+                                  ButtonStyle="ButtonStyle.Success" 
+                                  Style="margin-top: 20px; width: 300px" />
                 }
                 else
                 {
-                    <RadzenButton Click="RemoveFromAdminGroup" Text="Remove From Admin Group" ButtonStyle="ButtonStyle.Danger" Style="margin-top: 20px; width: 300px" />
+                    <RadzenButton Click="RemoveFromAdminGroup" 
+                                  Text="Remove From Admin Group" 
+                                  ButtonStyle="ButtonStyle.Danger" 
+                                  Style="margin-top: 20px; width: 300px" />
                 }
             }
         </div>
@@ -61,6 +67,7 @@
 
     string strError = "";
     string AdministrationGroup;
+    string AdminGroupId;
     bool? isAdmin = null;
     System.Security.Claims.ClaimsPrincipal user;
     string CurrentUserID;
@@ -75,20 +82,25 @@
     {
         try
         {
-            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var authState =
+                await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
             user = authState.User;
 
-            CurrentUserID = user.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+            CurrentUserID =
+                user.Claims.FirstOrDefault(
+                    c => c.Type ==
+                    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?
+                    .Value;
 
             AdministrationGroup = _configuration["AzureAdB2CManagement:AdministrationGroup"];
 
             IConfidentialClientApplication confidentialClientApplication =
-            ConfidentialClientApplicationBuilder
-            .Create(_configuration["AzureAdB2CManagement:ClientId"])
-            .WithTenantId(_configuration["AzureAdB2CManagement:Tenant"])
-            .WithClientSecret(_configuration["AzureAdB2CManagement:ClientSecret"])
-            .Build();
+                ConfidentialClientApplicationBuilder
+                .Create(_configuration["AzureAdB2CManagement:ClientId"])
+                .WithTenantId(_configuration["AzureAdB2CManagement:Tenant"])
+                .WithClientSecret(_configuration["AzureAdB2CManagement:ClientSecret"])
+                .Build();
 
             // With client credentials flows the scopes is ALWAYS of the shape
             // "resource/.default", as the
@@ -97,13 +109,24 @@
             // and then granted by a tenant administrator
             string[] scopes = new string[] { "https://graph.microsoft.com/.default" };
 
-            // Create an authentication provider by passing in a client application and graph scopes.
-            AuthenticationResult authenticationResult = await confidentialClientApplication.AcquireTokenForClient(scopes).ExecuteAsync();
+            // Create an authentication provider by passing in a client 
+            // application and graph scopes.
+            AuthenticationResult authenticationResult =
+                await confidentialClientApplication.AcquireTokenForClient(scopes)
+                .ExecuteAsync();
 
-            ClientCredentialProvider authProvider = new ClientCredentialProvider(confidentialClientApplication);
+            ClientCredentialProvider authProvider =
+                new ClientCredentialProvider(confidentialClientApplication);
 
             // Create a new instance of GraphServiceClient with the authentication provider.
             graphClient = new GraphServiceClient(authProvider);
+
+            // Get Admin Group Id
+            var GroupCollection = await graphClient.Groups.Request()
+                .Filter($"startsWith(displayName,'{AdministrationGroup}')")
+                .GetAsync();
+
+            AdminGroupId = GroupCollection.ToList().Where(g => g.DisplayName == AdministrationGroup).FirstOrDefault().Id;
 
             httpClient = new HttpClient();
 
@@ -139,7 +162,9 @@
 
         if (AdministrationGroup != "")
         {
-            isAdmin = (colGroups.Where(x => x.displayName.ToLower() == AdministrationGroup.ToLower()).FirstOrDefault() != null);
+            isAdmin = (colGroups
+                .Where(x => x.displayName.ToLower() == AdministrationGroup.ToLower())
+                .FirstOrDefault() != null);
         }
 
         if (colGroups.Count == 0)
@@ -148,14 +173,34 @@
         }
     }
 
-    void AddToAdminGroup()
+    async Task AddToAdminGroup()
     {
+        // Get selected user
+        var selectedUser = 
+            graphClient.Users[GraphUser.id]
+            .Request().GetAsync();
 
+        // Create a Directory Object for the selected user
+        var directoryObject = new DirectoryObject
+        {
+            Id = GraphUser.id
+        };
+
+        await graphClient.Groups[$"{AdminGroupId}"].Members.References
+            .Request().AddAsync(directoryObject);
+
+        dialogService.Close(true);
     }
 
-    void RemoveFromAdminGroup()
+    async Task RemoveFromAdminGroup()
     {
+        await graphClient
+            .Groups[$"{AdminGroupId}"]
+            .Members[$"{GraphUser.id}"].Reference
+            .Request()
+            .DeleteAsync();
 
+        dialogService.Close(true);
     }
 
     async Task UpdateUser()
@@ -177,8 +222,11 @@
         <p Style="margin-bottom: 10px;">Confirm?</p>
         <div class="row">
             <div class="col-md-12">
-                <RadzenButton Text="Yes" Click="DeleteUser" Style="margin-bottom: 10px; width: 150px" />
-                <RadzenButton Text="No" Click="()=> ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" Style="margin-bottom: 10px; width: 150px" />
+                <RadzenButton Text="Yes" Click="DeleteUser" 
+                              Style="margin-bottom: 10px; width: 150px" />
+                <RadzenButton Text="No" Click="()=> ds.Close(false)" 
+                              ButtonStyle="ButtonStyle.Secondary" 
+                              Style="margin-bottom: 10px; width: 150px" />
             </div>
         </div>
     </RadzenCard>);
@@ -192,5 +240,4 @@
         dialogService.Close(true);
         dialogService.Close(true);
     }
-
 }
