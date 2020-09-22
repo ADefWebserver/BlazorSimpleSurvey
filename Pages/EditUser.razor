@@ -118,7 +118,8 @@
             ClientCredentialProvider authProvider =
                 new ClientCredentialProvider(confidentialClientApplication);
 
-            // Create a new instance of GraphServiceClient with the authentication provider.
+            // Create a new instance of GraphServiceClient 
+            // with the authentication provider.
             graphClient = new GraphServiceClient(authProvider);
 
             // Get Admin Group Id
@@ -126,7 +127,10 @@
                 .Filter($"startsWith(displayName,'{AdministrationGroup}')")
                 .GetAsync();
 
-            AdminGroupId = GroupCollection.ToList().Where(g => g.DisplayName == AdministrationGroup).FirstOrDefault().Id;
+            AdminGroupId = GroupCollection
+                .ToList()
+                .Where(g => g.DisplayName == AdministrationGroup)
+                .FirstOrDefault().Id;
 
             httpClient = new HttpClient();
 
@@ -212,12 +216,14 @@
             GivenName = GraphUser.givenName
         };
 
-        await graphClient.Users[GraphUser.id].Request().UpdateAsync(UpdateUser);
+        await graphClient.Users[GraphUser.id].Request()
+            .UpdateAsync(UpdateUser);
 
         dialogService.Close(true);
     }
 
-    async Task DeleteUserDialog() => await dialogService.OpenAsync("Delete User", ds =>
+    async Task DeleteUserDialog() => await dialogService
+        .OpenAsync("Delete User", ds =>
     @<RadzenCard Style="padding: 20px;">
         <p Style="margin-bottom: 10px;">Confirm?</p>
         <div class="row">
