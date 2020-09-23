@@ -1,61 +1,48 @@
-﻿@using Microsoft.Identity.Client;
-@using Newtonsoft.Json;
+﻿@page "/logs"
+@using Microsoft.Identity.Client;
+@using Microsoft.EntityFrameworkCore;
+@using System.Linq.Dynamic.Core
+@using BlazorSimpleSurvey.Models;
 @using Newtonsoft.Json.Linq;
+@using BlazorSimpleSurvey.Data;
 @inject IConfiguration _configuration
 @inject ProtectedApiCallHelper ProtectedApiCallHelper
 @inject AuthenticationStateProvider AuthenticationStateProvider
-<div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand" href="">BlazorSimpleSurvey</a>
-    <button class="navbar-toggler" @onclick="ToggleNavMenu">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-</div>
-
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <ul class="nav flex-column">
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="displaysurvey">
-                <span class="oi oi-plus" aria-hidden="true"></span> Survey
-            </NavLink>
-        </li>
-        @if (UserID != null)
-        {
-            <li class="nav-item px-3">
-                <NavLink class="nav-link" href="claimsview">
-                    <span class="oi oi-plus" aria-hidden="true"></span> Auth Claims
-                </NavLink>
-            </li>
-        }
-        @if (isAdmin)
-        {
-            <li class="nav-item px-3">
-                <NavLink class="nav-link" href="administration">
-                    <span class="oi oi-plus" aria-hidden="true"></span> Administration
-                </NavLink>
-            </li>
-            <li class="nav-item px-3">
-                <NavLink class="nav-link" href="logs">
-                    <span class="oi oi-plus" aria-hidden="true"></span> Logs
-                </NavLink>
-            </li>
-        }
-    </ul>
-</div>
+@inject SimpleSurveyContext dbContext
+<h3>Logs</h3>
+@strError
+@if (isAdmin)
+{
+    <RadzenGrid Count="@count"
+                Data="@logs"
+                LoadData="@LoadData"
+                AllowSorting="true"
+                AllowFiltering="true"
+                AllowPaging="true"
+                PageSize="10" TItem="Logs"
+                ColumnWidth="200px">
+        <Columns>
+            <RadzenGridColumn TItem="Logs" Property="LogDate" Title="Log Date" />
+            <RadzenGridColumn TItem="Logs" Property="LogUser.DisplayName" Title="User" />
+            <RadzenGridColumn TItem="Logs" Property="LogType" Title="Log Type" />
+            <RadzenGridColumn TItem="Logs" Property="LogDetail" Title="Log Detail" />
+        </Columns>
+    </RadzenGrid>
+}
 
 @code {
-    private bool collapseNavMenu = true;
+    HttpClient httpClient;
+    ProtectedApiCallHelper apiCaller;
+    AuthenticationResult result = null;
 
-    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    int count;
+    IEnumerable<Logs> logs;
 
+    string strError = "";
+    string strSearch = "";
     string AdministrationGroup;
     bool isAdmin = false;
-    string UserID = null;
-
+    // Collection to hold all the Tasks
     List<GraphUser> colGraphUsers = new List<GraphUser>();
     List<GraphGroup> colGroups = new List<GraphGroup>();
 
@@ -79,21 +66,20 @@
             // and then granted by a tenant administrator
             string[] scopes = new string[] { "https://graph.microsoft.com/.default" };
 
-            AuthenticationResult result = null;
-
             result = await confidentialClientApplication.AcquireTokenForClient(scopes)
                 .ExecuteAsync();
 
-            var httpClient = new HttpClient();
-            var apiCaller = new ProtectedApiCallHelper(httpClient);
+            httpClient = new HttpClient();
+
+            apiCaller = new ProtectedApiCallHelper(httpClient);
 
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
             var user = authState.User;
 
-            UserID = 
+            var UserID =
                 user.Claims.FirstOrDefault(
-                    c => c.Type == 
+                    c => c.Type ==
                     "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?
                     .Value;
 
@@ -105,10 +91,11 @@
                     DisplayGroups
                     );
             }
+
         }
-        catch
+        catch (Exception ex)
         {
-            // do nothing if this fails
+            strError = ex.GetBaseException().Message;
         }
     }
 
@@ -126,16 +113,31 @@
 
         if (AdministrationGroup != "")
         {
-            isAdmin = 
+            isAdmin =
                 (colGroups
-                .Where(x => x.displayName.ToLower() == 
-                AdministrationGroup.ToLower())
+                .Where(x => x.displayName.ToLower() == AdministrationGroup.ToLower())
                 .FirstOrDefault() != null);
         }
     }
 
-    private void ToggleNavMenu()
+    async Task LoadData(LoadDataArgs args)
     {
-        collapseNavMenu = !collapseNavMenu;
+        var query = dbContext.Logs.Include(x => x.LogUser).AsQueryable();
+
+        if (!string.IsNullOrEmpty(args.Filter))
+        {
+            query = query.Where(args.Filter);
+        }
+
+        if (!string.IsNullOrEmpty(args.OrderBy))
+        {
+            query = query.OrderBy(args.OrderBy);
+        }
+
+        logs = query.Skip(args.Skip.Value).Take(args.Top.Value).ToList();
+
+        count = dbContext.Logs.Count();
+
+        await InvokeAsync(StateHasChanged);
     }
 }
