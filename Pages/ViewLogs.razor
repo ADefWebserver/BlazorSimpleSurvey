@@ -122,7 +122,7 @@
 
     async Task LoadData(LoadDataArgs args)
     {
-        var query = dbContext.Logs.Include(x => x.LogUser).AsQueryable();
+        var query = dbContext.Logs.Include(x => x.LogUser).OrderByDescending(x => x.LogDate).AsQueryable();
 
         if (!string.IsNullOrEmpty(args.Filter))
         {
