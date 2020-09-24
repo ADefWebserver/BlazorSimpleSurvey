@@ -258,6 +258,7 @@ namespace BlazorSimpleSurvey
 
             services.AddScoped<DialogService>();
             services.AddScoped<NotificationService>();
+            services.AddScoped<SimpleSurveyService>();
 
             services.AddHttpClient<ProtectedApiCallHelper>();
         }
