@@ -1,66 +1,30 @@
-﻿@using Microsoft.Identity.Client;
+﻿@page "/surveyadmin"
+@using Microsoft.Identity.Client;
 @using Newtonsoft.Json;
 @using Newtonsoft.Json.Linq;
+@using BlazorSimpleSurvey.Data;
 @inject IConfiguration _configuration
 @inject ProtectedApiCallHelper ProtectedApiCallHelper
 @inject AuthenticationStateProvider AuthenticationStateProvider
-<div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand" href="">BlazorSimpleSurvey</a>
-    <button class="navbar-toggler" @onclick="ToggleNavMenu">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-</div>
+@inject DialogService dialogService
+@inherits OwningComponentBase<SimpleSurveyService>
+<h3>Survey Administration</h3>
+@strError
+@if (isAdmin)
+{
 
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <ul class="nav flex-column">
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="displaysurvey">
-                <span class="oi oi-audio-spectrum" aria-hidden="true"></span> Survey
-            </NavLink>
-        </li>
-        @if (UserID != null)
-        {
-            <li class="nav-item px-3">
-                <NavLink class="nav-link" href="claimsview">
-                    <span class="oi oi-cloud" aria-hidden="true"></span> Auth Claims
-                </NavLink>
-            </li>
-        }
-        @if (isAdmin)
-        {
-            <li class="nav-item px-3">
-                <NavLink class="nav-link" href="administration">
-                    <span class="oi oi-cog" aria-hidden="true"></span> Administration
-                </NavLink>
-            </li>
-            <li class="nav-item px-3">
-                <NavLink class="nav-link" href="surveyadmin">
-                    <span class="oi oi-graph" aria-hidden="true"></span> Survey Administration
-                </NavLink>
-            </li>
-            <li class="nav-item px-3">
-                <NavLink class="nav-link" href="logs">
-                    <span class="oi oi-book" aria-hidden="true"></span> Logs
-                </NavLink>
-            </li>
-        }
-    </ul>
-</div>
 
+}
 @code {
-    private bool collapseNavMenu = true;
+    HttpClient httpClient;
+    ProtectedApiCallHelper apiCaller;
+    AuthenticationResult result = null;
 
-    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
+    string strError = "";
+    string strSearch = "";
     string AdministrationGroup;
     bool isAdmin = false;
-    string UserID = null;
-
+    // Collection to hold all the Tasks
     List<GraphUser> colGraphUsers = new List<GraphUser>();
     List<GraphGroup> colGroups = new List<GraphGroup>();
 
@@ -84,21 +48,20 @@
             // and then granted by a tenant administrator
             string[] scopes = new string[] { "https://graph.microsoft.com/.default" };
 
-            AuthenticationResult result = null;
-
             result = await confidentialClientApplication.AcquireTokenForClient(scopes)
                 .ExecuteAsync();
 
-            var httpClient = new HttpClient();
-            var apiCaller = new ProtectedApiCallHelper(httpClient);
+            httpClient = new HttpClient();
+
+            apiCaller = new ProtectedApiCallHelper(httpClient);
 
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
             var user = authState.User;
 
-            UserID = 
+            var UserID =
                 user.Claims.FirstOrDefault(
-                    c => c.Type == 
+                    c => c.Type ==
                     "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?
                     .Value;
 
@@ -110,10 +73,11 @@
                     DisplayGroups
                     );
             }
+
         }
-        catch
+        catch (Exception ex)
         {
-            // do nothing if this fails
+            strError = ex.GetBaseException().Message;
         }
     }
 
@@ -131,16 +95,10 @@
 
         if (AdministrationGroup != "")
         {
-            isAdmin = 
+            isAdmin =
                 (colGroups
-                .Where(x => x.displayName.ToLower() == 
-                AdministrationGroup.ToLower())
+                .Where(x => x.displayName.ToLower() == AdministrationGroup.ToLower())
                 .FirstOrDefault() != null);
         }
-    }
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
     }
 }
