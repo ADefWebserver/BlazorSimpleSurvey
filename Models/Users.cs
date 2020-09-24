@@ -9,6 +9,7 @@ namespace BlazorSimpleSurvey.Models
         public Users()
         {
             Logs = new HashSet<Logs>();
+            Survey = new HashSet<Survey>();
             SurveyAnswer = new HashSet<SurveyAnswer>();
         }
 
@@ -28,6 +29,7 @@ namespace BlazorSimpleSurvey.Models
         public string LastidpAccessToken { get; set; }
 
         public virtual ICollection<Logs> Logs { get; set; }
+        public virtual ICollection<Survey> Survey { get; set; }
         public virtual ICollection<SurveyAnswer> SurveyAnswer { get; set; }
     }
 }

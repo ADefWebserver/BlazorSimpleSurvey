@@ -18,6 +18,10 @@
       },
       {
          "HasPrimaryKey": true,
+         "Name": "[dbo].[Survey]"
+      },
+      {
+         "HasPrimaryKey": true,
          "Name": "[dbo].[SurveyAnswer]"
       },
       {

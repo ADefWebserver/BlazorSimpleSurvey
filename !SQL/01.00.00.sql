@@ -22,6 +22,25 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Survey]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[Survey](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[SurveyName] [nvarchar](500) NOT NULL,
+	[DateCreated] [datetime] NOT NULL,
+	[DateUpdated] [datetime] NULL,
+	[UserId] [int] NOT NULL,
+ CONSTRAINT [PK_Survey] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SurveyAnswer]') AND type in (N'U'))
 BEGIN
 CREATE TABLE [dbo].[SurveyAnswer](
@@ -44,6 +63,7 @@ IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Su
 BEGIN
 CREATE TABLE [dbo].[SurveyItem](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Survey] [int] NOT NULL,
 	[ItemLabel] [nvarchar](50) NOT NULL,
 	[ItemType] [nvarchar](50) NOT NULL,
 	[ItemValue] [nvarchar](50) NULL,
@@ -116,6 +136,13 @@ GO
 IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Logs_Users]') AND parent_object_id = OBJECT_ID(N'[dbo].[Logs]'))
 ALTER TABLE [dbo].[Logs] CHECK CONSTRAINT [FK_Logs_Users]
 GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Survey_Users]') AND parent_object_id = OBJECT_ID(N'[dbo].[Survey]'))
+ALTER TABLE [dbo].[Survey]  WITH CHECK ADD  CONSTRAINT [FK_Survey_Users] FOREIGN KEY([UserId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Survey_Users]') AND parent_object_id = OBJECT_ID(N'[dbo].[Survey]'))
+ALTER TABLE [dbo].[Survey] CHECK CONSTRAINT [FK_Survey_Users]
+GO
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_SurveyAnswer_SurveyItem]') AND parent_object_id = OBJECT_ID(N'[dbo].[SurveyAnswer]'))
 ALTER TABLE [dbo].[SurveyAnswer]  WITH CHECK ADD  CONSTRAINT [FK_SurveyAnswer_SurveyItem] FOREIGN KEY([SurveyItemId])
 REFERENCES [dbo].[SurveyItem] ([Id])
@@ -129,6 +156,13 @@ REFERENCES [dbo].[Users] ([Id])
 GO
 IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_SurveyAnswer_Users]') AND parent_object_id = OBJECT_ID(N'[dbo].[SurveyAnswer]'))
 ALTER TABLE [dbo].[SurveyAnswer] CHECK CONSTRAINT [FK_SurveyAnswer_Users]
+GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_SurveyItem_Survey]') AND parent_object_id = OBJECT_ID(N'[dbo].[SurveyItem]'))
+ALTER TABLE [dbo].[SurveyItem]  WITH CHECK ADD  CONSTRAINT [FK_SurveyItem_Survey] FOREIGN KEY([Survey])
+REFERENCES [dbo].[Survey] ([Id])
+GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_SurveyItem_Survey]') AND parent_object_id = OBJECT_ID(N'[dbo].[SurveyItem]'))
+ALTER TABLE [dbo].[SurveyItem] CHECK CONSTRAINT [FK_SurveyItem_Survey]
 GO
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_SurveyItem_SurveyItemOption]') AND parent_object_id = OBJECT_ID(N'[dbo].[SurveyItem]'))
 ALTER TABLE [dbo].[SurveyItem]  WITH CHECK ADD  CONSTRAINT [FK_SurveyItem_SurveyItemOption] FOREIGN KEY([SurveyChoiceId])

@@ -18,6 +18,7 @@ namespace BlazorSimpleSurvey.Data
         }
 
         public virtual DbSet<Logs> Logs { get; set; }
+        public virtual DbSet<Survey> Survey { get; set; }
         public virtual DbSet<SurveyAnswer> SurveyAnswer { get; set; }
         public virtual DbSet<SurveyItem> SurveyItem { get; set; }
         public virtual DbSet<SurveyItemOption> SurveyItemOption { get; set; }
@@ -51,6 +52,23 @@ namespace BlazorSimpleSurvey.Data
                     .WithMany(p => p.Logs)
                     .HasForeignKey(d => d.LogUserId)
                     .HasConstraintName("FK_Logs_Users");
+            });
+
+            modelBuilder.Entity<Survey>(entity =>
+            {
+                entity.Property(e => e.DateCreated).HasColumnType("datetime");
+
+                entity.Property(e => e.DateUpdated).HasColumnType("datetime");
+
+                entity.Property(e => e.SurveyName)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Survey)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Survey_Users");
             });
 
             modelBuilder.Entity<SurveyAnswer>(entity =>
@@ -88,6 +106,12 @@ namespace BlazorSimpleSurvey.Data
                 entity.Property(e => e.Required)
                     .IsRequired()
                     .HasMaxLength(50);
+
+                entity.HasOne(d => d.SurveyNavigation)
+                    .WithMany(p => p.SurveyItem)
+                    .HasForeignKey(d => d.Survey)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SurveyItem_Survey");
 
                 entity.HasOne(d => d.SurveyChoice)
                     .WithMany(p => p.SurveyItem)

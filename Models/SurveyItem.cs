@@ -12,6 +12,7 @@ namespace BlazorSimpleSurvey.Models
         }
 
         public int Id { get; set; }
+        public int Survey { get; set; }
         public string ItemLabel { get; set; }
         public string ItemType { get; set; }
         public string ItemValue { get; set; }
@@ -20,6 +21,7 @@ namespace BlazorSimpleSurvey.Models
         public int? SurveyChoiceId { get; set; }
 
         public virtual SurveyItemOption SurveyChoice { get; set; }
+        public virtual Survey SurveyNavigation { get; set; }
         public virtual ICollection<SurveyAnswer> SurveyAnswer { get; set; }
     }
 }

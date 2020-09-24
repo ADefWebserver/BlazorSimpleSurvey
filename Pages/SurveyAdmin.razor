@@ -21,7 +21,6 @@
     AuthenticationResult result = null;
 
     string strError = "";
-    string strSearch = "";
     string AdministrationGroup;
     bool isAdmin = false;
     // Collection to hold all the Tasks
@@ -73,6 +72,8 @@
                     DisplayGroups
                     );
             }
+
+            var colSurveys = await @Service.GetAllSurveysAsync();
 
         }
         catch (Exception ex)
