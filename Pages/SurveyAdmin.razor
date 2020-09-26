@@ -10,11 +10,21 @@
 @inherits OwningComponentBase<SimpleSurveyService>
 <h3>Survey Administration</h3>
 @strError
-@if (isAdmin)
-{
+@*
+    @if (isAdmin)
+    {
+*@
+<RadzenDropDown AllowClear="true" TValue="string"
+                Data="colSurveys"
+                TextProperty="SurveyName"
+                ValueProperty="Id" Style="margin-bottom: 20px"
+                Change="@(args => SelectSurvey(args, "DropDown"))" />
+<br />
 
+@*
+    }
+*@
 
-}
 @code {
     HttpClient httpClient;
     ProtectedApiCallHelper apiCaller;
@@ -26,6 +36,7 @@
     // Collection to hold all the Tasks
     List<GraphUser> colGraphUsers = new List<GraphUser>();
     List<GraphGroup> colGroups = new List<GraphGroup>();
+    List<Models.Survey> colSurveys = new List<Models.Survey>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -73,7 +84,7 @@
                     );
             }
 
-            var colSurveys = await @Service.GetAllSurveysAsync();
+            colSurveys = await @Service.GetAllSurveysAsync();
 
         }
         catch (Exception ex)
@@ -101,5 +112,10 @@
                 .Where(x => x.displayName.ToLower() == AdministrationGroup.ToLower())
                 .FirstOrDefault() != null);
         }
+    }
+
+    void SelectSurvey(object value, string name)
+    {
+        var str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
     }
 }
