@@ -50,7 +50,7 @@
         try
         {
             SelectedSurvey = await @Service.CreateSurveyAsync(SelectedSurvey);
-            dialogService.Close(true);
+            dialogService.Close(SelectedSurvey);
         }
         catch (Exception ex)
         {

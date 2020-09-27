@@ -21,7 +21,7 @@
                       Text="New Survey" Click="@(args =>
                                   dialogService.Open<EditSurvey>($"New Survey",
                                   new Dictionary<string, object>() { { "SelectedSurvey", new Survey() } },
-                                  new DialogOptions(){ Width = "500px", Height = "280px" }))" /><br /><br />
+                                  new DialogOptions() { Width = "500px", Height = "280px" }))" /><br /><br />
     </div>
     @if (ExistingSurveys == null)
     {
@@ -32,10 +32,10 @@
         @if (ExistingSurveys.Value == true)
         {
             <RadzenDropDown TValue="Survey"
-                            Data="colSurveys"
+                            Data="@colSurveys"
                             TextProperty="SurveyName"
                             @bind-Value="SelectedSurvey"
-                            Change="@(args => SurveyChange(args))" />
+                            Change="@(args => SelectedSurveyChange(args))" />
         }
     }
 </div>
@@ -69,6 +69,9 @@
     {
         try
         {
+            // detect when a dialog has closed
+            dialogService.OnClose += DialogClose;
+
             AdministrationGroup = _configuration["AzureAdB2CManagement:AdministrationGroup"];
 
             IConfidentialClientApplication confidentialClientApplication =
@@ -117,7 +120,7 @@
             {
                 ExistingSurveys = true;
                 SelectedSurvey = colSurveys.FirstOrDefault();
-                SurveyChange(SelectedSurvey);
+                SelectedSurveyChange(SelectedSurvey);
             }
             else
             {
@@ -151,8 +154,21 @@
         }
     }
 
-    void SurveyChange(object value)
+    void SelectedSurveyChange(object value)
     {
         var str = value;
+    }
+
+    void DialogClose(dynamic result)
+    {
+        Survey objSurvey = (Survey)result;
+
+        if (objSurvey != null)
+        {
+            // A Survey was passed
+            colSurveys.Add(objSurvey);
+            StateHasChanged();
+            SelectedSurvey = colSurveys.Where(x => x.Id == objSurvey.Id).FirstOrDefault();
+        }
     }
 }
