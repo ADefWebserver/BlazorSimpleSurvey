@@ -21,6 +21,17 @@ namespace BlazorSimpleSurvey.Data
             _environment = environment;
         }
 
+        // Users
+
+        #region public IQueryable<Users> GetAllUsersAsync()
+        public IQueryable<Users> GetAllUsersAsync()
+        {
+            return _context.Users.AsQueryable();
+        }
+        #endregion
+
+        // Surveys
+
         #region public async Task<List<Survey>> GetAllSurveysAsync()
         public async Task<List<Survey>> GetAllSurveysAsync()
         {
@@ -28,5 +39,51 @@ namespace BlazorSimpleSurvey.Data
         }
         #endregion
 
+        #region public Task<Survey> CreateSurveyAsync(Survey NewSurvey)
+        public Task<Survey> CreateSurveyAsync(Survey NewSurvey)
+        {
+            try
+            {
+                Survey objSurvey = new Survey();
+
+                objSurvey.Id = 0;
+                objSurvey.SurveyName = NewSurvey.SurveyName;                
+                objSurvey.UserId = NewSurvey.UserId;
+                objSurvey.DateCreated = DateTime.Now;
+
+                _context.Survey.Add(objSurvey);
+                _context.SaveChanges();
+
+                return Task.FromResult(objSurvey);
+            }
+            catch (Exception ex)
+            {
+                DetachAllEntities();
+                throw ex;
+            }
+        }
+        #endregion
+
+        // Utility       
+
+        #region public async Task ExecuteSqlRaw(string sql)
+        public async Task ExecuteSqlRaw(string sql)
+        {
+            await _context.Database.ExecuteSqlRawAsync(sql);
+        }
+        #endregion
+
+        #region public void DetachAllEntities()
+        public void DetachAllEntities()
+        {
+            var changedEntriesCopy = _context.ChangeTracker.Entries()
+                .Where(e => e.State == EntityState.Added ||
+                            e.State == EntityState.Modified ||
+                            e.State == EntityState.Deleted)
+                .ToList();
+            foreach (var entry in changedEntriesCopy)
+                entry.State = EntityState.Detached;
+        }
+        #endregion
     }
 }

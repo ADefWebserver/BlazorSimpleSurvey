@@ -1,7 +1,9 @@
 ﻿@using Models;
-@using Newtonsoft.Json.Linq;
+@using System.Linq;
 @using BlazorSimpleSurvey.Data;
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject Radzen.DialogService dialogService
+@inherits OwningComponentBase<SimpleSurveyService>
 @strError
 <RadzenCard Style="margin-bottom: 20px;">
     <div class="row">
@@ -19,13 +21,21 @@
     [Parameter] public Survey SelectedSurvey { get; set; }
 
     string strError = "";
+    System.Security.Claims.ClaimsPrincipal user;
+    int UserId = 1;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
+            user = authState.User;
 
+            if (user.Identity.IsAuthenticated != false)
+            {
+                UserId = @Service.GetAllUsersAsync().Where(x => x.Objectidentifier == user.Identity.Name).FirstOrDefault().Id;
+            }
         }
         catch (Exception ex)
         {
@@ -35,6 +45,16 @@
 
     async Task UpdateSurvey()
     {
-        dialogService.Close(true);
+        SelectedSurvey.UserId = UserId;
+
+        try
+        {
+            SelectedSurvey = await @Service.CreateSurveyAsync(SelectedSurvey);
+            dialogService.Close(true);
+        }
+        catch (Exception ex)
+        {
+            strError = ex.GetBaseException().Message;
+        }
     }
 }
