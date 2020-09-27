@@ -14,17 +14,31 @@
     @if (isAdmin)
     {
 *@
-<RadzenDropDown TValue="Survey"
-                Data="colSurveys"
-                TextProperty="SurveyName"
-                @bind-Value="SelectedSurvey"
-                Change="@(args => SurveyChange(args))"
-                Style="margin-bottom: 20px" />
-@*<RadzenButton Text="New" Click="@(args => 
-                                dialogService.Open<EditUser>($"Edit {GraphUser.displayName}",
-                                new Dictionary<string, object>() { { "GraphUser", GraphUser } },
-                                new DialogOptions(){ Width = "700px", Height = "450px" }))" 
-                                  />*@
+<div>
+    <div>
+        <RadzenButton ButtonStyle="ButtonStyle.Success"
+                      Size="Radzen.ButtonSize.Small"
+                      Text="New Survey" Click="@(args =>
+                                  dialogService.Open<EditSurvey>($"New Survey",
+                                  new Dictionary<string, object>() { { "SelectedSurvey", new Survey() } },
+                                  new DialogOptions(){ Width = "500px", Height = "280px" }))" /><br /><br />
+    </div>
+    @if (ExistingSurveys == null)
+    {
+        <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" Style="margin-bottom: 20px" />
+    }
+    else
+    {
+        @if (ExistingSurveys.Value == true)
+        {
+            <RadzenDropDown TValue="Survey"
+                            Data="colSurveys"
+                            TextProperty="SurveyName"
+                            @bind-Value="SelectedSurvey"
+                            Change="@(args => SurveyChange(args))" />
+        }
+    }
+</div>
 <br />
 @if (SelectedSurvey != null)
 {
@@ -41,6 +55,7 @@
     AuthenticationResult result = null;
 
     string strError = "";
+    bool? ExistingSurveys = null;
     string AdministrationGroup;
     bool isAdmin = false;
 
@@ -100,8 +115,13 @@
 
             if (colSurveys.Count > 0)
             {
+                ExistingSurveys = true;
                 SelectedSurvey = colSurveys.FirstOrDefault();
                 SurveyChange(SelectedSurvey);
+            }
+            else
+            {
+                ExistingSurveys = false;
             }
         }
         catch (Exception ex)

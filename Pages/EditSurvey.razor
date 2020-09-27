@@ -1,0 +1,40 @@
+﻿@using Models;
+@using Newtonsoft.Json.Linq;
+@using BlazorSimpleSurvey.Data;
+@inject Radzen.DialogService dialogService
+@strError
+<RadzenCard Style="margin-bottom: 20px;">
+    <div class="row">
+        <div class="col-md-12">
+            <div>Survey Name:</div>
+            <RadzenTextBox @bind-Value="SelectedSurvey.SurveyName" Style="width: 400px" />
+            <br />
+        </div>
+    </div>
+</RadzenCard>
+<RadzenButton Click="UpdateSurvey"
+              Text="Save" ButtonStyle="ButtonStyle.Success"
+              Style="margin-bottom: 10px; width: 150px" />
+@code {
+    [Parameter] public Survey SelectedSurvey { get; set; }
+
+    string strError = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+
+
+        }
+        catch (Exception ex)
+        {
+            strError = ex.GetBaseException().Message;
+        }
+    }
+
+    async Task UpdateSurvey()
+    {
+        dialogService.Close(true);
+    }
+}
