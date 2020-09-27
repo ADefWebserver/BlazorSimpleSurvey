@@ -49,7 +49,15 @@
 
         try
         {
-            SelectedSurvey = await @Service.CreateSurveyAsync(SelectedSurvey);
+            if (SelectedSurvey.Id == -1)
+            {
+                SelectedSurvey = await @Service.CreateSurveyAsync(SelectedSurvey);
+            }
+            else
+            {
+                SelectedSurvey = await @Service.UpdateSurveyAsync(SelectedSurvey);
+            }
+
             dialogService.Close(SelectedSurvey);
         }
         catch (Exception ex)

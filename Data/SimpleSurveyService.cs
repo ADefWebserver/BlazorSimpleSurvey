@@ -47,7 +47,7 @@ namespace BlazorSimpleSurvey.Data
                 Survey objSurvey = new Survey();
 
                 objSurvey.Id = 0;
-                objSurvey.SurveyName = NewSurvey.SurveyName;                
+                objSurvey.SurveyName = NewSurvey.SurveyName;
                 objSurvey.UserId = NewSurvey.UserId;
                 objSurvey.DateCreated = DateTime.Now;
 
@@ -55,6 +55,29 @@ namespace BlazorSimpleSurvey.Data
                 _context.SaveChanges();
 
                 return Task.FromResult(objSurvey);
+            }
+            catch (Exception ex)
+            {
+                DetachAllEntities();
+                throw ex;
+            }
+        }
+        #endregion
+
+        #region public Task<Survey> UpdateSurveyAsync(Survey objExistingSurvey)
+        public Task<Survey> UpdateSurveyAsync(Survey objExistingSurvey)
+        {
+            try
+            {
+                var ExistingSurvey = _context.Survey
+                                    .Where(x => x.Id == objExistingSurvey.Id)
+                                    .FirstOrDefault();
+
+                ExistingSurvey.SurveyName = objExistingSurvey.SurveyName;
+
+                _context.SaveChanges();
+
+                return Task.FromResult(ExistingSurvey);
             }
             catch (Exception ex)
             {

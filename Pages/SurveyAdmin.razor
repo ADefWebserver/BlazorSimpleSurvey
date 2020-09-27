@@ -20,7 +20,7 @@
                       Size="Radzen.ButtonSize.Small"
                       Text="New Survey" Click="@(args =>
                                   dialogService.Open<EditSurvey>($"New Survey",
-                                  new Dictionary<string, object>() { { "SelectedSurvey", new Survey() } },
+                                  new Dictionary<string, object>() { { "SelectedSurvey", new Survey() { Id = -1 } } },
                                   new DialogOptions() { Width = "500px", Height = "280px" }))" /><br /><br />
     </div>
     @if (ExistingSurveys == null)
@@ -36,6 +36,14 @@
                             TextProperty="SurveyName"
                             @bind-Value="SelectedSurvey"
                             Change="@(args => SelectedSurveyChange(args))" />
+
+            <RadzenButton ButtonStyle="ButtonStyle.Secondary"
+                          Style="vertical-align:top"
+                          Size="Radzen.ButtonSize.Small"
+                          Text="Edit Survey" Click="@(args =>
+                                  dialogService.Open<EditSurvey>($"Edit Survey",
+                                  new Dictionary<string, object>() { { "SelectedSurvey", SelectedSurvey } },
+                                  new DialogOptions() { Width = "500px", Height = "280px" }))" /><br /><br />
         }
     }
 </div>
@@ -165,9 +173,23 @@
 
         if (objSurvey != null)
         {
-            // A Survey was passed
-            colSurveys.Add(objSurvey);
+            // See if Survey is already in the list
+            var ExistingSurvey = colSurveys.Where(x => x.Id == objSurvey.Id).FirstOrDefault();
+
+            if (ExistingSurvey == null)
+            {
+                // Survey does not exist - Add it
+                colSurveys.Add(objSurvey);
+            }
+            else
+            {
+                // Update existing Survey
+                colSurveys.Remove(ExistingSurvey);
+                colSurveys.Add(objSurvey);
+            }
+
             StateHasChanged();
+
             SelectedSurvey = colSurveys.Where(x => x.Id == objSurvey.Id).FirstOrDefault();
         }
     }
