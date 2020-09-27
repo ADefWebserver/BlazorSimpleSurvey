@@ -1,6 +1,6 @@
 ﻿@page "/surveyadmin"
 @using Microsoft.Identity.Client;
-@using Newtonsoft.Json;
+@using Models;
 @using Newtonsoft.Json.Linq;
 @using BlazorSimpleSurvey.Data;
 @inject IConfiguration _configuration
@@ -14,13 +14,18 @@
     @if (isAdmin)
     {
 *@
-<RadzenDropDown AllowClear="true" TValue="string"
+<RadzenDropDown TValue="Survey"
                 Data="colSurveys"
                 TextProperty="SurveyName"
-                ValueProperty="Id" Style="margin-bottom: 20px"
-                Change="@(args => SelectSurvey(args, "DropDown"))" />
+                @bind-Value="SelectedSurvey"
+                Change="@(args => SurveyChange(args))"
+                Style="margin-bottom: 20px" />
 <br />
-
+@if (SelectedSurvey != null)
+{
+    <p>Selected Survey: @SelectedSurvey.SurveyName</p>
+    <p>Date Created: @SelectedSurvey.DateCreated.ToShortDateString()</p>
+}
 @*
     }
 *@
@@ -33,10 +38,12 @@
     string strError = "";
     string AdministrationGroup;
     bool isAdmin = false;
-    // Collection to hold all the Tasks
+
     List<GraphUser> colGraphUsers = new List<GraphUser>();
     List<GraphGroup> colGroups = new List<GraphGroup>();
-    List<Models.Survey> colSurveys = new List<Models.Survey>();
+
+    List<Survey> colSurveys = new List<Survey>();
+    Survey SelectedSurvey;
 
     protected override async Task OnInitializedAsync()
     {
@@ -86,6 +93,11 @@
 
             colSurveys = await @Service.GetAllSurveysAsync();
 
+            if (colSurveys.Count > 0)
+            {
+                SelectedSurvey = colSurveys.FirstOrDefault();
+                SurveyChange(SelectedSurvey);
+            }
         }
         catch (Exception ex)
         {
@@ -114,8 +126,8 @@
         }
     }
 
-    void SelectSurvey(object value, string name)
+    void SurveyChange(object value)
     {
-        var str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
+        var str = value;
     }
 }
