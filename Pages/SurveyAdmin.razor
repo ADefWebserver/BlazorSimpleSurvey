@@ -31,19 +31,20 @@
     {
         @if (ExistingSurveys.Value == true)
         {
+            <RadzenButton ButtonStyle="ButtonStyle.Secondary"
+                          Style="vertical-align:top"
+                          Size="Radzen.ButtonSize.Medium"
+                          Icon="edit" Click="@(args =>
+                                  dialogService.Open<EditSurvey>($"Edit Survey",
+                                  new Dictionary<string, object>() { { "SelectedSurvey", SelectedSurvey } },
+                                  new DialogOptions() { Width = "500px", Height = "280px" }))" />
             <RadzenDropDown TValue="Survey"
                             Data="@colSurveys"
                             TextProperty="SurveyName"
                             @bind-Value="SelectedSurvey"
                             Change="@(args => SelectedSurveyChange(args))" />
 
-            <RadzenButton ButtonStyle="ButtonStyle.Secondary"
-                          Style="vertical-align:top"
-                          Size="Radzen.ButtonSize.Small"
-                          Text="Edit Survey" Click="@(args =>
-                                  dialogService.Open<EditSurvey>($"Edit Survey",
-                                  new Dictionary<string, object>() { { "SelectedSurvey", SelectedSurvey } },
-                                  new DialogOptions() { Width = "500px", Height = "280px" }))" /><br /><br />
+            <br />
         }
     }
 </div>
