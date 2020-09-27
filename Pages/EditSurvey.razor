@@ -17,6 +17,13 @@
 <RadzenButton Click="UpdateSurvey"
               Text="Save" ButtonStyle="ButtonStyle.Success"
               Style="margin-bottom: 10px; width: 150px" />
+@if (SelectedSurvey.Id > 0)
+{
+    <RadzenButton Click="DeleteSurveyDialog"
+                  ButtonStyle="ButtonStyle.Danger"
+                  Text="Delete"
+                  Style="margin-bottom: 10px; width: 150px" />
+}
 @code {
     [Parameter] public Survey SelectedSurvey { get; set; }
 
@@ -64,5 +71,28 @@
         {
             strError = ex.GetBaseException().Message;
         }
+    }
+
+    async Task DeleteSurveyDialog() => await dialogService
+     .OpenAsync("Delete Survey", ds =>
+    @<RadzenCard Style="padding: 20px;">
+        <p Style="margin-bottom: 10px;">Confirm?</p>
+        <div class="row">
+            <div class="col-md-12">
+                <RadzenButton Text="Yes" Click="DeleteSurvey"
+                              Style="margin-bottom: 10px; width: 150px" />
+                <RadzenButton Text="No" Click="()=> ds.Close(false)"
+                              ButtonStyle="ButtonStyle.Secondary"
+                              Style="margin-bottom: 10px; width: 150px" />
+            </div>
+        </div>
+    </RadzenCard>);
+
+    async Task DeleteSurvey()
+    {
+        var result = await @Service.DeleteSurveyAsync(SelectedSurvey);
+
+        dialogService.Close(SelectedSurvey.Id);
+        dialogService.Close(SelectedSurvey.Id);
     }
 }

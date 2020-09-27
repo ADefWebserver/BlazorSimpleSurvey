@@ -59,20 +59,20 @@
 *@
 
 @code {
-    HttpClient httpClient;
-    ProtectedApiCallHelper apiCaller;
-    AuthenticationResult result = null;
+        HttpClient httpClient;
+        ProtectedApiCallHelper apiCaller;
+        AuthenticationResult result = null;
 
-    string strError = "";
-    bool? ExistingSurveys = null;
-    string AdministrationGroup;
-    bool isAdmin = false;
+        string strError = "";
+        bool? ExistingSurveys = null;
+        string AdministrationGroup;
+        bool isAdmin = false;
 
-    List<GraphUser> colGraphUsers = new List<GraphUser>();
-    List<GraphGroup> colGroups = new List<GraphGroup>();
+        List<GraphUser> colGraphUsers = new List<GraphUser>();
+        List<GraphGroup> colGroups = new List<GraphGroup>();
 
-    List<Survey> colSurveys = new List<Survey>();
-    Survey SelectedSurvey;
+        List<Survey> colSurveys = new List<Survey>();
+        Survey SelectedSurvey;
 
     protected override async Task OnInitializedAsync()
     {
@@ -170,28 +170,58 @@
 
     void DialogClose(dynamic result)
     {
-        Survey objSurvey = (Survey)result;
-
-        if (objSurvey != null)
+        if (result != null)
         {
-            // See if Survey is already in the list
-            var ExistingSurvey = colSurveys.Where(x => x.Id == objSurvey.Id).FirstOrDefault();
+            Survey objSurvey = result as Survey;
 
-            if (ExistingSurvey == null)
+            if (objSurvey != null)
             {
-                // Survey does not exist - Add it
-                colSurveys.Add(objSurvey);
+                // See if Survey is already in the list
+                var ExistingSurvey = colSurveys.Where(x => x.Id == objSurvey.Id).FirstOrDefault();
+
+                if (ExistingSurvey == null)
+                {
+                    // Survey does not exist - Add it
+                    colSurveys.Add(objSurvey);
+                }
+                else
+                {
+                    // Update existing Survey
+                    colSurveys.Remove(ExistingSurvey);
+                    colSurveys.Add(objSurvey);
+                }
+
+                StateHasChanged();
+
+                SelectedSurvey = colSurveys.Where(x => x.Id == objSurvey.Id).FirstOrDefault();
             }
             else
             {
-                // Update existing Survey
-                colSurveys.Remove(ExistingSurvey);
-                colSurveys.Add(objSurvey);
+                // A Survey was deleted
+                int? SurveyDeletedId = (int)result;
+
+                if (SurveyDeletedId != null)
+                {
+                    var SurveyToDelete = colSurveys.Where(x => x.Id == SurveyDeletedId).FirstOrDefault();
+
+                    if (SurveyToDelete != null)
+                    {
+                        colSurveys.Remove(SurveyToDelete);
+                    }
+
+                    if (colSurveys.Count > 0)
+                    {
+                        ExistingSurveys = true;
+                        SelectedSurvey = colSurveys.FirstOrDefault();
+                    }
+                    else
+                    {
+                        ExistingSurveys = false;
+                    }
+
+                    StateHasChanged();
+                }
             }
-
-            StateHasChanged();
-
-            SelectedSurvey = colSurveys.Where(x => x.Id == objSurvey.Id).FirstOrDefault();
         }
     }
 }

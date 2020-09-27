@@ -87,6 +87,28 @@ namespace BlazorSimpleSurvey.Data
         }
         #endregion
 
+        #region public Task<bool> DeleteSurveyAsync(Survey objExistingSurvey)
+        public Task<bool> DeleteSurveyAsync(Survey objExistingSurvey)
+        {
+            var ExistingSurvey =
+                _context.Survey
+                .Where(x => x.Id == objExistingSurvey.Id)
+                .FirstOrDefault();
+
+            if (ExistingSurvey != null)
+            {
+                _context.Survey.Remove(ExistingSurvey);
+                _context.SaveChanges();
+            }
+            else
+            {
+                return Task.FromResult(false);
+            }
+
+            return Task.FromResult(true);
+        }
+        #endregion
+
         // Utility       
 
         #region public async Task ExecuteSqlRaw(string sql)
