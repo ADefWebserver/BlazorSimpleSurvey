@@ -80,7 +80,6 @@ namespace BlazorSimpleSurvey.Data
                 entity.HasOne(d => d.SurveyItem)
                     .WithMany(p => p.SurveyAnswer)
                     .HasForeignKey(d => d.SurveyItemId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SurveyAnswer_SurveyItem");
 
                 entity.HasOne(d => d.User)
@@ -110,12 +109,12 @@ namespace BlazorSimpleSurvey.Data
                 entity.HasOne(d => d.SurveyNavigation)
                     .WithMany(p => p.SurveyItem)
                     .HasForeignKey(d => d.Survey)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SurveyItem_Survey");
 
                 entity.HasOne(d => d.SurveyChoice)
                     .WithMany(p => p.SurveyItem)
                     .HasForeignKey(d => d.SurveyChoiceId)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_SurveyItem_SurveyItemOption");
             });
 

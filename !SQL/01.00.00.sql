@@ -146,6 +146,7 @@ GO
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_SurveyAnswer_SurveyItem]') AND parent_object_id = OBJECT_ID(N'[dbo].[SurveyAnswer]'))
 ALTER TABLE [dbo].[SurveyAnswer]  WITH CHECK ADD  CONSTRAINT [FK_SurveyAnswer_SurveyItem] FOREIGN KEY([SurveyItemId])
 REFERENCES [dbo].[SurveyItem] ([Id])
+ON DELETE CASCADE
 GO
 IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_SurveyAnswer_SurveyItem]') AND parent_object_id = OBJECT_ID(N'[dbo].[SurveyAnswer]'))
 ALTER TABLE [dbo].[SurveyAnswer] CHECK CONSTRAINT [FK_SurveyAnswer_SurveyItem]
@@ -160,6 +161,7 @@ GO
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_SurveyItem_Survey]') AND parent_object_id = OBJECT_ID(N'[dbo].[SurveyItem]'))
 ALTER TABLE [dbo].[SurveyItem]  WITH CHECK ADD  CONSTRAINT [FK_SurveyItem_Survey] FOREIGN KEY([Survey])
 REFERENCES [dbo].[Survey] ([Id])
+ON DELETE CASCADE
 GO
 IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_SurveyItem_Survey]') AND parent_object_id = OBJECT_ID(N'[dbo].[SurveyItem]'))
 ALTER TABLE [dbo].[SurveyItem] CHECK CONSTRAINT [FK_SurveyItem_Survey]
@@ -167,6 +169,7 @@ GO
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_SurveyItem_SurveyItemOption]') AND parent_object_id = OBJECT_ID(N'[dbo].[SurveyItem]'))
 ALTER TABLE [dbo].[SurveyItem]  WITH CHECK ADD  CONSTRAINT [FK_SurveyItem_SurveyItemOption] FOREIGN KEY([SurveyChoiceId])
 REFERENCES [dbo].[SurveyItemOption] ([Id])
+ON DELETE CASCADE
 GO
 IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_SurveyItem_SurveyItemOption]') AND parent_object_id = OBJECT_ID(N'[dbo].[SurveyItem]'))
 ALTER TABLE [dbo].[SurveyItem] CHECK CONSTRAINT [FK_SurveyItem_SurveyItemOption]
