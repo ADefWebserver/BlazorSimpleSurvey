@@ -20,6 +20,11 @@
                 @bind-Value="SelectedSurvey"
                 Change="@(args => SurveyChange(args))"
                 Style="margin-bottom: 20px" />
+@*<RadzenButton Text="New" Click="@(args => 
+                                dialogService.Open<EditUser>($"Edit {GraphUser.displayName}",
+                                new Dictionary<string, object>() { { "GraphUser", GraphUser } },
+                                new DialogOptions(){ Width = "700px", Height = "450px" }))" 
+                                  />*@
 <br />
 @if (SelectedSurvey != null)
 {
