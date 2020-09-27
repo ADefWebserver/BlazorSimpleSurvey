@@ -59,20 +59,20 @@
 *@
 
 @code {
-        HttpClient httpClient;
-        ProtectedApiCallHelper apiCaller;
-        AuthenticationResult result = null;
+    HttpClient httpClient;
+    ProtectedApiCallHelper apiCaller;
+    AuthenticationResult result = null;
 
-        string strError = "";
-        bool? ExistingSurveys = null;
-        string AdministrationGroup;
-        bool isAdmin = false;
+    string strError = "";
+    bool? ExistingSurveys = null;
+    string AdministrationGroup;
+    bool isAdmin = false;
 
-        List<GraphUser> colGraphUsers = new List<GraphUser>();
-        List<GraphGroup> colGroups = new List<GraphGroup>();
+    List<GraphUser> colGraphUsers = new List<GraphUser>();
+    List<GraphGroup> colGroups = new List<GraphGroup>();
 
-        List<Survey> colSurveys = new List<Survey>();
-        Survey SelectedSurvey;
+    List<Survey> colSurveys = new List<Survey>();
+    Survey SelectedSurvey;
 
     protected override async Task OnInitializedAsync()
     {
@@ -170,7 +170,7 @@
 
     void DialogClose(dynamic result)
     {
-        if (result != null)
+        if (result != null) // Survey was edited
         {
             Survey objSurvey = result as Survey;
 
@@ -190,6 +190,8 @@
                     colSurveys.Remove(ExistingSurvey);
                     colSurveys.Add(objSurvey);
                 }
+
+                ExistingSurveys = true;
 
                 StateHasChanged();
 
@@ -217,6 +219,7 @@
                     else
                     {
                         ExistingSurveys = false;
+                        SelectedSurvey = null;
                     }
 
                     StateHasChanged();
