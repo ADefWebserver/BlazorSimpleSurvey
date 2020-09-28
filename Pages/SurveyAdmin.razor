@@ -45,6 +45,12 @@
                             Change="@(args => SelectedSurveyChange(args))" />
 
             <br />
+            <RadzenButton ButtonStyle="ButtonStyle.Success"
+                          Size="Radzen.ButtonSize.Small"
+                          Text="New Survey Item" Click="@(args =>
+                                  dialogService.Open<EditSurvey>($"New Survey Item",
+                                  new Dictionary<string, object>() { { "SelectedSurvey", new Survey() { Id = -1 } } },
+                                  new DialogOptions() { Width = "500px", Height = "280px" }))" />
         }
     }
 </div>
