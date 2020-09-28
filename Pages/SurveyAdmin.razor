@@ -200,7 +200,7 @@
             else
             {
                 // A Survey was deleted
-                int? SurveyDeletedId = (int)result;
+                int? SurveyDeletedId = result as int?;
 
                 if (SurveyDeletedId != null)
                 {
