@@ -8,7 +8,6 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject DialogService dialogService
 @inherits OwningComponentBase<SimpleSurveyService>
-<h3>Survey Administration</h3>
 @strError
 @*
     @if (isAdmin)
@@ -16,12 +15,18 @@
 *@
 <div>
     <div>
+        <h3>
+            Survey Administration
+        </h3>
         <RadzenButton ButtonStyle="ButtonStyle.Success"
                       Size="Radzen.ButtonSize.Small"
-                      Text="New Survey" Click="@(args =>
+                      Text="New Survey"
+                      Icon="addchart" Click="@(args =>
                                   dialogService.Open<EditSurvey>($"New Survey",
                                   new Dictionary<string, object>() { { "SelectedSurvey", new Survey() { Id = -1 } } },
-                                  new DialogOptions() { Width = "500px", Height = "280px" }))" /><br /><br />
+                                  new DialogOptions() { Width = "500px", Height = "280px" }))" />
+
+        <br /><br />
     </div>
     @if (ExistingSurveys == null)
     {
@@ -48,7 +53,7 @@
             <RadzenButton ButtonStyle="ButtonStyle.Success"
                           Size="Radzen.ButtonSize.Small"
                           Text="New Survey Item" Click="@(args =>
-                                  dialogService.Open<EditSurvey>($"New Survey Item",
+                                  dialogService.Open<EditSurveyItem>($"New Survey Item",
                                   new Dictionary<string, object>() { { "SelectedSurvey", new Survey() { Id = -1 } } },
                                   new DialogOptions() { Width = "500px", Height = "280px" }))" />
         }
