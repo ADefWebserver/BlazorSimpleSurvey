@@ -257,6 +257,7 @@ namespace BlazorSimpleSurvey
             services.AddServerSideBlazor();
 
             services.AddScoped<DialogService>();
+            services.AddScoped<TooltipService>();
             services.AddScoped<NotificationService>();
             services.AddScoped<SimpleSurveyService>();
 

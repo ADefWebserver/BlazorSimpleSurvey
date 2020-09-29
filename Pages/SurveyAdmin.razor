@@ -7,6 +7,7 @@
 @inject ProtectedApiCallHelper ProtectedApiCallHelper
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject DialogService dialogService
+@inject TooltipService tooltipService
 @inherits OwningComponentBase<SimpleSurveyService>
 @strError
 @*
@@ -15,18 +16,17 @@
 *@
 <div>
     <div>
-        <h3>
-            Survey Administration
-        </h3>
-        <RadzenButton ButtonStyle="ButtonStyle.Success"
-                      Size="Radzen.ButtonSize.Small"
-                      Text="New Survey"
-                      Icon="addchart" Click="@(args =>
+        <h2>
+            <RadzenButton ButtonStyle="ButtonStyle.Success"
+                          Size="Radzen.ButtonSize.Medium"
+                          MouseEnter="@(args => ShowNewSurveyTooltip(args) )"
+                          Icon="addchart" Click="@(args =>
                                   dialogService.Open<EditSurvey>($"New Survey",
                                   new Dictionary<string, object>() { { "SelectedSurvey", new Survey() { Id = -1 } } },
                                   new DialogOptions() { Width = "500px", Height = "280px" }))" />
-
-        <br /><br />
+            Survey Administration
+        </h2>
+        <br />
     </div>
     @if (ExistingSurveys == null)
     {
@@ -70,20 +70,20 @@
 *@
 
 @code {
-    HttpClient httpClient;
-    ProtectedApiCallHelper apiCaller;
-    AuthenticationResult result = null;
+        HttpClient httpClient;
+        ProtectedApiCallHelper apiCaller;
+        AuthenticationResult result = null;
 
-    string strError = "";
-    bool? ExistingSurveys = null;
-    string AdministrationGroup;
-    bool isAdmin = false;
+        string strError = "";
+        bool? ExistingSurveys = null;
+        string AdministrationGroup;
+        bool isAdmin = false;
 
-    List<GraphUser> colGraphUsers = new List<GraphUser>();
-    List<GraphGroup> colGroups = new List<GraphGroup>();
+        List<GraphUser> colGraphUsers = new List<GraphUser>();
+        List<GraphGroup> colGroups = new List<GraphGroup>();
 
-    List<Survey> colSurveys = new List<Survey>();
-    Survey SelectedSurvey;
+        List<Survey> colSurveys = new List<Survey>();
+        Survey SelectedSurvey;
 
     protected override async Task OnInitializedAsync()
     {
@@ -151,6 +151,10 @@
         {
             strError = ex.GetBaseException().Message;
         }
+    }
+
+    void ShowNewSurveyTooltip(ElementReference elementReference, TooltipOptions options = null) {
+        tooltipService.Open(elementReference, "New Survey", options);
     }
 
     private void DisplayGroups(JObject result)
