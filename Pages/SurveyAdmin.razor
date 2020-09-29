@@ -19,7 +19,7 @@
         <h2>
             <RadzenButton ButtonStyle="ButtonStyle.Success"
                           Size="Radzen.ButtonSize.Medium"
-                          MouseEnter="@(args => ShowNewSurveyTooltip(args) )"
+                          MouseEnter="@(args => ShowNewSurveyTooltip(args))"
                           Icon="addchart" Click="@(args =>
                                   dialogService.Open<EditSurvey>($"New Survey",
                                   new Dictionary<string, object>() { { "SelectedSurvey", new Survey() { Id = -1 } } },
@@ -36,9 +36,19 @@
     {
         @if (ExistingSurveys.Value == true)
         {
+            <RadzenButton ButtonStyle="ButtonStyle.Success"
+                          Style="vertical-align:top"
+                          Size="Radzen.ButtonSize.Medium"
+                          Icon="add"
+                          MouseEnter="@(args => ShowNewSurveyItemTooltip(args))"
+                          Click="@(args =>
+                                  dialogService.Open<EditSurveyItem>($"New Survey Item",
+                                  new Dictionary<string, object>() { { "SelectedSurvey", new Survey() { Id = -1 } } },
+                                  new DialogOptions() { Width = "500px", Height = "280px" }))" />
             <RadzenButton ButtonStyle="ButtonStyle.Secondary"
                           Style="vertical-align:top"
                           Size="Radzen.ButtonSize.Medium"
+                          MouseEnter="@(args => ShowEditSurveyTooltip(args))"
                           Icon="edit" Click="@(args =>
                                   dialogService.Open<EditSurvey>($"Edit Survey",
                                   new Dictionary<string, object>() { { "SelectedSurvey", SelectedSurvey } },
@@ -50,12 +60,6 @@
                             Change="@(args => SelectedSurveyChange(args))" />
 
             <br />
-            <RadzenButton ButtonStyle="ButtonStyle.Success"
-                          Size="Radzen.ButtonSize.Small"
-                          Text="New Survey Item" Click="@(args =>
-                                  dialogService.Open<EditSurveyItem>($"New Survey Item",
-                                  new Dictionary<string, object>() { { "SelectedSurvey", new Survey() { Id = -1 } } },
-                                  new DialogOptions() { Width = "500px", Height = "280px" }))" />
         }
     }
 </div>
@@ -70,20 +74,20 @@
 *@
 
 @code {
-        HttpClient httpClient;
-        ProtectedApiCallHelper apiCaller;
-        AuthenticationResult result = null;
+    HttpClient httpClient;
+    ProtectedApiCallHelper apiCaller;
+    AuthenticationResult result = null;
 
-        string strError = "";
-        bool? ExistingSurveys = null;
-        string AdministrationGroup;
-        bool isAdmin = false;
+    string strError = "";
+    bool? ExistingSurveys = null;
+    string AdministrationGroup;
+    bool isAdmin = false;
 
-        List<GraphUser> colGraphUsers = new List<GraphUser>();
-        List<GraphGroup> colGroups = new List<GraphGroup>();
+    List<GraphUser> colGraphUsers = new List<GraphUser>();
+    List<GraphGroup> colGroups = new List<GraphGroup>();
 
-        List<Survey> colSurveys = new List<Survey>();
-        Survey SelectedSurvey;
+    List<Survey> colSurveys = new List<Survey>();
+    Survey SelectedSurvey;
 
     protected override async Task OnInitializedAsync()
     {
@@ -153,8 +157,19 @@
         }
     }
 
-    void ShowNewSurveyTooltip(ElementReference elementReference, TooltipOptions options = null) {
+    void ShowNewSurveyTooltip(ElementReference elementReference, TooltipOptions options = null)
+    {
         tooltipService.Open(elementReference, "New Survey", options);
+    }
+
+    void ShowEditSurveyTooltip(ElementReference elementReference, TooltipOptions options = null)
+    {
+        tooltipService.Open(elementReference, "Edit Survey", options);
+    }
+
+    void ShowNewSurveyItemTooltip(ElementReference elementReference, TooltipOptions options = null)
+    {
+        tooltipService.Open(elementReference, "New Survey Item", options);
     }
 
     private void DisplayGroups(JObject result)
