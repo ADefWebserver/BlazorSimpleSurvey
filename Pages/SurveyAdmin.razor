@@ -19,7 +19,7 @@
         <h2>
             <RadzenButton ButtonStyle="ButtonStyle.Success"
                           Size="Radzen.ButtonSize.Medium"
-                          MouseEnter="@(args => ShowNewSurveyTooltip(args))"
+                          MouseEnter="@(args => ShowTooltip(args, new TooltipOptions(){ Text= "New Survey" }))"
                           Icon="addchart" Click="@(args =>
                                   dialogService.Open<EditSurvey>($"New Survey",
                                   new Dictionary<string, object>() { { "SelectedSurvey", new Survey() { Id = -1 } } },
@@ -40,7 +40,7 @@
                           Style="vertical-align:top"
                           Size="Radzen.ButtonSize.Medium"
                           Icon="add"
-                          MouseEnter="@(args => ShowNewSurveyItemTooltip(args))"
+                          MouseEnter="@(args => ShowTooltip(args, new TooltipOptions(){ Text= "New Survey Item" }))"
                           Click="@(args =>
                                   dialogService.Open<EditSurveyItem>($"New Survey Item",
                                   new Dictionary<string, object>() { { "SelectedSurvey", new Survey() { Id = -1 } } },
@@ -48,7 +48,7 @@
             <RadzenButton ButtonStyle="ButtonStyle.Secondary"
                           Style="vertical-align:top"
                           Size="Radzen.ButtonSize.Medium"
-                          MouseEnter="@(args => ShowEditSurveyTooltip(args))"
+                          MouseEnter="@(args => ShowTooltip(args, new TooltipOptions(){ Text= "Edit Survey" }))"
                           Icon="edit" Click="@(args =>
                                   dialogService.Open<EditSurvey>($"Edit Survey",
                                   new Dictionary<string, object>() { { "SelectedSurvey", SelectedSurvey } },
@@ -157,19 +157,9 @@
         }
     }
 
-    void ShowNewSurveyTooltip(ElementReference elementReference, TooltipOptions options = null)
+    void ShowTooltip(ElementReference elementReference, TooltipOptions options = null)
     {
-        tooltipService.Open(elementReference, "New Survey", options);
-    }
-
-    void ShowEditSurveyTooltip(ElementReference elementReference, TooltipOptions options = null)
-    {
-        tooltipService.Open(elementReference, "Edit Survey", options);
-    }
-
-    void ShowNewSurveyItemTooltip(ElementReference elementReference, TooltipOptions options = null)
-    {
-        tooltipService.Open(elementReference, "New Survey Item", options);
+        tooltipService.Open(elementReference, options.Text, options);
     }
 
     private void DisplayGroups(JObject result)
