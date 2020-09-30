@@ -1,72 +1,53 @@
-﻿<h3>EditSurveyItem</h3>
-@using Models;
+﻿@using Models;
 @using System.Linq;
 @using BlazorSimpleSurvey.Data;
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject Radzen.DialogService dialogService
 @inherits OwningComponentBase<SimpleSurveyService>
 @strError
+<h3>Edit Survey Item</h3>
 <RadzenCard Style="margin-bottom: 20px;">
     <div class="row">
         <div class="col-md-12">
-            <div>Survey Name:</div>
-            <RadzenTextBox @bind-Value="SelectedSurvey.SurveyName" Style="width: 400px" />
+            <div>Survey Item Name:</div>
+            <RadzenTextBox 
+                           @bind-Value="SelectedSurveyItem.SurveyNavigation.SurveyName" 
+                           Style="width: 400px" />
             <br />
         </div>
     </div>
 </RadzenCard>
-<RadzenButton Click="UpdateSurvey"
+<RadzenButton Click="UpdateSurveyItem"
               Text="Save" ButtonStyle="ButtonStyle.Success"
               Style="margin-bottom: 10px; width: 150px" />
-@if (SelectedSurvey.Id > 0)
+@if (SelectedSurveyItem.Id > 0)
 {
-    <RadzenButton Click="DeleteSurveyDialog"
+    <RadzenButton Click="DeleteSurveyItemDialog"
                   ButtonStyle="ButtonStyle.Danger"
                   Text="Delete"
                   Style="margin-bottom: 10px; width: 150px" />
 }
 @code {
-    [Parameter] public Survey SelectedSurvey { get; set; }
+    [Parameter] public SurveyItem SelectedSurveyItem { get; set; }
 
     string strError = "";
     System.Security.Claims.ClaimsPrincipal user;
     int UserId = 1;
 
-    protected override async Task OnInitializedAsync()
+    async Task UpdateSurveyItem()
     {
         try
         {
-            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-
-            user = authState.User;
-
-            if (user.Identity.IsAuthenticated != false)
+            if (SelectedSurveyItem.Id == -1)
             {
-                UserId = @Service.GetAllUsersAsync().Where(x => x.Objectidentifier == user.Identity.Name).FirstOrDefault().Id;
-            }
-        }
-        catch (Exception ex)
-        {
-            strError = ex.GetBaseException().Message;
-        }
-    }
-
-    async Task UpdateSurvey()
-    {
-        SelectedSurvey.UserId = UserId;
-
-        try
-        {
-            if (SelectedSurvey.Id == -1)
-            {
-                SelectedSurvey = await @Service.CreateSurveyAsync(SelectedSurvey);
+                SelectedSurveyItem = await @Service.CreateSurveyItemAsync(SelectedSurveyItem);
             }
             else
             {
-                SelectedSurvey = await @Service.UpdateSurveyAsync(SelectedSurvey);
+                SelectedSurveyItem = await @Service.UpdateSurveyItemAsync(SelectedSurveyItem);
             }
 
-            dialogService.Close(SelectedSurvey);
+            dialogService.Close(SelectedSurveyItem);
         }
         catch (Exception ex)
         {
@@ -74,13 +55,13 @@
         }
     }
 
-    async Task DeleteSurveyDialog() => await dialogService
-     .OpenAsync("Delete Survey", ds =>
+    async Task DeleteSurveyItemDialog() => await dialogService
+     .OpenAsync("Delete Survey Item", ds =>
     @<RadzenCard Style="padding: 20px;">
         <p Style="margin-bottom: 10px;">Confirm?</p>
         <div class="row">
             <div class="col-md-12">
-                <RadzenButton Text="Yes" Click="DeleteSurvey"
+                <RadzenButton Text="Yes" Click="DeleteSurveyItem"
                               Style="margin-bottom: 10px; width: 150px" />
                 <RadzenButton Text="No" Click="()=> ds.Close(false)"
                               ButtonStyle="ButtonStyle.Secondary"
@@ -89,11 +70,11 @@
         </div>
     </RadzenCard>);
 
-async Task DeleteSurvey()
+async Task DeleteSurveyItem()
 {
-var result = await @Service.DeleteSurveyAsync(SelectedSurvey);
-
-dialogService.Close(SelectedSurvey.Id);
-dialogService.Close(SelectedSurvey.Id);
-}
+        var result = await @Service.DeleteSurveyItemAsync(SelectedSurveyItem);
+        
+        dialogService.Close(SelectedSurveyItem.Id);
+        dialogService.Close(SelectedSurveyItem.Id);
+    }
 }

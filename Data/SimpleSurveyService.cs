@@ -30,7 +30,7 @@ namespace BlazorSimpleSurvey.Data
         }
         #endregion
 
-        // Surveys
+        // Survey
 
         #region public async Task<List<Survey>> GetAllSurveysAsync()
         public async Task<List<Survey>> GetAllSurveysAsync()
@@ -98,6 +98,97 @@ namespace BlazorSimpleSurvey.Data
             if (ExistingSurvey != null)
             {
                 _context.Survey.Remove(ExistingSurvey);
+                _context.SaveChanges();
+            }
+            else
+            {
+                return Task.FromResult(false);
+            }
+
+            return Task.FromResult(true);
+        }
+        #endregion
+
+        // Survey Item
+
+        #region public async Task<List<SurveyItem>> GetAllSurveyItemsAsync(int SurveyId)
+        public async Task<List<SurveyItem>> GetAllSurveyItemsAsync(int SurveyId)
+        {
+            return await _context.SurveyItem
+                .AsNoTracking()
+                .Where(x => x.SurveyNavigation.Id == SurveyId)
+                .OrderBy(x => x.Id)
+                .ToListAsync();
+        }
+        #endregion
+
+        #region public Task<SurveyItem> CreateSurveyItemAsync(SurveyItem NewSurveyItem)
+        public Task<SurveyItem> CreateSurveyItemAsync(SurveyItem NewSurveyItem)
+        {
+            try
+            {
+                SurveyItem objSurveyItem = new SurveyItem();
+
+                objSurveyItem.Id = 0;
+                objSurveyItem.SurveyNavigation.Id = NewSurveyItem.SurveyNavigation.Id;
+                objSurveyItem.ItemLabel = NewSurveyItem.ItemLabel;
+                objSurveyItem.ItemType = NewSurveyItem.ItemType;
+                objSurveyItem.ItemValue = NewSurveyItem.ItemValue;
+                objSurveyItem.ItemDateValue = NewSurveyItem.ItemDateValue;
+                objSurveyItem.Required = NewSurveyItem.Required;
+                objSurveyItem.SurveyAnswer = new List<SurveyAnswer>();                
+
+                _context.SurveyItem.Add(objSurveyItem);
+                _context.SaveChanges();
+
+                return Task.FromResult(objSurveyItem);
+            }
+            catch (Exception ex)
+            {
+                DetachAllEntities();
+                throw ex;
+            }
+        }
+        #endregion
+
+        #region public Task<SurveyItem> UpdateSurveyItemAsync(SurveyItem objExistingSurveyItem)
+        public Task<SurveyItem> UpdateSurveyItemAsync(SurveyItem objExistingSurveyItem)
+        {
+            try
+            {
+                var ExistingSurveyItem = _context.SurveyItem
+                                    .Where(x => x.Id == objExistingSurveyItem.Id)
+                                    .FirstOrDefault();
+
+                ExistingSurveyItem.ItemLabel = objExistingSurveyItem.ItemLabel;
+                ExistingSurveyItem.ItemType = objExistingSurveyItem.ItemType;
+                ExistingSurveyItem.ItemValue = objExistingSurveyItem.ItemValue;
+                ExistingSurveyItem.ItemDateValue = objExistingSurveyItem.ItemDateValue;
+                ExistingSurveyItem.Required = objExistingSurveyItem.Required;
+
+                _context.SaveChanges();
+
+                return Task.FromResult(ExistingSurveyItem);
+            }
+            catch (Exception ex)
+            {
+                DetachAllEntities();
+                throw ex;
+            }
+        }
+        #endregion
+
+        #region public Task<bool> DeleteSurveyItemAsync(SurveyItem objExistingSurveyItem)
+        public Task<bool> DeleteSurveyItemAsync(SurveyItem objExistingSurveyItem)
+        {
+            var ExistingSurveyItem =
+                _context.SurveyItem
+                .Where(x => x.Id == objExistingSurveyItem.Id)
+                .FirstOrDefault();
+
+            if (ExistingSurveyItem != null)
+            {
+                _context.SurveyItem.Remove(ExistingSurveyItem);
                 _context.SaveChanges();
             }
             else
