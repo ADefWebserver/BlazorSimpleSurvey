@@ -16,8 +16,8 @@ namespace BlazorSimpleSurvey.Models
         public string ItemLabel { get; set; }
         public string ItemType { get; set; }
         public string ItemValue { get; set; }
-        public DateTime? ItemDateValue { get; set; }
-        public string Required { get; set; }
+        public string Position { get; set; }
+        public int Required { get; set; }
         public int? SurveyChoiceId { get; set; }
 
         public virtual SurveyItemOption SurveyChoice { get; set; }

@@ -134,7 +134,6 @@ namespace BlazorSimpleSurvey.Data
                 objSurveyItem.ItemLabel = NewSurveyItem.ItemLabel;
                 objSurveyItem.ItemType = NewSurveyItem.ItemType;
                 objSurveyItem.ItemValue = NewSurveyItem.ItemValue;
-                objSurveyItem.ItemDateValue = NewSurveyItem.ItemDateValue;
                 objSurveyItem.Required = NewSurveyItem.Required;
                 objSurveyItem.SurveyAnswer = new List<SurveyAnswer>();                
 
@@ -163,7 +162,6 @@ namespace BlazorSimpleSurvey.Data
                 ExistingSurveyItem.ItemLabel = objExistingSurveyItem.ItemLabel;
                 ExistingSurveyItem.ItemType = objExistingSurveyItem.ItemType;
                 ExistingSurveyItem.ItemValue = objExistingSurveyItem.ItemValue;
-                ExistingSurveyItem.ItemDateValue = objExistingSurveyItem.ItemDateValue;
                 ExistingSurveyItem.Required = objExistingSurveyItem.Required;
 
                 _context.SaveChanges();

@@ -90,8 +90,6 @@ namespace BlazorSimpleSurvey.Data
 
             modelBuilder.Entity<SurveyItem>(entity =>
             {
-                entity.Property(e => e.ItemDateValue).HasColumnType("datetime");
-
                 entity.Property(e => e.ItemLabel)
                     .IsRequired()
                     .HasMaxLength(50);
@@ -102,9 +100,9 @@ namespace BlazorSimpleSurvey.Data
 
                 entity.Property(e => e.ItemValue).HasMaxLength(50);
 
-                entity.Property(e => e.Required)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.Property(e => e.Position)
+                    .HasMaxLength(10)
+                    .IsFixedLength();
 
                 entity.HasOne(d => d.SurveyNavigation)
                     .WithMany(p => p.SurveyItem)
