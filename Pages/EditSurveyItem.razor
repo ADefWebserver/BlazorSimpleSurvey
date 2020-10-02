@@ -8,7 +8,7 @@
 <RadzenCard Style="margin-bottom: 20px;">
     <div class="row">
         <div class="col-md-12">
-            <div>Survey Item Name:</div>
+            <div><b>Survey Item Name</b></div>
             <RadzenTextBox @bind-Value="SelectedSurveyItem.ItemLabel"
                            Style="width: 400px" />
             <br />
@@ -16,8 +16,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <span><b>Item Type</b></span>
-            <br />
+            <div><b>Survey Item Type</b></div>
             <RadzenDropDown AllowClear="true" TValue="string"
                             Data="@FormTypes"
                             @bind-Value="SelectedSurveyItem.ItemType" />
