@@ -130,11 +130,14 @@ namespace BlazorSimpleSurvey.Data
                 SurveyItem objSurveyItem = new SurveyItem();
 
                 objSurveyItem.Id = 0;
-                objSurveyItem.SurveyNavigation.Id = NewSurveyItem.SurveyNavigation.Id;
                 objSurveyItem.ItemLabel = NewSurveyItem.ItemLabel;
                 objSurveyItem.ItemType = NewSurveyItem.ItemType;
                 objSurveyItem.ItemValue = NewSurveyItem.ItemValue;
                 objSurveyItem.Required = NewSurveyItem.Required;
+
+                objSurveyItem.SurveyNavigation = new Survey();
+                objSurveyItem.SurveyNavigation.Id = NewSurveyItem.SurveyNavigation.Id;
+
                 objSurveyItem.SurveyAnswer = new List<SurveyAnswer>();                
 
                 _context.SurveyItem.Add(objSurveyItem);
