@@ -128,17 +128,25 @@ namespace BlazorSimpleSurvey.Data
             try
             {
                 SurveyItem objSurveyItem = new SurveyItem();
+                
+                objSurveyItem.SurveyAnswer = new List<SurveyAnswer>();
+
+                objSurveyItem.SurveyNavigation =
+                    _context.Survey
+                    .Where(x => x.Id == NewSurveyItem.SurveyNavigation.Id)
+                    .FirstOrDefault();
 
                 objSurveyItem.Id = 0;
                 objSurveyItem.ItemLabel = NewSurveyItem.ItemLabel;
                 objSurveyItem.ItemType = NewSurveyItem.ItemType;
                 objSurveyItem.ItemValue = NewSurveyItem.ItemValue;
                 objSurveyItem.Required = NewSurveyItem.Required;
+                objSurveyItem.Position = 0;
 
-                objSurveyItem.SurveyNavigation = new Survey();
-                objSurveyItem.SurveyNavigation.Id = NewSurveyItem.SurveyNavigation.Id;
-
-                objSurveyItem.SurveyAnswer = new List<SurveyAnswer>();                
+                if (NewSurveyItem.SurveyItemOption != null)
+                {
+                    objSurveyItem.SurveyItemOption = NewSurveyItem.SurveyItemOption;
+                }
 
                 _context.SurveyItem.Add(objSurveyItem);
                 _context.SaveChanges();

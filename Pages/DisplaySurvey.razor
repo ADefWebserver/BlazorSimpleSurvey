@@ -154,7 +154,7 @@
     private string newItemLabel;
     private string newItemType = "TextBox";
     private string newOption;
-    List<SurveyItemOption> newOptions = new List<SurveyItemOption>();
+    List<DTOSurveyItemOption> newOptions = new List<DTOSurveyItemOption>();
 
     bool ShowPopup = false;
     bool ShowResultsPopup = false;
@@ -177,7 +177,7 @@
             items.Add(NewFormItem);
 
             newItemLabel = string.Empty;
-            newOptions = new List<SurveyItemOption>();
+            newOptions = new List<DTOSurveyItemOption>();
         }
     }
 
@@ -199,12 +199,12 @@
         {
             Guid newGuid = Guid.NewGuid();
 
-            newOptions.Add(new SurveyItemOption { OptionLabel = newOption, SurveyItemOptionId = newGuid.ToString() });
+            newOptions.Add(new DTOSurveyItemOption { OptionLabel = newOption, SurveyItemOptionId = newGuid.ToString() });
             newOption = string.Empty;
         }
     }
 
-    private void RemoveOption(SurveyItemOption paramSurveyItemOption)
+    private void RemoveOption(DTOSurveyItemOption paramSurveyItemOption)
     {
         // Remove the option from the collection
         newOptions.Remove(paramSurveyItemOption);

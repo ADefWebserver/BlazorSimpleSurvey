@@ -9,6 +9,7 @@ namespace BlazorSimpleSurvey.Models
         public SurveyItem()
         {
             SurveyAnswer = new HashSet<SurveyAnswer>();
+            SurveyItemOption = new HashSet<SurveyItemOption>();
         }
 
         public int Id { get; set; }
@@ -16,12 +17,12 @@ namespace BlazorSimpleSurvey.Models
         public string ItemLabel { get; set; }
         public string ItemType { get; set; }
         public string ItemValue { get; set; }
-        public string Position { get; set; }
+        public int? Position { get; set; }
         public int Required { get; set; }
         public int? SurveyChoiceId { get; set; }
 
-        public virtual SurveyItemOption SurveyChoice { get; set; }
         public virtual Survey SurveyNavigation { get; set; }
         public virtual ICollection<SurveyAnswer> SurveyAnswer { get; set; }
+        public virtual ICollection<SurveyItemOption> SurveyItemOption { get; set; }
     }
 }

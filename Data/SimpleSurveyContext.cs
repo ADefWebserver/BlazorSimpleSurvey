@@ -100,20 +100,10 @@ namespace BlazorSimpleSurvey.Data
 
                 entity.Property(e => e.ItemValue).HasMaxLength(50);
 
-                entity.Property(e => e.Position)
-                    .HasMaxLength(10)
-                    .IsFixedLength();
-
                 entity.HasOne(d => d.SurveyNavigation)
                     .WithMany(p => p.SurveyItem)
                     .HasForeignKey(d => d.Survey)
                     .HasConstraintName("FK_SurveyItem_Survey");
-
-                entity.HasOne(d => d.SurveyChoice)
-                    .WithMany(p => p.SurveyItem)
-                    .HasForeignKey(d => d.SurveyChoiceId)
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .HasConstraintName("FK_SurveyItem_SurveyItemOption");
             });
 
             modelBuilder.Entity<SurveyItemOption>(entity =>
@@ -121,6 +111,11 @@ namespace BlazorSimpleSurvey.Data
                 entity.Property(e => e.OptionLabel)
                     .IsRequired()
                     .HasMaxLength(500);
+
+                entity.HasOne(d => d.SurveyItemNavigation)
+                    .WithMany(p => p.SurveyItemOption)
+                    .HasForeignKey(d => d.SurveyItem)
+                    .HasConstraintName("FK_SurveyItemOption_SurveyItem");
             });
 
             modelBuilder.Entity<Users>(entity =>

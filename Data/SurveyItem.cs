@@ -13,7 +13,7 @@ namespace BlazorSimpleSurvey.Data
         private string _ItemValue;
         private DateTime? _ItemDateValue;
         private bool _Required = false;
-        private List<SurveyItemOption> _SurveyItemOptions;
+        private List<DTOSurveyItemOption> _SurveyItemOptions;
 
         //  initialization
         public DTOSurveyItem()
@@ -93,7 +93,7 @@ namespace BlazorSimpleSurvey.Data
             }
         }
 
-        public List<SurveyItemOption> SurveyItemOptions
+        public List<DTOSurveyItemOption> SurveyItemOptions
         {
             get
             {
@@ -105,7 +105,7 @@ namespace BlazorSimpleSurvey.Data
             }
         }
     }
-    public class SurveyItemOption
+    public class DTOSurveyItemOption
     {
         public string SurveyItemOptionId { get; set; }
         public string OptionLabel { get; set; }

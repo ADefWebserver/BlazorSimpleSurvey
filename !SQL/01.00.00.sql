@@ -67,7 +67,7 @@ CREATE TABLE [dbo].[SurveyItem](
 	[ItemLabel] [nvarchar](50) NOT NULL,
 	[ItemType] [nvarchar](50) NOT NULL,
 	[ItemValue] [nvarchar](50) NULL,
-	[Position] [nchar](10) NULL,
+	[Position] [int] NULL,
 	[Required] [int] NOT NULL,
 	[SurveyChoiceId] [int] NULL,
  CONSTRAINT [PK_SurveyItem] PRIMARY KEY CLUSTERED 
@@ -85,6 +85,7 @@ IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Su
 BEGIN
 CREATE TABLE [dbo].[SurveyItemOption](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[SurveyItem] [int] NOT NULL,
 	[OptionLabel] [nvarchar](500) NOT NULL,
  CONSTRAINT [PK_SurveyItemOption] PRIMARY KEY CLUSTERED 
 (
@@ -166,11 +167,11 @@ GO
 IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_SurveyItem_Survey]') AND parent_object_id = OBJECT_ID(N'[dbo].[SurveyItem]'))
 ALTER TABLE [dbo].[SurveyItem] CHECK CONSTRAINT [FK_SurveyItem_Survey]
 GO
-IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_SurveyItem_SurveyItemOption]') AND parent_object_id = OBJECT_ID(N'[dbo].[SurveyItem]'))
-ALTER TABLE [dbo].[SurveyItem]  WITH CHECK ADD  CONSTRAINT [FK_SurveyItem_SurveyItemOption] FOREIGN KEY([SurveyChoiceId])
-REFERENCES [dbo].[SurveyItemOption] ([Id])
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_SurveyItemOption_SurveyItem]') AND parent_object_id = OBJECT_ID(N'[dbo].[SurveyItemOption]'))
+ALTER TABLE [dbo].[SurveyItemOption]  WITH CHECK ADD  CONSTRAINT [FK_SurveyItemOption_SurveyItem] FOREIGN KEY([SurveyItem])
+REFERENCES [dbo].[SurveyItem] ([Id])
 ON DELETE CASCADE
 GO
-IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_SurveyItem_SurveyItemOption]') AND parent_object_id = OBJECT_ID(N'[dbo].[SurveyItem]'))
-ALTER TABLE [dbo].[SurveyItem] CHECK CONSTRAINT [FK_SurveyItem_SurveyItemOption]
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_SurveyItemOption_SurveyItem]') AND parent_object_id = OBJECT_ID(N'[dbo].[SurveyItemOption]'))
+ALTER TABLE [dbo].[SurveyItemOption] CHECK CONSTRAINT [FK_SurveyItemOption_SurveyItem]
 GO

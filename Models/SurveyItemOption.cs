@@ -6,14 +6,10 @@ namespace BlazorSimpleSurvey.Models
 {
     public partial class SurveyItemOption
     {
-        public SurveyItemOption()
-        {
-            SurveyItem = new HashSet<SurveyItem>();
-        }
-
         public int Id { get; set; }
+        public int SurveyItem { get; set; }
         public string OptionLabel { get; set; }
 
-        public virtual ICollection<SurveyItem> SurveyItem { get; set; }
+        public virtual SurveyItem SurveyItemNavigation { get; set; }
     }
 }
