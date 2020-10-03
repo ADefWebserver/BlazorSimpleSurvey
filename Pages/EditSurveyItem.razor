@@ -58,28 +58,32 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h3 class="modal-title">Edit Options</h3>
-                    <!-- Button to close the popup -->
-                    <button type="button" class="close"
-                            @onclick="ClosePopup">
-                        <span aria-hidden="true">X</span>
-                    </button>
                 </div>
                 <div class="modal-body">
                     <ul style="list-style-type:none;">
                         @foreach (var option in SelectedSurveyItem.SurveyItemOption)
                         {
                             <li>
-                                <input @bind="option.OptionLabel" />
-                                <button type="button" class="btn btn-link"
-                                        @onclick="(() => RemoveOption(option))">
-                                    [Delete]
-                                </button>
+                                <div Style="margin-bottom: 10px; width: 150px" >
+                                <RadzenButton Click="(() => RemoveOption(option))"
+                                              Icon="delete"
+                                              Size="Radzen.ButtonSize.Small"
+                                              ButtonStyle="ButtonStyle.Danger" />
+                                <b>@option.OptionLabel</b>
+                                </div>
                             </li>
                         }
                     </ul>
-
-                    <input @bind="newOption" />
-                    <button @onclick="AddOption">Add</button>
+                    <RadzenTextBox @bind-Value="newOption"
+                                   Style="width: 200px" />
+                    <RadzenButton Click="AddOption"
+                                  Text="Add"
+                                  Size="Radzen.ButtonSize.Small"
+                                  ButtonStyle="ButtonStyle.Success" />
+                    <RadzenButton Click="ClosePopup"
+                                  Text="Close"
+                                  Size="Radzen.ButtonSize.Small"
+                                  ButtonStyle="ButtonStyle.Secondary" />
                 </div>
             </div>
         </div>
