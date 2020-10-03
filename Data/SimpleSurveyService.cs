@@ -151,6 +151,15 @@ namespace BlazorSimpleSurvey.Data
                 _context.SurveyItem.Add(objSurveyItem);
                 _context.SaveChanges();
 
+                // Set position
+                int CoutOfSurveyItems = 
+                    _context.SurveyItem
+                    .Where(x => x.SurveyNavigation.Id == NewSurveyItem.SurveyNavigation.Id)
+                    .Count();
+
+                objSurveyItem.Position = CoutOfSurveyItems;
+                _context.SaveChanges();
+
                 return Task.FromResult(objSurveyItem);
             }
             catch (Exception ex)

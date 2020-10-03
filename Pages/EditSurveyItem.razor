@@ -8,21 +8,35 @@
 <RadzenCard Style="margin-bottom: 20px;">
     <div class="row">
         <div class="col-md-12">
-            <div><b>Survey Item Name</b></div>
+            <div><b>Name</b></div>
             <RadzenTextBox @bind-Value="SelectedSurveyItem.ItemLabel"
                            Style="width: 400px" />
             <br />
         </div>
     </div>
+    <br />
     <div class="row">
-        <div class="col-md-12">
-            <div><b>Survey Item Type</b></div>
+        <div class="col-md-6">
+            <div><b>Type</b></div>
             <RadzenDropDown AllowClear="true" TValue="string"
                             Data="@FormTypes"
                             @bind-Value="SelectedSurveyItem.ItemType" />
+        </div>
+        <div class="col-md-6">
+            <div><b>Required</b></div>
+            <RadzenCheckBox @bind-Value="boolRequired"
+                            Style="margin-bottom: 20px" TValue="bool" />
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
             @if (SelectedSurveyItem.ItemType == "Dropdown")
             {
-                <button type="button" class="btn btn-link" @onclick="OpenPopup">[Edit Options]</button>
+                <RadzenButton Click="OpenPopup"
+                              Text="Edit Options" 
+                              Size="Radzen.ButtonSize.Small"
+                              ButtonStyle="ButtonStyle.Info"/>
             }
         </div>
     </div>
@@ -76,15 +90,30 @@
 
     string strError = "";
     bool ShowPopup = false;
+    bool boolRequired = false;
 
-    IEnumerable<string> FormTypes = new string[] { "TextBox", "TextArea", "Date", "DateTime", "Dropdown" };
+    IEnumerable<string> FormTypes = new string[] { "Text Box", "Text Area", "Date", "Date Time", "Dropdown" };
 
     private string newOption;
+
+    protected override void OnParametersSet()
+    {
+        boolRequired = (SelectedSurveyItem.Required == 1);
+    }
 
     async Task UpdateSurveyItem()
     {
         try
         {
+            if(boolRequired)
+            {
+                SelectedSurveyItem.Required = 1;
+            }
+            else
+            {
+                SelectedSurveyItem.Required = 0;
+            }
+
             if (SelectedSurveyItem.Id == -1)
             {
                 SelectedSurveyItem = await @Service.CreateSurveyItemAsync(SelectedSurveyItem);
