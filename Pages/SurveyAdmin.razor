@@ -63,38 +63,50 @@
             <div style="margin-left:10px">
                 @foreach (var SurveyItem in SelectedSurvey.SurveyItem)
                 {
-                    <div>
-                        <span><b>@SurveyItem.ItemLabel</b></span>
-                        <br />
-                        @if (SurveyItem.ItemType == "Text Box")
-                        {
-                            <RadzenTextBox MaxLength="4000" />
-                        }
-                        @if (SurveyItem.ItemType == "Text Area")
-                        {
-                            <RadzenTextArea MaxLength="4000" />
-                        }
-                        @if (SurveyItem.ItemType == "Date")
-                        {
-                            <RadzenDatePicker DateFormat="d" TValue="DateTime?" ShowTime="false" />
-                        }
-                        @if (SurveyItem.ItemType == "Date Time")
-                        {
-                            <RadzenDatePicker TValue="DateTime?" ShowTime="true" />
-                        }
-                        @if (SurveyItem.ItemType == "Dropdown")
-                        {
-                            <RadzenDropDown AllowClear="true" TValue="string"
-                                            Data="@SurveyItem.SurveyItemOption"
-                                            TextProperty="OptionLabel" ValueProperty="SurveyItemOptionId" />
-                        }
-                        @if (SurveyItem.ItemType == "Multi-Select Dropdown")
-                        {
-                            <RadzenDropDown AllowClear="true" TValue="string"
-                                            Data="@SurveyItem.SurveyItemOption"
-                                            TextProperty="OptionLabel" ValueProperty="SurveyItemOptionId" />
-                        }
-                    </div>
+                <div>
+
+                    <RadzenButton ButtonStyle="ButtonStyle.Success"
+                                  Style="vertical-align:top"
+                                  Size="Radzen.ButtonSize.Medium"
+                                  Icon="edit"
+                                  MouseEnter="@(args => ShowTooltip(args, new TooltipOptions(){ Text= "Edit Survey Item" }))"
+                                  Click="@(args =>
+                                  dialogService.Open<EditSurveyItem>($"Edit Survey Item",
+                                  new Dictionary<string, object>() { { "SelectedSurveyItem", SurveyItem } },
+                                  new DialogOptions() { Width = "500px", Height = "380px" }))" />
+                    <span>
+                        <b>@SurveyItem.ItemLabel</b>
+                    </span>
+                    <br />
+                    @if (SurveyItem.ItemType == "Text Box")
+                    {
+                        <RadzenTextBox MaxLength="4000" />
+                    }
+                    @if (SurveyItem.ItemType == "Text Area")
+                    {
+                        <RadzenTextArea MaxLength="4000" />
+                    }
+                    @if (SurveyItem.ItemType == "Date")
+                    {
+                        <RadzenDatePicker DateFormat="d" TValue="DateTime?" ShowTime="false" />
+                    }
+                    @if (SurveyItem.ItemType == "Date Time")
+                    {
+                        <RadzenDatePicker TValue="DateTime?" ShowTime="true" />
+                    }
+                    @if (SurveyItem.ItemType == "Dropdown")
+                    {
+                        <RadzenDropDown AllowClear="true" TValue="string"
+                                        Data="@SurveyItem.SurveyItemOption"
+                                        TextProperty="OptionLabel" ValueProperty="SurveyItemOptionId" />
+                    }
+                    @if (SurveyItem.ItemType == "Multi-Select Dropdown")
+                    {
+                        <RadzenDropDown AllowClear="true" TValue="string"
+                                        Data="@SurveyItem.SurveyItemOption"
+                                        TextProperty="OptionLabel" ValueProperty="SurveyItemOptionId" />
+                    }
+                </div>
                     <br />
                 }
             </div>
