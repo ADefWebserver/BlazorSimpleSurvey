@@ -35,7 +35,12 @@ namespace BlazorSimpleSurvey.Data
         #region public async Task<List<Survey>> GetAllSurveysAsync()
         public async Task<List<Survey>> GetAllSurveysAsync()
         {
-            return await _context.Survey.AsNoTracking().OrderBy(x => x.SurveyName).ToListAsync();
+            return await _context.Survey
+                .Include(x => x.SurveyItem)
+                .ThenInclude(x => x.SurveyItemOption)
+                .AsNoTracking()
+                .OrderBy(x => x.SurveyName)
+                .ToListAsync();
         }
         #endregion
 

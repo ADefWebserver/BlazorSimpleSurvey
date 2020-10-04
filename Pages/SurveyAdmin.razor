@@ -59,64 +59,60 @@
                             @bind-Value="SelectedSurvey"
                             Change="@(args => SelectedSurveyChange(args))" />
 
-            <br />
-            <h3>Display Survey</h3>
-
-            <h4>Items: (@SelectedSurvey.SurveyItem.Count)</h4>
-
-            @foreach (var SurveyItem in SelectedSurvey.SurveyItem)
-            {
-                <div>
-                    <span><b>@SurveyItem.ItemLabel</b></span>
+            <br /><br />
+            <div style="margin-left:10px">
+                @foreach (var SurveyItem in SelectedSurvey.SurveyItem)
+                {
+                    <div>
+                        <span><b>@SurveyItem.ItemLabel</b></span>
+                        <br />
+                        @if (SurveyItem.ItemType == "Text Box")
+                        {
+                            <RadzenTextBox MaxLength="4000" />
+                        }
+                        @if (SurveyItem.ItemType == "Text Area")
+                        {
+                            <RadzenTextArea MaxLength="4000" />
+                        }
+                        @if (SurveyItem.ItemType == "Date")
+                        {
+                            <RadzenDatePicker DateFormat="d" TValue="DateTime?" ShowTime="false" />
+                        }
+                        @if (SurveyItem.ItemType == "Date Time")
+                        {
+                            <RadzenDatePicker TValue="DateTime?" ShowTime="true" />
+                        }
+                        @if (SurveyItem.ItemType == "Dropdown")
+                        {
+                            <RadzenDropDown AllowClear="true" TValue="string"
+                                            Data="@SurveyItem.SurveyItemOption"
+                                            TextProperty="OptionLabel" ValueProperty="SurveyItemOptionId" />
+                        }
+                        @if (SurveyItem.ItemType == "Multi-Select Dropdown")
+                        {
+                            <RadzenDropDown AllowClear="true" TValue="string"
+                                            Data="@SurveyItem.SurveyItemOption"
+                                            TextProperty="OptionLabel" ValueProperty="SurveyItemOptionId" />
+                        }
+                    </div>
                     <br />
-                    @if (SurveyItem.ItemType == "TextBox")
-                    {
-                        <RadzenTextBox @bind-Value="@SurveyItem.ItemValue" MaxLength="4000" />
-                    }
-                    @if (SurveyItem.ItemType == "Text Area")
-                    {
-                        <RadzenTextArea @bind-Value="@SurveyItem.ItemValue" MaxLength="4000" />
-                    }
-                    @if (SurveyItem.ItemType == "Date")
-                    {
-                        @*<RadzenDatePicker DateFormat="d" TValue="DateTime?" @bind-Value="@SurveyItem.ItemValue" ShowTime="false" />*@
-                    }
-                    @if (SurveyItem.ItemType == "Date Time")
-                    {
-                        @*<RadzenDatePicker TValue="DateTime?" @bind-Value="@SurveyItem.ItemValue" ShowTime="true" />*@
-                    }
-                    @if (SurveyItem.ItemType == "Dropdown")
-                    {
-                        <RadzenDropDown AllowClear="true" TValue="string"
-                                        Data="@SurveyItem.SurveyItemOption"
-                                        TextProperty="OptionLabel" ValueProperty="SurveyItemOptionId"
-                                        @bind-Value="@SurveyItem.ItemValue" />
-                    }
-                    @if (SurveyItem.ItemType == "Multi-Select Dropdown")
-                    {
-                        <RadzenDropDown AllowClear="true" TValue="string"
-                                        Data="@SurveyItem.SurveyItemOption"
-                                        TextProperty="OptionLabel" ValueProperty="SurveyItemOptionId"
-                                        @bind-Value="@SurveyItem.ItemValue" />
-                    }
-                </div>
-                <br />
-
-            }
+                }
+            </div>
             @if (SelectedSurvey.SurveyItem.Count > 0)
             {
+                <br />
                 <RadzenButton Click="OpenResultsPopup" ButtonStyle="ButtonStyle.Primary" Text="Submit" />
+            }
+            else
+            {
+                <h4>No Survey Items</h4>
             }
             <br />
         }
     }
 </div>
 <br />
-@if (SelectedSurvey != null)
-{
-    <p>Selected Survey: @SelectedSurvey.SurveyName</p>
-    <p>Date Created: @SelectedSurvey.DateCreated.ToShortDateString()</p>
-}
+
 @if (ShowResultsPopup)
 {
     <div class="modal" tabindex="-1" style="display:block;background-color:gainsboro" role="dialog">
@@ -164,7 +160,7 @@
     List<GraphGroup> colGroups = new List<GraphGroup>();
 
     List<Survey> colSurveys = new List<Survey>();
-    Survey SelectedSurvey;
+    Survey SelectedSurvey = new Survey();
 
     protected override async Task OnInitializedAsync()
     {
