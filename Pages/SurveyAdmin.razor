@@ -297,10 +297,43 @@
         SelectedSurvey = await Service.GetSurvey(SelectedSurvey.Id);
     }
 
-    void SelectedSurveyMoveDown(object value)
+    async Task SelectedSurveyMoveDown(object value)
     {
         SurveyItem objSurveyItem = (SurveyItem)value;
+        int DesiredPosition = (objSurveyItem.Position + 1);
 
+        // Move the current element in that position
+        var CurrentSurveyItem =
+            await Service.GetSurveyItemAsync(
+                SelectedSurvey.SurveyItem
+                .Where(x => x.Position == DesiredPosition)
+                .FirstOrDefault().Id);
+
+        if (CurrentSurveyItem != null)
+        {
+            // Move it up
+            CurrentSurveyItem.Position = CurrentSurveyItem.Position - 1;
+            // Update it
+            await Service.UpdateSurveyItemAsync(CurrentSurveyItem);
+        }
+
+        // Move Item Down
+        var SurveyItemToMoveDown =
+            await Service.GetSurveyItemAsync(
+                SelectedSurvey.SurveyItem
+                .Where(x => x.Id == objSurveyItem.Id)
+                .FirstOrDefault().Id);
+
+        if (SurveyItemToMoveDown != null)
+        {
+            // Move it up
+            SurveyItemToMoveDown.Position = SurveyItemToMoveDown.Position + 1;
+            // Update it
+            await Service.UpdateSurveyItemAsync(SurveyItemToMoveDown);
+        }
+
+        // Refresh SelectedSurvey
+        SelectedSurvey = await Service.GetSurvey(SelectedSurvey.Id);
     }
 
     void DialogClose(dynamic result)
