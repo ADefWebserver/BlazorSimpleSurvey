@@ -9,7 +9,8 @@ namespace BlazorSimpleSurvey.Models
         public int Id { get; set; }
         public int SurveyItemId { get; set; }
         public string AnswerValue { get; set; }
-        public int? UserId { get; set; }
+        public DateTime? AnswerValueDateTime { get; set; }
+        public int UserId { get; set; }
 
         public virtual SurveyItem SurveyItem { get; set; }
         public virtual Users User { get; set; }

@@ -46,8 +46,9 @@ BEGIN
 CREATE TABLE [dbo].[SurveyAnswer](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[SurveyItemId] [int] NOT NULL,
-	[AnswerValue] [nvarchar](500) NOT NULL,
-	[UserId] [int] NULL,
+	[AnswerValue] [nvarchar](500) NULL,
+	[AnswerValueDateTime] [datetime] NULL,
+	[UserId] [int] NOT NULL,
  CONSTRAINT [PK_SurveyAnswer] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC

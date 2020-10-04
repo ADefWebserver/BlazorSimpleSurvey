@@ -73,9 +73,9 @@ namespace BlazorSimpleSurvey.Data
 
             modelBuilder.Entity<SurveyAnswer>(entity =>
             {
-                entity.Property(e => e.AnswerValue)
-                    .IsRequired()
-                    .HasMaxLength(500);
+                entity.Property(e => e.AnswerValue).HasMaxLength(500);
+
+                entity.Property(e => e.AnswerValueDateTime).HasColumnType("datetime");
 
                 entity.HasOne(d => d.SurveyItem)
                     .WithMany(p => p.SurveyAnswer)
@@ -85,6 +85,7 @@ namespace BlazorSimpleSurvey.Data
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.SurveyAnswer)
                     .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SurveyAnswer_Users");
             });
 

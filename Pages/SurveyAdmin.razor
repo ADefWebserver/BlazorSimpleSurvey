@@ -60,6 +60,54 @@
                             Change="@(args => SelectedSurveyChange(args))" />
 
             <br />
+            <h3>Display Survey</h3>
+
+            <h4>Items: (@SelectedSurvey.SurveyItem.Count)</h4>
+
+            @foreach (var SurveyItem in SelectedSurvey.SurveyItem)
+            {
+                <div>
+                    <span><b>@SurveyItem.ItemLabel</b></span>
+                    <br />
+                    @if (SurveyItem.ItemType == "TextBox")
+                    {
+                        <RadzenTextBox @bind-Value="@SurveyItem.ItemValue" MaxLength="4000" />
+                    }
+                    @if (SurveyItem.ItemType == "Text Area")
+                    {
+                        <RadzenTextArea @bind-Value="@SurveyItem.ItemValue" MaxLength="4000" />
+                    }
+                    @if (SurveyItem.ItemType == "Date")
+                    {
+                        @*<RadzenDatePicker DateFormat="d" TValue="DateTime?" @bind-Value="@SurveyItem.ItemValue" ShowTime="false" />*@
+                    }
+                    @if (SurveyItem.ItemType == "Date Time")
+                    {
+                        @*<RadzenDatePicker TValue="DateTime?" @bind-Value="@SurveyItem.ItemValue" ShowTime="true" />*@
+                    }
+                    @if (SurveyItem.ItemType == "Dropdown")
+                    {
+                        <RadzenDropDown AllowClear="true" TValue="string"
+                                        Data="@SurveyItem.SurveyItemOption"
+                                        TextProperty="OptionLabel" ValueProperty="SurveyItemOptionId"
+                                        @bind-Value="@SurveyItem.ItemValue" />
+                    }
+                    @if (SurveyItem.ItemType == "Multi-Select Dropdown")
+                    {
+                        <RadzenDropDown AllowClear="true" TValue="string"
+                                        Data="@SurveyItem.SurveyItemOption"
+                                        TextProperty="OptionLabel" ValueProperty="SurveyItemOptionId"
+                                        @bind-Value="@SurveyItem.ItemValue" />
+                    }
+                </div>
+                <br />
+
+            }
+            @if (SelectedSurvey.SurveyItem.Count > 0)
+            {
+                <RadzenButton Click="OpenResultsPopup" ButtonStyle="ButtonStyle.Primary" Text="Submit" />
+            }
+            <br />
         }
     }
 </div>
@@ -68,6 +116,34 @@
 {
     <p>Selected Survey: @SelectedSurvey.SurveyName</p>
     <p>Date Created: @SelectedSurvey.DateCreated.ToShortDateString()</p>
+}
+@if (ShowResultsPopup)
+{
+    <div class="modal" tabindex="-1" style="display:block;background-color:gainsboro" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Form Results</h3>
+                    <!-- Button to close the popup -->
+                    <button type="button" class="close"
+                            @onclick="CloseResultsPopup">
+                        <span aria-hidden="true">X</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <ul style="list-style-type:none;">
+                        @foreach (var item in SelectedSurvey.SurveyItem)
+                        {
+                            <li>
+                                <p><b>@item.ItemLabel</b></p>
+                                <p>@item.ItemValue</p>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 }
 @*
     }
@@ -82,6 +158,7 @@
     bool? ExistingSurveys = null;
     string AdministrationGroup;
     bool isAdmin = false;
+    bool ShowResultsPopup = false;
 
     List<GraphUser> colGraphUsers = new List<GraphUser>();
     List<GraphGroup> colGroups = new List<GraphGroup>();
@@ -246,5 +323,17 @@
                 }
             }
         }
+    }
+
+    void OpenResultsPopup()
+    {
+        // Open Popup
+        ShowResultsPopup = true;
+    }
+
+    void CloseResultsPopup()
+    {
+        // Close Popup
+        ShowResultsPopup = false;
     }
 }
