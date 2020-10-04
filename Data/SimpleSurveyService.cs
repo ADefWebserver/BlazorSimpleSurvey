@@ -44,6 +44,17 @@ namespace BlazorSimpleSurvey.Data
         }
         #endregion
 
+        #region public Task<Survey> GetSurvey(int Id)
+        public Task<Survey> GetSurvey(int Id)
+        {
+            return Task.FromResult(_context.Survey
+                .Include(x => x.SurveyItem)
+                .ThenInclude(x => x.SurveyItemOption)
+                .Where(x => x.Id == Id)
+                .FirstOrDefault());
+        }
+        #endregion
+
         #region public Task<Survey> CreateSurveyAsync(Survey NewSurvey)
         public Task<Survey> CreateSurveyAsync(Survey NewSurvey)
         {
@@ -127,13 +138,23 @@ namespace BlazorSimpleSurvey.Data
         }
         #endregion
 
+        #region public Task<SurveyItem> GetSurveyItemAsync(int SurveyItemId)
+        public Task<SurveyItem> GetSurveyItemAsync(int SurveyItemId)
+        {
+            return Task.FromResult(_context.SurveyItem
+                .Where(x => x.Id == SurveyItemId)
+                .Include(x => x.SurveyItemOption)
+                .FirstOrDefault());
+        }
+        #endregion
+
         #region public Task<SurveyItem> CreateSurveyItemAsync(SurveyItem NewSurveyItem)
         public Task<SurveyItem> CreateSurveyItemAsync(SurveyItem NewSurveyItem)
         {
             try
             {
                 SurveyItem objSurveyItem = new SurveyItem();
-                
+
                 objSurveyItem.SurveyAnswer = new List<SurveyAnswer>();
 
                 objSurveyItem.SurveyNavigation =
@@ -157,7 +178,7 @@ namespace BlazorSimpleSurvey.Data
                 _context.SaveChanges();
 
                 // Set position
-                int CoutOfSurveyItems = 
+                int CoutOfSurveyItems =
                     _context.SurveyItem
                     .Where(x => x.SurveyNavigation.Id == NewSurveyItem.SurveyNavigation.Id)
                     .Count();

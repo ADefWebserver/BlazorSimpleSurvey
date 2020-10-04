@@ -61,7 +61,7 @@
 
             <br /><br />
             <div>
-                @foreach (var SurveyItem in SelectedSurvey.SurveyItem)
+                @foreach (var SurveyItem in SelectedSurvey.SurveyItem.OrderBy(x => x.Position))
                 {
                     <div class="row">
                         <div class="col-md-3" style="text-align:right">
@@ -125,16 +125,8 @@
                     </div>
                 }
             </div>
-            @if (SelectedSurvey.SurveyItem.Count > 0)
-            {
-                <br />
-                <RadzenButton Click="OpenResultsPopup" 
-                              ButtonStyle="ButtonStyle.Primary" 
-                              Style="margin-left:40px"
-                              Text="Submit" />
-            }
-            else
-            {
+            @if (SelectedSurvey.SurveyItem.Count == 0)
+            { 
                 <h4>No Survey Items</h4>
             }
             <br />
@@ -142,35 +134,6 @@
     }
 </div>
 <br />
-
-@if (ShowResultsPopup)
-{
-    <div class="modal" tabindex="-1" style="display:block;background-color:gainsboro" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">Form Results</h3>
-                    <!-- Button to close the popup -->
-                    <button type="button" class="close"
-                            @onclick="CloseResultsPopup">
-                        <span aria-hidden="true">X</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <ul style="list-style-type:none;">
-                        @foreach (var item in SelectedSurvey.SurveyItem)
-                        {
-                            <li>
-                                <p><b>@item.ItemLabel</b></p>
-                                <p>@item.ItemValue</p>
-                            </li>
-                        }
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-}
 @*
     }
 *@
@@ -184,7 +147,6 @@
     bool? ExistingSurveys = null;
     string AdministrationGroup;
     bool isAdmin = false;
-    bool ShowResultsPopup = false;
 
     List<GraphUser> colGraphUsers = new List<GraphUser>();
     List<GraphGroup> colGroups = new List<GraphGroup>();
@@ -247,7 +209,6 @@
             {
                 ExistingSurveys = true;
                 SelectedSurvey = colSurveys.FirstOrDefault();
-                SelectedSurveyChange(SelectedSurvey);
             }
             else
             {
@@ -286,17 +247,54 @@
         }
     }
 
-    void SelectedSurveyChange(object value)
+    async Task RefreshSurveys(int SelectedSurveyId)
     {
-        var str = value;
+        colSurveys = await @Service.GetAllSurveysAsync();
+        SelectedSurvey = colSurveys.Where(x => x.Id == SelectedSurveyId).FirstOrDefault();
     }
 
-    void SelectedSurveyMoveUp(object value)
+    async Task SelectedSurveyChange(object value)
+    {
+        await RefreshSurveys(SelectedSurvey.Id);
+    }
+
+    async Task SelectedSurveyMoveUp(object value)
     {
         SurveyItem objSurveyItem = (SurveyItem)value;
         int DesiredPosition = (objSurveyItem.Position - 1);
 
-        // 
+        // Move the current element in that position
+        var CurrentSurveyItem =
+            await Service.GetSurveyItemAsync(
+                SelectedSurvey.SurveyItem
+                .Where(x => x.Position == DesiredPosition)
+                .FirstOrDefault().Id);
+
+        if (CurrentSurveyItem != null)
+        {
+            // Move it down
+            CurrentSurveyItem.Position = CurrentSurveyItem.Position + 1;
+            // Update it
+            await Service.UpdateSurveyItemAsync(CurrentSurveyItem);
+        }
+
+        // Move Item Up
+        var SurveyItemToMoveUp =
+            await Service.GetSurveyItemAsync(
+                SelectedSurvey.SurveyItem
+                .Where(x => x.Id == objSurveyItem.Id)
+                .FirstOrDefault().Id);
+
+        if (SurveyItemToMoveUp != null)
+        {
+            // Move it up
+            SurveyItemToMoveUp.Position = SurveyItemToMoveUp.Position - 1;
+            // Update it
+            await Service.UpdateSurveyItemAsync(SurveyItemToMoveUp);
+        }
+
+        // Refresh SelectedSurvey
+        SelectedSurvey = await Service.GetSurvey(SelectedSurvey.Id);
     }
 
     void SelectedSurveyMoveDown(object value)
@@ -363,17 +361,5 @@
                 }
             }
         }
-    }
-
-    void OpenResultsPopup()
-    {
-        // Open Popup
-        ShowResultsPopup = true;
-    }
-
-    void CloseResultsPopup()
-    {
-        // Close Popup
-        ShowResultsPopup = false;
     }
 }
