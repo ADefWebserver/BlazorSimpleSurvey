@@ -182,12 +182,15 @@ namespace BlazorSimpleSurvey.Data
             {
                 var ExistingSurveyItem = _context.SurveyItem
                                     .Where(x => x.Id == objExistingSurveyItem.Id)
+                                    .Include(x => x.SurveyItemOption)
                                     .FirstOrDefault();
 
                 ExistingSurveyItem.ItemLabel = objExistingSurveyItem.ItemLabel;
                 ExistingSurveyItem.ItemType = objExistingSurveyItem.ItemType;
                 ExistingSurveyItem.ItemValue = objExistingSurveyItem.ItemValue;
                 ExistingSurveyItem.Required = objExistingSurveyItem.Required;
+
+                ExistingSurveyItem.SurveyItemOption = objExistingSurveyItem.SurveyItemOption;
 
                 _context.SaveChanges();
 

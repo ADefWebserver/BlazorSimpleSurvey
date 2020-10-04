@@ -61,7 +61,7 @@
                 </div>
                 <div class="modal-body">
                     <ul style="list-style-type:none;">
-                        @foreach (var option in SelectedSurveyItem.SurveyItemOption)
+                        @foreach (var option in SelectedSurveyItem.SurveyItemOption.OrderBy(x => x.Id))
                         {
                             <li>
                                 <div Style="margin-bottom: 10px; width: 150px" >
