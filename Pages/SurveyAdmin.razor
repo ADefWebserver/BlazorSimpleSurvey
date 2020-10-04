@@ -265,7 +265,7 @@
 
         // Move the current element in that position
         var CurrentSurveyItem =
-            await Service.GetSurveyItemAsync(
+            await @Service.GetSurveyItemAsync(
                 SelectedSurvey.SurveyItem
                 .Where(x => x.Position == DesiredPosition)
                 .FirstOrDefault().Id);
@@ -280,7 +280,7 @@
 
         // Move Item Up
         var SurveyItemToMoveUp =
-            await Service.GetSurveyItemAsync(
+            await @Service.GetSurveyItemAsync(
                 SelectedSurvey.SurveyItem
                 .Where(x => x.Id == objSurveyItem.Id)
                 .FirstOrDefault().Id);
@@ -294,7 +294,7 @@
         }
 
         // Refresh SelectedSurvey
-        SelectedSurvey = await Service.GetSurvey(SelectedSurvey.Id);
+        SelectedSurvey = await @Service.GetSurvey(SelectedSurvey.Id);
     }
 
     async Task SelectedSurveyMoveDown(object value)
@@ -304,7 +304,7 @@
 
         // Move the current element in that position
         var CurrentSurveyItem =
-            await Service.GetSurveyItemAsync(
+            await @Service.GetSurveyItemAsync(
                 SelectedSurvey.SurveyItem
                 .Where(x => x.Position == DesiredPosition)
                 .FirstOrDefault().Id);
@@ -319,7 +319,7 @@
 
         // Move Item Down
         var SurveyItemToMoveDown =
-            await Service.GetSurveyItemAsync(
+            await @Service.GetSurveyItemAsync(
                 SelectedSurvey.SurveyItem
                 .Where(x => x.Id == objSurveyItem.Id)
                 .FirstOrDefault().Id);
@@ -333,7 +333,12 @@
         }
 
         // Refresh SelectedSurvey
-        SelectedSurvey = await Service.GetSurvey(SelectedSurvey.Id);
+        await RefreshSurvey(SelectedSurvey.Id);
+    }
+
+    async Task RefreshSurvey(int SurveyId)
+    {
+        SelectedSurvey = await @Service.GetSurvey(SurveyId);
     }
 
     void DialogClose(dynamic result)
@@ -341,6 +346,16 @@
         if (result != null) // Survey was edited
         {
             Survey objSurvey = result as Survey;
+            SurveyItem objSurveyItem = result as SurveyItem;
+
+            if (objSurveyItem != null)
+            {
+                // This is a Survey Item
+                // Refresh the Survey
+                Task.Run(() => RefreshSurvey(SelectedSurvey.Id));
+                StateHasChanged();
+                return;
+            }
 
             if (objSurvey != null)
             {
@@ -351,19 +366,17 @@
                 {
                     // Survey does not exist - Add it
                     colSurveys.Add(objSurvey);
+                    ExistingSurveys = true;
+                    StateHasChanged();
+                    SelectedSurvey = colSurveys.Where(x => x.Id == objSurvey.Id).FirstOrDefault();
                 }
                 else
                 {
-                    // Update existing Survey
-                    colSurveys.Remove(ExistingSurvey);
-                    colSurveys.Add(objSurvey);
+                    // Refresh the Survey
+                    Task.Run(() => RefreshSurvey(objSurvey.Id));
+                    StateHasChanged();
+                    return;
                 }
-
-                ExistingSurveys = true;
-
-                StateHasChanged();
-
-                SelectedSurvey = colSurveys.Where(x => x.Id == objSurvey.Id).FirstOrDefault();
             }
             else
             {
