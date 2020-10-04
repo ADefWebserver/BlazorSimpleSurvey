@@ -68,7 +68,7 @@ CREATE TABLE [dbo].[SurveyItem](
 	[ItemLabel] [nvarchar](50) NOT NULL,
 	[ItemType] [nvarchar](50) NOT NULL,
 	[ItemValue] [nvarchar](50) NULL,
-	[Position] [int] NULL,
+	[Position] [int] NOT NULL,
 	[Required] [int] NOT NULL,
 	[SurveyChoiceId] [int] NULL,
  CONSTRAINT [PK_SurveyItem] PRIMARY KEY CLUSTERED 

@@ -71,7 +71,7 @@
                                               Size="Radzen.ButtonSize.Medium"
                                               Icon="arrow_circle_up"
                                               Style="margin-top: 20px"
-                                              Click="@(args => SelectedSurveyChange(args))" />
+                                              Click="@(args => SelectedSurveyMoveUp(SurveyItem))" />
                             }
                             @if (SurveyItem.Position < SelectedSurvey.SurveyItem.Count())
                             {
@@ -79,7 +79,7 @@
                                               Size="Radzen.ButtonSize.Medium"
                                               Icon="arrow_circle_down"
                                               Style="margin-top: 20px"
-                                              Click="@(args => SelectedSurveyChange(args))" />
+                                              Click="@(args => SelectedSurveyMoveDown(SurveyItem))" />
                             }
                             <RadzenButton ButtonStyle="ButtonStyle.Light"
                                           Size="Radzen.ButtonSize.Medium"
@@ -289,6 +289,20 @@
     void SelectedSurveyChange(object value)
     {
         var str = value;
+    }
+
+    void SelectedSurveyMoveUp(object value)
+    {
+        SurveyItem objSurveyItem = (SurveyItem)value;
+        int DesiredPosition = (objSurveyItem.Position - 1);
+
+        // 
+    }
+
+    void SelectedSurveyMoveDown(object value)
+    {
+        SurveyItem objSurveyItem = (SurveyItem)value;
+
     }
 
     void DialogClose(dynamic result)
