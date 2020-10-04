@@ -247,15 +247,26 @@
         }
     }
 
-    async Task RefreshSurveys(int SelectedSurveyId)
-    {
-        colSurveys = await @Service.GetAllSurveysAsync();
-        SelectedSurvey = colSurveys.Where(x => x.Id == SelectedSurveyId).FirstOrDefault();
-    }
+    // SelectedSurveyChange
 
     async Task SelectedSurveyChange(object value)
     {
         await RefreshSurveys(SelectedSurvey.Id);
+    }
+
+    // Refresh RefreshSurveys
+
+    async Task RefreshSurveys(int SurveyId)
+    {
+        colSurveys = await @Service.GetAllSurveysAsync();
+        SelectedSurvey = colSurveys.Where(x => x.Id == SurveyId).FirstOrDefault();
+    }
+
+    // Refresh RefreshSurvey
+
+    async Task RefreshSurvey(int SurveyId)
+    {
+        SelectedSurvey = await @Service.GetSurvey(SurveyId);
     }
 
     async Task SelectedSurveyMoveUp(object value)
@@ -334,11 +345,6 @@
 
         // Refresh SelectedSurvey
         await RefreshSurvey(SelectedSurvey.Id);
-    }
-
-    async Task RefreshSurvey(int SurveyId)
-    {
-        SelectedSurvey = await @Service.GetSurvey(SurveyId);
     }
 
     void DialogClose(dynamic result)
