@@ -166,8 +166,8 @@
     {
         var result = await @Service.DeleteSurveyItemAsync(SelectedSurveyItem);
 
-        dialogService.Close(SelectedSurveyItem.Id);
-        dialogService.Close(SelectedSurveyItem.Id);
+        dialogService.Close(SelectedSurveyItem);
+        dialogService.Close(SelectedSurveyItem);
     }
 
     async Task DeleteSurveyItemDialog() => await dialogService.OpenAsync("Delete Survey Item", ds => @<RadzenCard Style="padding: 20px;">

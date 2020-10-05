@@ -349,21 +349,28 @@
 
     void DialogClose(dynamic result)
     {
-        if (result != null) // Survey was edited
+        if (result != null) 
         {
             Survey objSurvey = result as Survey;
             SurveyItem objSurveyItem = result as SurveyItem;
 
-            if (objSurveyItem != null)
+            if (objSurveyItem != null) // A SurveyItem was edited
             {
-                // This is a Survey Item
                 // Refresh the Survey
-                Task.Run(() => RefreshSurvey(SelectedSurvey.Id));
+                var ExistingSurvey = colSurveys.Where(x => x.Id == SelectedSurvey.Id).FirstOrDefault();
+
+                var AwaitResult = Task.Run(async () => await @Service.GetSurvey(SelectedSurvey.Id));
+                var RefreshedSurvey = AwaitResult.Result;
+
+                // Update existing Survey
+                colSurveys.Remove(ExistingSurvey);
+                colSurveys.Add(RefreshedSurvey);
+
                 StateHasChanged();
                 return;
             }
 
-            if (objSurvey != null)
+            if (objSurvey != null) // A Survey was Edited
             {
                 // See if Survey is already in the list
                 var ExistingSurvey = colSurveys.Where(x => x.Id == objSurvey.Id).FirstOrDefault();
@@ -372,17 +379,23 @@
                 {
                     // Survey does not exist - Add it
                     colSurveys.Add(objSurvey);
-                    ExistingSurveys = true;
-                    StateHasChanged();
-                    SelectedSurvey = colSurveys.Where(x => x.Id == objSurvey.Id).FirstOrDefault();
                 }
                 else
                 {
                     // Refresh the Survey
-                    Task.Run(() => RefreshSurvey(objSurvey.Id));
-                    StateHasChanged();
+                    var AwaitResult = Task.Run(async () => await @Service.GetSurvey(SelectedSurvey.Id));
+                    var RefreshedSurvey = AwaitResult.Result;
+
+                    // Update existing Survey
+                    colSurveys.Remove(ExistingSurvey);
+                    colSurveys.Add(RefreshedSurvey);
+
                     return;
                 }
+
+                ExistingSurveys = true;
+                SelectedSurvey = colSurveys.Where(x => x.Id == objSurvey.Id).FirstOrDefault();
+                StateHasChanged();
             }
             else
             {
