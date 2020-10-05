@@ -166,6 +166,9 @@
     {
         var result = await @Service.DeleteSurveyItemAsync(SelectedSurveyItem);
 
+        // Set the Id to -1 so we know it is deleted
+        SelectedSurveyItem.Id = -1;
+
         dialogService.Close(SelectedSurveyItem);
         dialogService.Close(SelectedSurveyItem);
     }

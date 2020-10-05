@@ -349,22 +349,27 @@
 
     void DialogClose(dynamic result)
     {
-        if (result != null) 
+        if (result != null)
         {
             Survey objSurvey = result as Survey;
             SurveyItem objSurveyItem = result as SurveyItem;
 
             if (objSurveyItem != null) // A SurveyItem was edited
             {
-                // Refresh the Survey
-                var ExistingSurvey = colSurveys.Where(x => x.Id == SelectedSurvey.Id).FirstOrDefault();
+                // Refresh the SurveyItem
+                var ExistingSurveyItem = SelectedSurvey.SurveyItem.Where(x => x.Id == objSurveyItem.Id).FirstOrDefault();
 
-                var AwaitResult = Task.Run(async () => await @Service.GetSurvey(SelectedSurvey.Id));
-                var RefreshedSurvey = AwaitResult.Result;
-
-                // Update existing Survey
-                colSurveys.Remove(ExistingSurvey);
-                colSurveys.Add(RefreshedSurvey);
+                if (objSurveyItem.Id == -1)
+                {
+                    // It was deleted
+                    SelectedSurvey.SurveyItem.Remove(ExistingSurveyItem);
+                }
+                else
+                {
+                    // Update existing Survey
+                    SelectedSurvey.SurveyItem.Remove(ExistingSurveyItem);
+                    SelectedSurvey.SurveyItem.Add(objSurveyItem);
+                }
 
                 StateHasChanged();
                 return;
