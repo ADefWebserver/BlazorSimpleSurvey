@@ -31,7 +31,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            @if (SelectedSurveyItem.ItemType == "Dropdown")
+            @if ((SelectedSurveyItem.ItemType == "Dropdown") ||(SelectedSurveyItem.ItemType == "Multi-Select Dropdown"))
             {
                 <RadzenButton Click="OpenPopup"
                               Text="Edit Options" 

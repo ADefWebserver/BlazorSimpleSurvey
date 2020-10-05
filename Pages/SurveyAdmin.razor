@@ -117,7 +117,7 @@
                             }
                             @if (SurveyItem.ItemType == "Multi-Select Dropdown")
                             {
-                                <RadzenDropDown AllowClear="true" TValue="string"
+                                <RadzenDropDown AllowClear="true" TValue="string" Multiple="true" Placeholder="Select..."
                                                 Data="@SurveyItem.SurveyItemOption.OrderBy(x => x.Id)"
                                                 TextProperty="OptionLabel" ValueProperty="SurveyItemOptionId" />
                             }
@@ -387,13 +387,9 @@
                 }
                 else
                 {
-                    // Refresh the Survey
-                    var AwaitResult = Task.Run(async () => await @Service.GetSurvey(SelectedSurvey.Id));
-                    var RefreshedSurvey = AwaitResult.Result;
-
                     // Update existing Survey
                     colSurveys.Remove(ExistingSurvey);
-                    colSurveys.Add(RefreshedSurvey);
+                    colSurveys.Add(objSurvey);
 
                     return;
                 }
