@@ -31,7 +31,8 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            @if ((SelectedSurveyItem.ItemType == "Dropdown") ||(SelectedSurveyItem.ItemType == "Multi-Select Dropdown"))
+            @if ((SelectedSurveyItem.ItemType == "Dropdown") 
+                || (SelectedSurveyItem.ItemType == "Multi-Select Dropdown"))
             {
                 <RadzenButton Click="OpenPopup"
                               Text="Edit Options" 
@@ -96,7 +97,8 @@
     bool ShowPopup = false;
     bool boolRequired = false;
 
-    IEnumerable<string> FormTypes = new string[] { "Text Box", "Text Area", "Date", "Date Time", "Dropdown", "Multi-Select Dropdown" };
+    IEnumerable<string> FormTypes = new string[] 
+    { "Text Box", "Text Area", "Date", "Date Time", "Dropdown", "Multi-Select Dropdown" };
 
     private string newOption;
 
@@ -120,11 +122,13 @@
 
             if (SelectedSurveyItem.Id == -1)
             {
-                SelectedSurveyItem = await @Service.CreateSurveyItemAsync(SelectedSurveyItem);
+                SelectedSurveyItem = 
+                    await @Service.CreateSurveyItemAsync(SelectedSurveyItem);
             }
             else
             {
-                SelectedSurveyItem = await @Service.UpdateSurveyItemAsync(SelectedSurveyItem);
+                SelectedSurveyItem = 
+                    await @Service.UpdateSurveyItemAsync(SelectedSurveyItem);
             }
 
             dialogService.Close(SelectedSurveyItem);
@@ -151,7 +155,9 @@
     {
         if (!string.IsNullOrWhiteSpace(newOption))
         {
-            SelectedSurveyItem.SurveyItemOption.Add(new SurveyItemOption { OptionLabel = newOption });
+            SelectedSurveyItem.SurveyItemOption
+                .Add(new SurveyItemOption { OptionLabel = newOption });
+
             newOption = string.Empty;
         }
     }
@@ -173,7 +179,9 @@
         dialogService.Close(SelectedSurveyItem);
     }
 
-    async Task DeleteSurveyItemDialog() => await dialogService.OpenAsync("Delete Survey Item", ds => @<RadzenCard Style="padding: 20px;">
+    async Task DeleteSurveyItemDialog() => 
+        await dialogService.OpenAsync("Delete Survey Item", ds => 
+    @<RadzenCard Style="padding: 20px;">
         <p Style="margin-bottom: 10px;">Confirm?</p>
         <div class="row">
             <div class="col-md-12">
