@@ -41,7 +41,11 @@
 
             if (user.Identity.IsAuthenticated != false)
             {
-                UserId = @Service.GetAllUsersAsync().Where(x => x.Objectidentifier == user.Identity.Name).FirstOrDefault().Id;
+                var Objectidentifier = user.Claims
+                    .FirstOrDefault(c => 
+                    c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+
+                UserId = @Service.GetAllUsersAsync().Where(x => x.Objectidentifier == Objectidentifier).FirstOrDefault().Id;
             }
         }
         catch (Exception ex)
