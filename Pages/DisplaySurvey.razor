@@ -6,7 +6,6 @@
 @inject Radzen.DialogService dialogService
 @inherits OwningComponentBase<SimpleSurveyService>
 @strError
-<h3>Display Survey</h3>
 @*
     @if(isAuthenticated)
     {
@@ -27,12 +26,55 @@ else
                         Change="@(args => SelectedSurveyChange(args))" />
 
         <br />
+        <hr />
+        <div>
+            @foreach (var SurveyItem in SelectedSurvey.SurveyItem.OrderBy(x => x.Position))
+            {
+                <div class="row">
+                    <div class="col-md-9" style="text-align: left;margin-bottom: 20px">
+                        <b>@SurveyItem.ItemLabel</b>
+                        <br />
+                        @if (SurveyItem.ItemType == "Text Box")
+                        {
+                            <RadzenTextBox MaxLength="4000" />
+                        }
+                        @if (SurveyItem.ItemType == "Text Area")
+                        {
+                            <RadzenTextArea MaxLength="4000" />
+                        }
+                        @if (SurveyItem.ItemType == "Date")
+                        {
+                            <RadzenDatePicker DateFormat="d" TValue="DateTime?" ShowTime="false" />
+                        }
+                        @if (SurveyItem.ItemType == "Date Time")
+                        {
+                            <RadzenDatePicker TValue="DateTime?" ShowTime="true" />
+                        }
+                        @if (SurveyItem.ItemType == "Dropdown")
+                        {
+                            <RadzenDropDown AllowClear="true" TValue="string"
+                                            Data="@SurveyItem.SurveyItemOption.OrderBy(x => x.Id)"
+                                            TextProperty="OptionLabel" ValueProperty="SurveyItemOptionId" />
+                        }
+                        @if (SurveyItem.ItemType == "Multi-Select Dropdown")
+                        {
+                            <RadzenDropDown AllowFiltering="true" AllowClear="true"
+                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                            TValue="string" Multiple="true" Placeholder="Select..."
+                                            Data="@SurveyItem.SurveyItemOption.OrderBy(x => x.Id)"
+                                            TextProperty="OptionLabel" ValueProperty="SurveyItemOptionId" />
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+        @if (SelectedSurvey.SurveyItem.Count == 0)
+        {
+            <h4>No Survey Items</h4>
+        }
         <br />
     }
-
 }
-
-
 @*
     }
     else
@@ -40,7 +82,6 @@ else
         <h4>You must be logged in to take a Survey</h4>
     }
 *@
-
 @code {
     string strError = "";
     System.Security.Claims.ClaimsPrincipal user;
