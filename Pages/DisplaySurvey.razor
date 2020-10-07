@@ -1,224 +1,116 @@
 ﻿@page "/displaysurvey"
-@using BlazorSimpleSurvey.Data
-
+@using Models;
+@using System.Linq;
+@using BlazorSimpleSurvey.Data;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject Radzen.DialogService dialogService
+@inherits OwningComponentBase<SimpleSurveyService>
+@strError
 <h3>Display Survey</h3>
+@*
+    @if(isAuthenticated)
+    {
+*@
 
-<h4>Items: (@items.Count)</h4>
-
-@foreach (var item in items)
+@if (ExistingSurveys == null)
 {
-    <div>
-        <span><b>@item.ItemLabel</b></span>
+    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" Style="margin-bottom: 20px" />
+}
+else
+{
+    @if (ExistingSurveys.Value == true)
+    {
+        <RadzenDropDown TValue="Survey"
+                        Data="@colSurveys"
+                        TextProperty="SurveyName"
+                        @bind-Value="SelectedSurvey"
+                        Change="@(args => SelectedSurveyChange(args))" />
+
         <br />
-        @if (item.ItemType == "TextBox")
-        {
-            <RadzenTextBox @bind-Value="@item.ItemValue" MaxLength="4000" />
-        }
-        @if (item.ItemType == "TextArea")
-        {
-            <RadzenTextArea @bind-Value="@item.ItemValue" MaxLength="4000" />
-        }
-        @if (item.ItemType == "Date")
-        {
-            <RadzenDatePicker DateFormat="d" TValue="DateTime?" @bind-Value="@item.ItemDateValue" ShowTime="false" />
-        }
-        @if (item.ItemType == "DateTime")
-        {
-            <RadzenDatePicker TValue="DateTime?" @bind-Value="@item.ItemDateValue" ShowTime="true" />
-        }
-        @if (item.ItemType == "Dropdown")
-        {
-            <RadzenDropDown AllowClear="true" TValue="string"
-                            Data="@item.SurveyItemOptions"
-                            TextProperty="OptionLabel" ValueProperty="SurveyItemOptionId"
-                            @bind-Value="@item.ItemValue" />
-        }
-    </div>
-    <br />
-
-}
-@if (@items.Count > 0)
-{
-    <RadzenButton Click="OpenResultsPopup" ButtonStyle="ButtonStyle.Primary" Text="Submit" />
-}
-<br />
-<br />
-<br />
-<hr />
-<h4>Add Form Item</h4>
-<div>
-    <span><b>Item Label</b></span>
-    <br />
-    <RadzenTextBox @bind-Value="@newItemLabel" />
-</div>
-<div>
-    <span><b>Item Type</b></span>
-    <br />
-    <RadzenDropDown AllowClear="true" TValue="string"
-                    Data="@FormTypes"
-                    @bind-Value="newItemType" />
-    @if (newItemType == "Dropdown")
-    {
-        <button type="button" class="btn btn-link" @onclick="OpenPopup">[Edit Options]</button>
+        <br />
     }
-</div>
-<br />
-<RadzenButton Click="AddItem" ButtonStyle="ButtonStyle.Success" Text="Add Item" />
 
-@if (ShowPopup)
-{
-    <div class="modal" tabindex="-1" style="display:block;background-color:gainsboro" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">Edit Options</h3>
-                    <!-- Button to close the popup -->
-                    <button type="button" class="close"
-                            @onclick="ClosePopup">
-                        <span aria-hidden="true">X</span>
-                    </button>
-                </div>
-                <!-- Edit form for the current Category -->
-                <div class="modal-body">
-                    <ul style="list-style-type:none;">
-                        @foreach (var option in newOptions)
-                        {
-                            <li>
-                                <input @bind="option.OptionLabel" />
-                                <button type="button" class="btn btn-link"
-                                        @onclick="(() => RemoveOption(option))">
-                                    [Delete]
-                                </button>
-                            </li>
-                        }
-                    </ul>
+}
 
-                    <input @bind="newOption" />
-                    <button @onclick="AddOption">Add</button>
-                </div>
-            </div>
-        </div>
-    </div>
-}
-@if (ShowResultsPopup)
-{
-    <div class="modal" tabindex="-1" style="display:block;background-color:gainsboro" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">Form Results</h3>
-                    <!-- Button to close the popup -->
-                    <button type="button" class="close"
-                            @onclick="CloseResultsPopup">
-                        <span aria-hidden="true">X</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <ul style="list-style-type:none;">
-                        @foreach (var item in items)
-                        {
-                        <li>
-                            <p><b>@item.ItemLabel</b></p>
-                            @if (@item.ItemDateValue.HasValue)
-                            {
-                                @if (@item.ItemType == "Date")
-                                {
-                                    <p>@item.ItemDateValue.Value.ToShortDateString()</p>
-                                }
-                                else
-                                {
-                                    <p>@item.ItemDateValue.Value.ToShortDateString() @item.ItemDateValue.Value.ToShortTimeString()</p>
-                                }
-                            }
-                            else
-                            {
-                                @if (@item.ItemType == "Dropdown")
-                                {
-                                    <p>@item.SurveyItemOptions.Where(x => x.SurveyItemOptionId == item.ItemValue).FirstOrDefault().OptionLabel</p>
-                                }
-                                else
-                                {
-                                    <p>@item.ItemValue</p>
-                                }                                
-                            }
-                        </li>
-                        }
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-}
+
+@*
+    }
+    else
+    {
+        <h4>You must be logged in to take a Survey</h4>
+    }
+*@
+
 @code {
-    private IList<DTOSurveyItem> items = new List<DTOSurveyItem>();
-    private string newItemLabel;
-    private string newItemType = "TextBox";
-    private string newOption;
-    List<DTOSurveyItemOption> newOptions = new List<DTOSurveyItemOption>();
+    string strError = "";
+    System.Security.Claims.ClaimsPrincipal user;
+    bool isAuthenticated = false;
+    int UserId = -1;
 
-    bool ShowPopup = false;
-    bool ShowResultsPopup = false;
+    bool? ExistingSurveys = null;
+    List<Survey> colSurveys = new List<Survey>();
+    Survey SelectedSurvey = new Survey();
 
-    IEnumerable<string> FormTypes = new string[] { "TextBox", "TextArea", "Date", "DateTime", "Dropdown" };
-
-    private void AddItem()
+    protected override async Task OnInitializedAsync()
     {
-        if (!string.IsNullOrWhiteSpace(newItemLabel))
+        try
         {
-            var NewFormItem =
-                new DTOSurveyItem
-                {
-                    ItemLabel = newItemLabel,
-                    ItemType = newItemType,
-                    SurveyItemOptions = newOptions,
-                    Required = true
-                };
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
-            items.Add(NewFormItem);
+            user = authState.User;
 
-            newItemLabel = string.Empty;
-            newOptions = new List<DTOSurveyItemOption>();
+            if (user.Identity.IsAuthenticated != false)
+            {
+                isAuthenticated = true;
+
+                var Objectidentifier = user.Claims
+                    .FirstOrDefault(c =>
+                    c.Type ==
+                    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+
+                UserId = @Service.GetAllUsersAsync()
+                    .Where(x => x.Objectidentifier == Objectidentifier)
+                    .FirstOrDefault().Id;
+            }
+
+            colSurveys = await @Service.GetAllSurveysAsync();
+
+            if (colSurveys.Count > 0)
+            {
+                ExistingSurveys = true;
+                SelectedSurvey = colSurveys.FirstOrDefault();
+            }
+            else
+            {
+                ExistingSurveys = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            strError = ex.GetBaseException().Message;
         }
     }
 
-    void OpenPopup()
+    // SelectedSurveyChange
+
+    async Task SelectedSurveyChange(object value)
     {
-        // Open Popup
-        ShowPopup = true;
+        await RefreshSurveys(SelectedSurvey.Id);
     }
 
-    void ClosePopup()
+    // Refresh RefreshSurveys
+
+    async Task RefreshSurveys(int SurveyId)
     {
-        // Close Popup
-        ShowPopup = false;
+        colSurveys = await @Service.GetAllSurveysAsync();
+        SelectedSurvey = colSurveys.Where(x => x.Id == SurveyId).FirstOrDefault();
     }
 
-    private void AddOption()
-    {
-        if (!string.IsNullOrWhiteSpace(newOption))
-        {
-            Guid newGuid = Guid.NewGuid();
+    // Refresh RefreshSurvey
 
-            newOptions.Add(new DTOSurveyItemOption { OptionLabel = newOption, SurveyItemOptionId = newGuid.ToString() });
-            newOption = string.Empty;
-        }
+    async Task RefreshSurvey(int SurveyId)
+    {
+        SelectedSurvey = await @Service.GetSurvey(SurveyId);
     }
 
-    private void RemoveOption(DTOSurveyItemOption paramSurveyItemOption)
-    {
-        // Remove the option from the collection
-        newOptions.Remove(paramSurveyItemOption);
-    }
-
-    void OpenResultsPopup()
-    {
-        // Open Popup
-        ShowResultsPopup = true;
-    }
-
-    void CloseResultsPopup()
-    {
-        // Close Popup
-        ShowResultsPopup = false;
-    }
 }
