@@ -67,10 +67,10 @@ else
                         {
                             <RadzenDropDown AllowFiltering="true" AllowClear="true"
                                             FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                            TValue="string" Multiple="true" Placeholder="Select..."
+                                            TValue="IEnumerable<int>" Multiple="true" Placeholder="Select..."
                                             Data="@SurveyItem.SurveyItemOption.OrderBy(x => x.Id)"
-                                            TextProperty="OptionLabel" ValueProperty="OptionLabel" 
-                                            @bind-Value="@SurveyItem.AnswerValueString" />
+                                            TextProperty="OptionLabel" ValueProperty="Id" 
+                                            @bind-Value="@SurveyItem.AnswerValueCollection" />
                         }
                     </div>
                 </div>
@@ -192,7 +192,9 @@ else
             objDTOSurveyItem.Position = SurveyItem.Position;
             objDTOSurveyItem.Required = SurveyItem.Required;
 
-            objDTOSurveyItem.SurveyItemOption = 
+            objDTOSurveyItem.AnswerValueCollection = new List<int>();
+
+            objDTOSurveyItem.SurveyItemOption =
                 new List<DTOSurveyItemOption>();
 
             foreach (var SurveyItemOption in SurveyItem.SurveyItemOption)
@@ -207,6 +209,7 @@ else
 
             objDTOSurvey.SurveyItem.Add(objDTOSurveyItem);
         }
+
 
         return objDTOSurvey;
     }
