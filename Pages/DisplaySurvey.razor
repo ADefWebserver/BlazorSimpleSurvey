@@ -63,15 +63,6 @@ else
                                             TextProperty="OptionLabel" ValueProperty="Id"
                                             @bind-Value="@SurveyItem.AnswerValueInteger" />
                         }
-                        @if (SurveyItem.ItemType == "Multi-Select Dropdown")
-                        {
-                            <RadzenDropDown AllowFiltering="true" AllowClear="true"
-                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                            TValue="IEnumerable<int>" Multiple="true" Placeholder="Select..."
-                                            Data="@SurveyItem.SurveyItemOption.OrderBy(x => x.Id)"
-                                            TextProperty="OptionLabel" ValueProperty="Id" 
-                                            @bind-Value="@SurveyItem.AnswerValueCollection" />
-                        }
                     </div>
                 </div>
             }
@@ -91,6 +82,13 @@ else
     }
 *@
 @code {
+    async Task DropDownChange(object value)
+    {
+        var objVaue = value;
+        StateHasChanged();
+    }
+
+
     string strError = "";
     System.Security.Claims.ClaimsPrincipal user;
     bool isAuthenticated = false;
@@ -191,8 +189,6 @@ else
             objDTOSurveyItem.ItemType = SurveyItem.ItemType;
             objDTOSurveyItem.Position = SurveyItem.Position;
             objDTOSurveyItem.Required = SurveyItem.Required;
-
-            objDTOSurveyItem.AnswerValueCollection = new List<int>();
 
             objDTOSurveyItem.SurveyItemOption =
                 new List<DTOSurveyItemOption>();

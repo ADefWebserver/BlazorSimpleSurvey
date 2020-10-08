@@ -113,14 +113,6 @@
                                                     Data="@SurveyItem.SurveyItemOption.OrderBy(x => x.Id)"
                                                     TextProperty="OptionLabel" ValueProperty="SurveyItemOptionId" />
                                 }
-                                @if (SurveyItem.ItemType == "Multi-Select Dropdown")
-                                {
-                                    <RadzenDropDown AllowFiltering="true" AllowClear="true"
-                                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                                    TValue="string" Multiple="true" Placeholder="Select..."
-                                                    Data="@SurveyItem.SurveyItemOption.OrderBy(x => x.Id)"
-                                                    TextProperty="OptionLabel" ValueProperty="SurveyItemOptionId" />
-                                }
                             </div>
                         </div>
                     }

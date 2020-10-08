@@ -26,7 +26,6 @@ namespace BlazorSimpleSurvey.Data
         public string AnswerValueString { get; set; }
         public int? AnswerValueInteger { get; set; }
         public DateTime? AnswerValueDateTime { get; set; }
-        public IEnumerable<int> AnswerValueCollection { get; set; }
         public List<DTOSurveyItemOption> SurveyItemOption { get; set; }
     }
     public partial class DTOSurveyItemOption
