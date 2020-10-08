@@ -31,7 +31,6 @@ namespace BlazorSimpleSurvey.Data
     public partial class DTOSurveyItemOption
     {
         public int Id { get; set; }
-        public int SurveyItem { get; set; }
         public string OptionLabel { get; set; }
     }
 }

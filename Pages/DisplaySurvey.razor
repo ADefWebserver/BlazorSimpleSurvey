@@ -60,7 +60,7 @@ else
                         {
                             <RadzenDropDown AllowClear="true" TValue="int?"
                                             Data="@SurveyItem.SurveyItemOption.OrderBy(x => x.Id)"
-                                            TextProperty="OptionLabel" ValueProperty="SurveyItem"
+                                            TextProperty="OptionLabel" ValueProperty="Id"
                                             @bind-Value="@SurveyItem.AnswerValueInteger" />
                         }
                         @if (SurveyItem.ItemType == "Multi-Select Dropdown")
@@ -201,7 +201,6 @@ else
 
                 objDTOSurveyItemOption.Id = SurveyItemOption.Id;
                 objDTOSurveyItemOption.OptionLabel = SurveyItemOption.OptionLabel;
-                objDTOSurveyItemOption.SurveyItem = SurveyItemOption.SurveyItem;
 
                 objDTOSurveyItem.SurveyItemOption.Add(objDTOSurveyItemOption);
             }
