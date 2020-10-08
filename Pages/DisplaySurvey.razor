@@ -89,7 +89,7 @@ else
     int UserId = -1;
 
     bool? ExistingSurveys = null;
-    List<Survey> colSurveys = new List<Survey>();
+    List<DTOSurvey> colSurveys = new List<DTOSurvey>();
     DTOSurvey SelectedSurvey = new DTOSurvey();
 
     protected override async Task OnInitializedAsync()
@@ -114,12 +114,17 @@ else
                     .FirstOrDefault().Id;
             }
 
-            colSurveys = await @Service.GetAllSurveysAsync();
+            var Surveys = await @Service.GetAllSurveysAsync();
+
+            foreach (var survey in Surveys)
+            {
+                colSurveys.Add(ConvertToDTO(survey));
+            }
 
             if (colSurveys.Count > 0)
             {
                 ExistingSurveys = true;
-                SelectedSurvey = ConvertToDTO(colSurveys.FirstOrDefault());
+                SelectedSurvey = colSurveys.FirstOrDefault();
             }
             else
             {
@@ -136,6 +141,7 @@ else
 
     async Task SelectedSurveyChange(object value)
     {
+        colSurveys = new List<DTOSurvey>();
         await RefreshSurveys(SelectedSurvey.Id);
     }
 
@@ -143,8 +149,14 @@ else
 
     async Task RefreshSurveys(int SurveyId)
     {
-        colSurveys = await @Service.GetAllSurveysAsync();
-        SelectedSurvey = ConvertToDTO(colSurveys.Where(x => x.Id == SurveyId).FirstOrDefault());
+        var Surveys = await @Service.GetAllSurveysAsync();
+
+        foreach (var survey in Surveys)
+        {
+            colSurveys.Add(ConvertToDTO(survey));
+        }
+
+        SelectedSurvey = colSurveys.Where(x => x.Id == SurveyId).FirstOrDefault();
     }
 
     // Refresh RefreshSurvey
@@ -160,7 +172,8 @@ else
         objDTOSurvey.Id = objSurvey.Id;
         objDTOSurvey.SurveyName = objSurvey.SurveyName;
 
-        objDTOSurvey.SurveyItem = new List<DTOSurveyItem>();
+        objDTOSurvey.SurveyItem = new List<DTOSurveyItem>
+            ();
 
         foreach (var SurveyItem in objSurvey.SurveyItem)
         {
@@ -172,7 +185,8 @@ else
             objDTOSurveyItem.Position = SurveyItem.Position;
             objDTOSurveyItem.Required = SurveyItem.Required;
 
-            objDTOSurveyItem.SurveyItemOption = new List<DTOSurveyItemOption>();
+            objDTOSurveyItem.SurveyItemOption = new List<DTOSurveyItemOption>
+                ();
 
             foreach (var SurveyItemOption in objDTOSurveyItem.SurveyItemOption)
             {
