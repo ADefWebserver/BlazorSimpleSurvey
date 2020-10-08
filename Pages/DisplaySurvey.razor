@@ -36,25 +36,32 @@ else
                         <br />
                         @if (SurveyItem.ItemType == "Text Box")
                         {
-                            <RadzenTextBox MaxLength="4000" />
+                            <RadzenTextBox MaxLength="4000" 
+                                           @bind-Value="@SurveyItem.AnswerValueString" />
                         }
                         @if (SurveyItem.ItemType == "Text Area")
                         {
-                            <RadzenTextArea MaxLength="4000" />
+                            <RadzenTextArea MaxLength="4000" 
+                                            @bind-Value="@SurveyItem.AnswerValueString" />
                         }
                         @if (SurveyItem.ItemType == "Date")
                         {
-                            <RadzenDatePicker DateFormat="d" TValue="DateTime?" ShowTime="false" />
+                            <RadzenDatePicker DateFormat="d" 
+                                              @bind-Value="@SurveyItem.AnswerValueDateTime" 
+                                              TValue="DateTime?" ShowTime="false" />
                         }
                         @if (SurveyItem.ItemType == "Date Time")
                         {
-                            <RadzenDatePicker TValue="DateTime?" ShowTime="true" />
+                            <RadzenDatePicker TValue="DateTime?" 
+                                              @bind-Value="@SurveyItem.AnswerValueDateTime" 
+                                              ShowTime="true" />
                         }
                         @if (SurveyItem.ItemType == "Dropdown")
                         {
-                            <RadzenDropDown AllowClear="true" TValue="string"
+                            <RadzenDropDown AllowClear="true" TValue="int?"
                                             Data="@SurveyItem.SurveyItemOption.OrderBy(x => x.Id)"
-                                            TextProperty="OptionLabel" ValueProperty="SurveyItemOptionId" />
+                                            TextProperty="OptionLabel" ValueProperty="SurveyItem"
+                                            @bind-Value="@SurveyItem.AnswerValueInteger" />
                         }
                         @if (SurveyItem.ItemType == "Multi-Select Dropdown")
                         {
@@ -62,7 +69,8 @@ else
                                             FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                             TValue="string" Multiple="true" Placeholder="Select..."
                                             Data="@SurveyItem.SurveyItemOption.OrderBy(x => x.Id)"
-                                            TextProperty="OptionLabel" ValueProperty="SurveyItemOptionId" />
+                                            TextProperty="OptionLabel" ValueProperty="OptionLabel" 
+                                            @bind-Value="@SurveyItem.AnswerValueString" />
                         }
                     </div>
                 </div>
@@ -172,8 +180,7 @@ else
         objDTOSurvey.Id = objSurvey.Id;
         objDTOSurvey.SurveyName = objSurvey.SurveyName;
 
-        objDTOSurvey.SurveyItem = new List<DTOSurveyItem>
-            ();
+        objDTOSurvey.SurveyItem = new List<DTOSurveyItem>();
 
         foreach (var SurveyItem in objSurvey.SurveyItem)
         {
@@ -185,16 +192,16 @@ else
             objDTOSurveyItem.Position = SurveyItem.Position;
             objDTOSurveyItem.Required = SurveyItem.Required;
 
-            objDTOSurveyItem.SurveyItemOption = new List<DTOSurveyItemOption>
-                ();
+            objDTOSurveyItem.SurveyItemOption = 
+                new List<DTOSurveyItemOption>();
 
-            foreach (var SurveyItemOption in objDTOSurveyItem.SurveyItemOption)
+            foreach (var SurveyItemOption in SurveyItem.SurveyItemOption)
             {
                 DTOSurveyItemOption objDTOSurveyItemOption = new DTOSurveyItemOption();
 
-                objDTOSurveyItemOption.Id = objDTOSurveyItemOption.Id;
-                objDTOSurveyItemOption.OptionLabel = objDTOSurveyItemOption.OptionLabel;
-                objDTOSurveyItemOption.SurveyItem = objDTOSurveyItemOption.SurveyItem;
+                objDTOSurveyItemOption.Id = SurveyItemOption.Id;
+                objDTOSurveyItemOption.OptionLabel = SurveyItemOption.OptionLabel;
+                objDTOSurveyItemOption.SurveyItem = SurveyItemOption.SurveyItem;
 
                 objDTOSurveyItem.SurveyItemOption.Add(objDTOSurveyItemOption);
             }
