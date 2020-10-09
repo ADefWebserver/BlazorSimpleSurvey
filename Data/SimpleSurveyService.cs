@@ -256,19 +256,22 @@ namespace BlazorSimpleSurvey.Data
         {
             try
             {
-                List<SurveyAnswer> SurveyAnswers = new List<SurveyAnswer>();
-
-                // Delete existing answers
-                var ExistingAnswers = _context.SurveyAnswer
-                    .Where(x => x.Id == paramDTOSurvey.Id)
-                    .Where(x => x.UserId == paramDTOSurvey.UserId)
-                    .ToList();
-
-                _context.SurveyAnswer.RemoveRange(ExistingAnswers);
-                _context.SaveChanges();
+                List<SurveyAnswer> SurveyAnswers = new List<SurveyAnswer>(); 
 
                 foreach (var SurveyItem in paramDTOSurvey.SurveyItem)
                 {
+                    // Delete possible existing answer
+                    var ExistingAnswer = _context.SurveyAnswer
+                        .Where(x => x.SurveyItemId == SurveyItem.Id)
+                        .Where(x => x.UserId == paramDTOSurvey.UserId)
+                        .FirstOrDefault();
+
+                    if(ExistingAnswer != null)
+                    {
+                        _context.SurveyAnswer.RemoveRange(ExistingAnswer);
+                        _context.SaveChanges();
+                    }
+
                     SurveyAnswer NewSurveyAnswer = new SurveyAnswer();
 
                     NewSurveyAnswer.AnswerValue = SurveyItem.AnswerValueString;

@@ -53,10 +53,10 @@ else
                         }
                         @if (SurveyItem.ItemType == "Dropdown")
                         {
-                            <RadzenDropDown AllowClear="true" TValue="int?"
+                            <RadzenDropDown AllowClear="true" TValue="string"
                                             Data="@SurveyItem.SurveyItemOption.OrderBy(x => x.Id)"
-                                            TextProperty="OptionLabel" ValueProperty="Id"
-                                            @bind-Value="@SurveyItem.AnswerValueInteger" />
+                                            TextProperty="OptionLabel" ValueProperty="OptionLabel"
+                                            @bind-Value="@SurveyItem.AnswerValueString" />
                         }
                     </div>
                 </div>
