@@ -6,11 +6,6 @@
 @inject Radzen.DialogService dialogService
 @inherits OwningComponentBase<SimpleSurveyService>
 @strError
-@*
-    @if(isAuthenticated)
-    {
-*@
-
 @if (ExistingSurveys == null)
 {
     <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" Style="margin-bottom: 20px" />
@@ -36,24 +31,24 @@ else
                         <br />
                         @if (SurveyItem.ItemType == "Text Box")
                         {
-                            <RadzenTextBox MaxLength="4000" 
+                            <RadzenTextBox MaxLength="4000"
                                            @bind-Value="@SurveyItem.AnswerValueString" />
                         }
                         @if (SurveyItem.ItemType == "Text Area")
                         {
-                            <RadzenTextArea MaxLength="4000" 
+                            <RadzenTextArea MaxLength="4000"
                                             @bind-Value="@SurveyItem.AnswerValueString" />
                         }
                         @if (SurveyItem.ItemType == "Date")
                         {
-                            <RadzenDatePicker DateFormat="d" 
-                                              @bind-Value="@SurveyItem.AnswerValueDateTime" 
+                            <RadzenDatePicker DateFormat="d"
+                                              @bind-Value="@SurveyItem.AnswerValueDateTime"
                                               TValue="DateTime?" ShowTime="false" />
                         }
                         @if (SurveyItem.ItemType == "Date Time")
                         {
-                            <RadzenDatePicker TValue="DateTime?" 
-                                              @bind-Value="@SurveyItem.AnswerValueDateTime" 
+                            <RadzenDatePicker TValue="DateTime?"
+                                              @bind-Value="@SurveyItem.AnswerValueDateTime"
                                               ShowTime="true" />
                         }
                         @if (SurveyItem.ItemType == "Dropdown")
@@ -67,6 +62,20 @@ else
                 </div>
             }
         </div>
+
+        @if (isAuthenticated)
+        {
+            <div class="row">
+                <RadzenButton Click="SaveSurvey"
+                              Text="Save" ButtonStyle="ButtonStyle.Success"
+                              Style="margin-bottom: 10px; width: 150px" />
+            </div>
+        }
+        else
+        {
+            <h4>You must be logged in to take a Survey</h4>
+        }
+
         @if (SelectedSurvey.SurveyItem.Count == 0)
         {
             <h4>No Survey Items</h4>
@@ -74,21 +83,8 @@ else
         <br />
     }
 }
-@*
-    }
-    else
-    {
-        <h4>You must be logged in to take a Survey</h4>
-    }
-*@
+
 @code {
-    async Task DropDownChange(object value)
-    {
-        var objVaue = value;
-        StateHasChanged();
-    }
-
-
     string strError = "";
     System.Security.Claims.ClaimsPrincipal user;
     bool isAuthenticated = false;
@@ -177,6 +173,7 @@ else
         DTOSurvey objDTOSurvey = new DTOSurvey();
         objDTOSurvey.Id = objSurvey.Id;
         objDTOSurvey.SurveyName = objSurvey.SurveyName;
+        objDTOSurvey.UserId = UserId;
 
         objDTOSurvey.SurveyItem = new List<DTOSurveyItem>();
 
@@ -210,4 +207,18 @@ else
         return objDTOSurvey;
     }
 
+    // Submit
+
+    async Task SaveSurvey()
+    {
+        try
+        {
+            var result =
+                    await @Service.CreateSurveyAnswersAsync(SelectedSurvey);
+        }
+        catch (Exception ex)
+        {
+            strError = ex.GetBaseException().Message;
+        }
+    }
 }

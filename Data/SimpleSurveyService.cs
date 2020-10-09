@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
 using Z.EntityFramework.Plus;
 using BlazorSimpleSurvey.Models;
+using System.Security.Cryptography.X509Certificates;
+using Microsoft.Graph;
 
 namespace BlazorSimpleSurvey.Data
 {
@@ -244,6 +246,47 @@ namespace BlazorSimpleSurvey.Data
             }
 
             return Task.FromResult(true);
+        }
+        #endregion
+
+        // Survey Answers
+
+        #region public Task<bool> CreateSurveyAnswersAsync(DTOSurvey paramDTOSurvey)
+        public Task<bool> CreateSurveyAnswersAsync(DTOSurvey paramDTOSurvey)
+        {
+            try
+            {
+                List<SurveyAnswer> SurveyAnswers = new List<SurveyAnswer>();
+
+                // Delete existing answers
+                var ExistingAnswers = _context.SurveyAnswer
+                    .Where(x => x.Id == paramDTOSurvey.Id)
+                    .Where(x => x.UserId == paramDTOSurvey.UserId)
+                    .ToList();
+
+                _context.SurveyAnswer.RemoveRange(ExistingAnswers);
+                _context.SaveChanges();
+
+                foreach (var SurveyItem in paramDTOSurvey.SurveyItem)
+                {
+                    SurveyAnswer NewSurveyAnswer = new SurveyAnswer();
+
+                    NewSurveyAnswer.AnswerValue = SurveyItem.AnswerValueString;
+                    NewSurveyAnswer.AnswerValueDateTime = SurveyItem.AnswerValueDateTime;
+                    NewSurveyAnswer.SurveyItemId = SurveyItem.Id;
+                    NewSurveyAnswer.UserId = paramDTOSurvey.UserId;
+
+                    _context.SurveyAnswer.Add(NewSurveyAnswer);
+                    _context.SaveChanges();
+                }
+
+                return Task.FromResult(true);
+            }
+            catch (Exception ex)
+            {
+                DetachAllEntities();
+                throw ex;
+            }
         }
         #endregion
 
