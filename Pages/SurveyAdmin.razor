@@ -62,7 +62,7 @@
                     @foreach (var SurveyItem in SelectedSurvey.SurveyItem.OrderBy(x => x.Position))
                     {
                         <div class="row">
-                            <div class="col-md-3" style="text-align:right">
+                            <div class="col-md-2" style="text-align:right">
                                 @if (SurveyItem.Position > 1)
                                 {
                                     <RadzenButton ButtonStyle="ButtonStyle.Light"
@@ -88,7 +88,7 @@
                                                    new Dictionary<string, object>() { { "SelectedSurveyItem", SurveyItem } },
                                                    new DialogOptions() { Width = "500px", Height = "380px" }))" />
                             </div>
-                            <div class="col-md-9" style="text-align: left;margin-bottom: 20px">
+                            <div class="col-md-10" style="text-align: left;margin-bottom: 20px">
                                 <b>@SurveyItem.ItemLabel</b>
                                 <br />
                                 @if (SurveyItem.ItemType == "Text Box")
