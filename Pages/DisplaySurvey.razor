@@ -22,60 +22,58 @@ else
 
         <br />
         <hr />
-        <div>
-            @foreach (var SurveyItem in SelectedSurvey.SurveyItem.OrderBy(x => x.Position))
+        <RadzenTemplateForm TItem="DTOSurvey" Data="@SelectedSurvey" Submit="@SaveSurvey">
+            <div>
+                @foreach (var SurveyItem in SelectedSurvey.SurveyItem.OrderBy(x => x.Position))
+                {
+                    <div class="row">
+                        <div class="col-md-9" style="text-align: left;margin-bottom: 20px">
+                            <b>@SurveyItem.ItemLabel</b>
+                            <br />
+                            @if (SurveyItem.ItemType == "Text Box")
+                            {
+                                <RadzenTextBox MaxLength="4000"
+                                               @bind-Value="@SurveyItem.AnswerValueString" />
+                            }
+                            @if (SurveyItem.ItemType == "Text Area")
+                            {
+                                <RadzenTextArea MaxLength="4000"
+                                                @bind-Value="@SurveyItem.AnswerValueString" />
+                            }
+                            @if (SurveyItem.ItemType == "Date")
+                            {
+                                <RadzenDatePicker DateFormat="d"
+                                                  @bind-Value="@SurveyItem.AnswerValueDateTime"
+                                                  TValue="DateTime?" ShowTime="false" />
+                            }
+                            @if (SurveyItem.ItemType == "Date Time")
+                            {
+                                <RadzenDatePicker TValue="DateTime?"
+                                                  @bind-Value="@SurveyItem.AnswerValueDateTime"
+                                                  ShowTime="true" />
+                            }
+                            @if (SurveyItem.ItemType == "Dropdown")
+                            {
+                                <RadzenDropDown AllowClear="true" TValue="string"
+                                                Data="@SurveyItem.SurveyItemOption.OrderBy(x => x.Id)"
+                                                TextProperty="OptionLabel" ValueProperty="OptionLabel"
+                                                @bind-Value="@SurveyItem.AnswerValueString" />
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+            @if (isAuthenticated)
             {
                 <div class="row">
-                    <div class="col-md-9" style="text-align: left;margin-bottom: 20px">
-                        <b>@SurveyItem.ItemLabel</b>
-                        <br />
-                        @if (SurveyItem.ItemType == "Text Box")
-                        {
-                            <RadzenTextBox MaxLength="4000"
-                                           @bind-Value="@SurveyItem.AnswerValueString" />
-                        }
-                        @if (SurveyItem.ItemType == "Text Area")
-                        {
-                            <RadzenTextArea MaxLength="4000"
-                                            @bind-Value="@SurveyItem.AnswerValueString" />
-                        }
-                        @if (SurveyItem.ItemType == "Date")
-                        {
-                            <RadzenDatePicker DateFormat="d"
-                                              @bind-Value="@SurveyItem.AnswerValueDateTime"
-                                              TValue="DateTime?" ShowTime="false" />
-                        }
-                        @if (SurveyItem.ItemType == "Date Time")
-                        {
-                            <RadzenDatePicker TValue="DateTime?"
-                                              @bind-Value="@SurveyItem.AnswerValueDateTime"
-                                              ShowTime="true" />
-                        }
-                        @if (SurveyItem.ItemType == "Dropdown")
-                        {
-                            <RadzenDropDown AllowClear="true" TValue="string"
-                                            Data="@SurveyItem.SurveyItemOption.OrderBy(x => x.Id)"
-                                            TextProperty="OptionLabel" ValueProperty="OptionLabel"
-                                            @bind-Value="@SurveyItem.AnswerValueString" />
-                        }
-                    </div>
+                    <RadzenButton ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
                 </div>
             }
-        </div>
-
-        @if (isAuthenticated)
-        {
-            <div class="row">
-                <RadzenButton Click="SaveSurvey"
-                              Text="Save" ButtonStyle="ButtonStyle.Success"
-                              Style="margin-bottom: 10px; width: 150px" />
-            </div>
-        }
-        else
-        {
-            <h4>You must be logged in to take a Survey</h4>
-        }
-
+            else
+            {
+                <h4>You must <a href="AzureADB2C/Account/SignIn">Log in</a> to take a Survey</h4>
+            }
+        </RadzenTemplateForm>
         @if (SelectedSurvey.SurveyItem.Count == 0)
         {
             <h4>No Survey Items</h4>
@@ -215,10 +213,26 @@ else
         {
             var result =
                     await @Service.CreateSurveyAnswersAsync(SelectedSurvey);
+
+            await CompleteSurveyDialog();
         }
         catch (Exception ex)
         {
             strError = ex.GetBaseException().Message;
         }
     }
+
+    async Task CompleteSurveyDialog() => await dialogService
+        .OpenAsync("Survey Complete", ds =>
+    @<RadzenCard Style="padding: 5px;">
+         <div class="row">
+             <div class="col-md-4">
+             </div>
+                 <div class="col-md-6">
+                     <RadzenButton Text="Close" Click="()=> ds.Close(false)"
+                                   ButtonStyle="ButtonStyle.Secondary"
+                                   Style="margin-bottom: 10px; width: 150px" />
+                 </div>
+             </div>
+</RadzenCard>);
 }
