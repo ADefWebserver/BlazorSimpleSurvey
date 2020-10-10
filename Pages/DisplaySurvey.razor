@@ -102,6 +102,9 @@ else
     {
         try
         {
+            // detect when a dialog has closed
+            dialogService.OnClose += DialogClose;
+
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
             user = authState.User;
@@ -165,13 +168,6 @@ else
         SelectedSurvey = colSurveys.Where(x => x.Id == SurveyId).FirstOrDefault();
     }
 
-    // Refresh RefreshSurvey
-
-    async Task RefreshSurvey(int SurveyId)
-    {
-        SelectedSurvey = ConvertToDTO(await @Service.GetSurvey(SurveyId));
-    }
-
     private DTOSurvey ConvertToDTO(Survey objSurvey)
     {
         DTOSurvey objDTOSurvey = new DTOSurvey();
@@ -228,9 +224,24 @@ else
         }
     }
 
+    void DialogClose(dynamic result)
+    {
+        if (result != null)
+        {
+            // Clear Answers
+            foreach (var item in SelectedSurvey.SurveyItem)
+            {
+                item.AnswerValueString = null;
+                item.AnswerValueDateTime = null;
+            }
+
+            StateHasChanged();
+        }
+    }
+
     async Task CompleteSurveyDialog() => await dialogService
         .OpenAsync("Results Saved - Survey Complete", ds =>
-    @<RadzenCard Style="padding: 1px;border:none">
+        @<RadzenCard Style="padding: 1px;border:none">
          <div class="row">
              <div class="col-md-4">
              </div>
@@ -240,5 +251,5 @@ else
                                    Style="margin-bottom: 10px; width: 150px" />
                  </div>
              </div>
-</RadzenCard>);
+        </RadzenCard>);
 }
