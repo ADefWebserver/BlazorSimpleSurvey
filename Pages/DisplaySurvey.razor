@@ -1,6 +1,7 @@
 ﻿@page "/displaysurvey"
 @using Models;
 @using System.Linq;
+@using System.Linq.Dynamic.Core
 @using BlazorSimpleSurvey.Data;
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject Radzen.DialogService dialogService
@@ -59,11 +60,25 @@ else
                                                 TextProperty="OptionLabel" ValueProperty="OptionLabel"
                                                 @bind-Value="@SurveyItem.AnswerValueString" />
                             }
+                            @if (SurveyItem.ItemType == "Multi-Select Dropdown")
+                            {
+                                <RadzenDropDown Name="@SurveyItem.Id.ToString()"
+                                                TValue="IEnumerable<string>"
+                                                Multiple="true"
+                                                AllowClear="true"
+                                                AllowFiltering="true"
+                                                @bind-Value="SurveyItem.AnswerValueList"
+                                                Placeholder="Select..."
+                                                Data="@SurveyItem.SurveyItemOption"
+                                                TextProperty="OptionLabel"
+                                                ValueProperty="OptionLabel"
+                                                Style="width:400px;" />
+                            }
                             @if (SurveyItem.Required == 1)
                             {
-                            <br /><RadzenRequiredValidator Component="@SurveyItem.Id.ToString()"
-                                                           Text="Required" Popup="false"
-                                                           Style="position: absolute" />
+                                <br /><RadzenRequiredValidator Component="@SurveyItem.Id.ToString()"
+                                                               Text="Required" Popup="false"
+                                                               Style="position: absolute" />
                             }
                         </div>
                     </div>
@@ -241,15 +256,15 @@ else
 
     async Task CompleteSurveyDialog() => await dialogService
         .OpenAsync("Results Saved - Survey Complete", ds =>
-        @<RadzenCard Style="padding: 1px;border:none">
-         <div class="row">
-             <div class="col-md-4">
-             </div>
-                 <div class="col-md-6">
-                     <RadzenButton Text="Close" Click="()=> ds.Close(false)"
-                                   ButtonStyle="ButtonStyle.Secondary"
-                                   Style="margin-bottom: 10px; width: 150px" />
-                 </div>
-             </div>
-        </RadzenCard>);
+    @<RadzenCard Style="padding: 1px;border:none">
+        <div class="row">
+            <div class="col-md-4">
+            </div>
+            <div class="col-md-6">
+                <RadzenButton Text="Close" Click="()=> ds.Close(false)"
+                              ButtonStyle="ButtonStyle.Secondary"
+                              Style="margin-bottom: 10px; width: 150px" />
+            </div>
+        </div>
+    </RadzenCard>);
 }

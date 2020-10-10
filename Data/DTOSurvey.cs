@@ -24,6 +24,7 @@ namespace BlazorSimpleSurvey.Data
         public int Required { get; set; }
         public int? SurveyChoiceId { get; set; }             
         public string AnswerValueString { get; set; }
+        public IEnumerable<string> AnswerValueList { get; set; }
         public DateTime? AnswerValueDateTime { get; set; }
         public List<DTOSurveyItemOption> SurveyItemOption { get; set; }
     }

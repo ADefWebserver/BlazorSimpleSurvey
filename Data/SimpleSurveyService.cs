@@ -261,26 +261,46 @@ namespace BlazorSimpleSurvey.Data
                 foreach (var SurveyItem in paramDTOSurvey.SurveyItem)
                 {
                     // Delete possible existing answer
-                    var ExistingAnswer = _context.SurveyAnswer
+                    var ExistingAnswers = _context.SurveyAnswer
                         .Where(x => x.SurveyItemId == SurveyItem.Id)
                         .Where(x => x.UserId == paramDTOSurvey.UserId)
-                        .FirstOrDefault();
+                        .ToList();
 
-                    if(ExistingAnswer != null)
+                    if(ExistingAnswers != null)
                     {
-                        _context.SurveyAnswer.RemoveRange(ExistingAnswer);
+                        _context.SurveyAnswer.RemoveRange(ExistingAnswers);
                         _context.SaveChanges();
                     }
 
-                    SurveyAnswer NewSurveyAnswer = new SurveyAnswer();
+                    // Save Answer
 
-                    NewSurveyAnswer.AnswerValue = SurveyItem.AnswerValueString;
-                    NewSurveyAnswer.AnswerValueDateTime = SurveyItem.AnswerValueDateTime;
-                    NewSurveyAnswer.SurveyItemId = SurveyItem.Id;
-                    NewSurveyAnswer.UserId = paramDTOSurvey.UserId;
+                    if (SurveyItem.ItemType != "Multi-Select Dropdown")
+                    {
+                        SurveyAnswer NewSurveyAnswer = new SurveyAnswer();
 
-                    _context.SurveyAnswer.Add(NewSurveyAnswer);
-                    _context.SaveChanges();
+                        NewSurveyAnswer.AnswerValue = SurveyItem.AnswerValueString;
+                        NewSurveyAnswer.AnswerValueDateTime = SurveyItem.AnswerValueDateTime;
+                        NewSurveyAnswer.SurveyItemId = SurveyItem.Id;
+                        NewSurveyAnswer.UserId = paramDTOSurvey.UserId;
+
+                        _context.SurveyAnswer.Add(NewSurveyAnswer);
+                        _context.SaveChanges();
+                    }
+
+                    if (SurveyItem.AnswerValueList != null)
+                    {
+                        foreach (var item in SurveyItem.AnswerValueList)
+                        {
+                            SurveyAnswer NewSurveyAnswerValueList = new SurveyAnswer();
+
+                            NewSurveyAnswerValueList.AnswerValue = item;
+                            NewSurveyAnswerValueList.SurveyItemId = SurveyItem.Id;
+                            NewSurveyAnswerValueList.UserId = paramDTOSurvey.UserId;
+
+                            _context.SurveyAnswer.Add(NewSurveyAnswerValueList);
+                            _context.SaveChanges();
+                        }
+                    }
                 }
 
                 return Task.FromResult(true);
