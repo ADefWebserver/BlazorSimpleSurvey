@@ -109,9 +109,10 @@
                                 }
                                 @if (SurveyItem.ItemType == "Dropdown")
                                 {
-                                    <RadzenDropDown AllowClear="true" TValue="string"
+                                    <RadzenDropDown AllowClear="true" TValue="string" 
                                                     Data="@SurveyItem.SurveyItemOption.OrderBy(x => x.Id)"
-                                                    TextProperty="OptionLabel" ValueProperty="SurveyItemOptionId" />
+                                                    TextProperty="OptionLabel" ValueProperty="OptionLabel"
+                                                    @bind-Value="@Answer.AnswerValueString" />
                                 }
                                 @if (SurveyItem.ItemType == "Multi-Select Dropdown")
                                 {
@@ -121,6 +122,7 @@
                                                     AllowFiltering="true"
                                                     Placeholder="Select..."
                                                     Data="@SurveyItem.SurveyItemOption.OrderBy(x => x.Id)"
+                                                    @bind-Value="Answer.AnswerValueList"
                                                     TextProperty="OptionLabel"
                                                     ValueProperty="OptionLabel" />
                                 }
@@ -147,6 +149,8 @@
     bool? ExistingSurveys = null;
     string AdministrationGroup;
     bool isAdmin = false;
+
+    public DTOSurveyItem Answer = new DTOSurveyItem();
 
     List<GraphUser> colGraphUsers = new List<GraphUser>();
     List<GraphGroup> colGroups = new List<GraphGroup>();

@@ -23,6 +23,12 @@ else
 
         <br />
         <hr />
+        @if (ShowSurveyComplete)
+        {
+            <h4>Responses Saved - Survey Complete</h4>
+        }
+        else
+        {
         <RadzenTemplateForm TItem="DTOSurvey" Data="@SelectedSurvey" Submit="@SaveSurvey">
             <div>
                 @foreach (var SurveyItem in SelectedSurvey.SurveyItem.OrderBy(x => x.Position))
@@ -71,8 +77,7 @@ else
                                                 Placeholder="Select..."
                                                 Data="@SurveyItem.SurveyItemOption"
                                                 TextProperty="OptionLabel"
-                                                ValueProperty="OptionLabel"
-                                                Style="width:400px;" />
+                                                ValueProperty="OptionLabel" />
                             }
                             @if (SurveyItem.Required == 1)
                             {
@@ -95,6 +100,7 @@ else
                 <h4>You must <a href="AzureADB2C/Account/SignIn">Log in</a> to take a Survey</h4>
             }
         </RadzenTemplateForm>
+        }
         @if (SelectedSurvey.SurveyItem.Count == 0)
         {
             <h4>No Survey Items</h4>
@@ -110,6 +116,7 @@ else
     int UserId = -1;
 
     bool? ExistingSurveys = null;
+    bool ShowSurveyComplete = false;
     List<DTOSurvey> colSurveys = new List<DTOSurvey>();
     DTOSurvey SelectedSurvey = new DTOSurvey();
 
@@ -117,9 +124,6 @@ else
     {
         try
         {
-            // detect when a dialog has closed
-            dialogService.OnClose += DialogClose;
-
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
             user = authState.User;
@@ -165,6 +169,7 @@ else
 
     async Task SelectedSurveyChange(object value)
     {
+        ShowSurveyComplete = false;
         colSurveys = new List<DTOSurvey>();
         await RefreshSurveys(SelectedSurvey.Id);
     }
@@ -205,7 +210,7 @@ else
             objDTOSurveyItem.SurveyItemOption =
                 new List<DTOSurveyItemOption>();
 
-            foreach (var SurveyItemOption in SurveyItem.SurveyItemOption)
+            foreach (var SurveyItemOption in SurveyItem.SurveyItemOption.OrderBy(x => x.Id))
             {
                 DTOSurveyItemOption objDTOSurveyItemOption = new DTOSurveyItemOption();
 
@@ -231,7 +236,7 @@ else
             var result =
                     await @Service.CreateSurveyAnswersAsync(SelectedSurvey);
 
-            await CompleteSurveyDialog();
+            CompleteSurvey();
         }
         catch (Exception ex)
         {
@@ -239,32 +244,16 @@ else
         }
     }
 
-    void DialogClose(dynamic result)
+    void CompleteSurvey()
     {
-        if (result != null)
-        {
-            // Clear Answers
-            foreach (var item in SelectedSurvey.SurveyItem)
-            {
-                item.AnswerValueString = null;
-                item.AnswerValueDateTime = null;
-            }
+        ShowSurveyComplete = true;
 
-            StateHasChanged();
+        // Clear Answers
+        foreach (var item in SelectedSurvey.SurveyItem)
+        {
+            item.AnswerValueString = null;
+            item.AnswerValueDateTime = null;
+            item.AnswerValueList = null;
         }
     }
-
-    async Task CompleteSurveyDialog() => await dialogService
-        .OpenAsync("Results Saved - Survey Complete", ds =>
-    @<RadzenCard Style="padding: 1px;border:none">
-        <div class="row">
-            <div class="col-md-4">
-            </div>
-            <div class="col-md-6">
-                <RadzenButton Text="Close" Click="()=> ds.Close(false)"
-                              ButtonStyle="ButtonStyle.Secondary"
-                              Style="margin-bottom: 10px; width: 150px" />
-            </div>
-        </div>
-    </RadzenCard>);
 }
