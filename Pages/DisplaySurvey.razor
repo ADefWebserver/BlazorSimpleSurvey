@@ -32,8 +32,11 @@ else
                             <br />
                             @if (SurveyItem.ItemType == "Text Box")
                             {
-                                <RadzenTextBox MaxLength="4000"
+                                <RadzenTextBox MaxLength="4000" Name="@SurveyItem.Id.ToString()"
                                                @bind-Value="@SurveyItem.AnswerValueString" />
+                                <RadzenRequiredValidator Component="@SurveyItem.Id.ToString()" 
+                                                         Text="Required" Popup="@popup" 
+                                                         Style="position: absolute" />
                             }
                             @if (SurveyItem.ItemType == "Text Area")
                             {
@@ -84,6 +87,7 @@ else
 
 @code {
     string strError = "";
+    bool popup;
     System.Security.Claims.ClaimsPrincipal user;
     bool isAuthenticated = false;
     int UserId = -1;
