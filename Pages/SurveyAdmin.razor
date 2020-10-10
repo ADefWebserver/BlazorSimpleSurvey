@@ -112,7 +112,8 @@
                                     <RadzenDropDown AllowClear="true" TValue="string" 
                                                     Data="@SurveyItem.SurveyItemOption.OrderBy(x => x.Id)"
                                                     TextProperty="OptionLabel" ValueProperty="OptionLabel"
-                                                    @bind-Value="@Answer.AnswerValueString" />
+                                                    @bind-Value="@Answer.AnswerValueString" 
+                                                    Style="width:300px;" />
                                 }
                                 @if (SurveyItem.ItemType == "Multi-Select Dropdown")
                                 {
@@ -124,7 +125,8 @@
                                                     Data="@SurveyItem.SurveyItemOption.OrderBy(x => x.Id)"
                                                     @bind-Value="Answer.AnswerValueList"
                                                     TextProperty="OptionLabel"
-                                                    ValueProperty="OptionLabel" />
+                                                    ValueProperty="OptionLabel" 
+                                                    Style="width:300px;" />
                                 }
                             </div>
                         </div>

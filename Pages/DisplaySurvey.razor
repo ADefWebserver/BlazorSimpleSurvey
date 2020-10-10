@@ -64,7 +64,8 @@ else
                                 <RadzenDropDown AllowClear="true" TValue="string" Name="@SurveyItem.Id.ToString()"
                                                 Data="@SurveyItem.SurveyItemOption.OrderBy(x => x.Id)"
                                                 TextProperty="OptionLabel" ValueProperty="OptionLabel"
-                                                @bind-Value="@SurveyItem.AnswerValueString" />
+                                                @bind-Value="@SurveyItem.AnswerValueString" 
+                                                Style="width:300px;"/>
                             }
                             @if (SurveyItem.ItemType == "Multi-Select Dropdown")
                             {
@@ -77,7 +78,8 @@ else
                                                 Placeholder="Select..."
                                                 Data="@SurveyItem.SurveyItemOption"
                                                 TextProperty="OptionLabel"
-                                                ValueProperty="OptionLabel" />
+                                                ValueProperty="OptionLabel" 
+                                                Style="width:300px;" />
                             }
                             @if (SurveyItem.Required == 1)
                             {
