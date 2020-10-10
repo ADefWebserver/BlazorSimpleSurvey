@@ -34,33 +34,36 @@ else
                             {
                                 <RadzenTextBox MaxLength="4000" Name="@SurveyItem.Id.ToString()"
                                                @bind-Value="@SurveyItem.AnswerValueString" />
-                                <RadzenRequiredValidator Component="@SurveyItem.Id.ToString()" 
-                                                         Text="Required" Popup="@popup" 
-                                                         Style="position: absolute" />
                             }
                             @if (SurveyItem.ItemType == "Text Area")
                             {
-                                <RadzenTextArea MaxLength="4000"
+                                <RadzenTextArea MaxLength="4000" Name="@SurveyItem.Id.ToString()"
                                                 @bind-Value="@SurveyItem.AnswerValueString" />
                             }
                             @if (SurveyItem.ItemType == "Date")
                             {
-                                <RadzenDatePicker DateFormat="d"
+                                <RadzenDatePicker DateFormat="d" Name="@SurveyItem.Id.ToString()"
                                                   @bind-Value="@SurveyItem.AnswerValueDateTime"
                                                   TValue="DateTime?" ShowTime="false" />
                             }
                             @if (SurveyItem.ItemType == "Date Time")
                             {
-                                <RadzenDatePicker TValue="DateTime?"
+                                <RadzenDatePicker TValue="DateTime?" Name="@SurveyItem.Id.ToString()"
                                                   @bind-Value="@SurveyItem.AnswerValueDateTime"
                                                   ShowTime="true" />
                             }
                             @if (SurveyItem.ItemType == "Dropdown")
                             {
-                                <RadzenDropDown AllowClear="true" TValue="string"
+                                <RadzenDropDown AllowClear="true" TValue="string" Name="@SurveyItem.Id.ToString()"
                                                 Data="@SurveyItem.SurveyItemOption.OrderBy(x => x.Id)"
                                                 TextProperty="OptionLabel" ValueProperty="OptionLabel"
                                                 @bind-Value="@SurveyItem.AnswerValueString" />
+                            }
+                            @if (SurveyItem.Required == 1)
+                            {
+                            <br /><RadzenRequiredValidator Component="@SurveyItem.Id.ToString()"
+                                                           Text="Required" Popup="false"
+                                                           Style="position: absolute" />
                             }
                         </div>
                     </div>
@@ -87,7 +90,6 @@ else
 
 @code {
     string strError = "";
-    bool popup;
     System.Security.Claims.ClaimsPrincipal user;
     bool isAuthenticated = false;
     int UserId = -1;
@@ -227,8 +229,8 @@ else
     }
 
     async Task CompleteSurveyDialog() => await dialogService
-        .OpenAsync("Survey Complete", ds =>
-    @<RadzenCard Style="padding: 5px;">
+        .OpenAsync("Results Saved - Survey Complete", ds =>
+    @<RadzenCard Style="padding: 1px;border:none">
          <div class="row">
              <div class="col-md-4">
              </div>
