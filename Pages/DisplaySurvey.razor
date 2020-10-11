@@ -313,6 +313,9 @@ else
 
     async Task LoadSurveyResultsData(LoadDataArgs args)
     {
+        // Get Survey Items
+        // Don't include "Text Area"
+
         var query = dbContext.SurveyItem
             .Where(x => x.Survey == SelectedSurvey.Id)
             .Where(x => x.ItemType != "Text Area")
@@ -343,9 +346,11 @@ else
             NewDTOSurveyItem.Position = SurveyItem.Position;
             NewDTOSurveyItem.Required = SurveyItem.Required;
 
+            List<AnswerResponse> ColAnswerResponse;
+
             if ((SurveyItem.ItemType == "Date") || (SurveyItem.ItemType == "Date Time"))
             {
-                NewDTOSurveyItem.AnswerResponses = dbContext.SurveyAnswer
+                ColAnswerResponse = dbContext.SurveyAnswer
                     .Where(x => x.SurveyItemId == SurveyItem.Id)
                     .GroupBy(n => n.AnswerValueDateTime)
                     .Select(n => new AnswerResponse
@@ -357,7 +362,7 @@ else
             }
             else
             {
-                NewDTOSurveyItem.AnswerResponses = dbContext.SurveyAnswer
+                ColAnswerResponse = dbContext.SurveyAnswer
                     .Where(x => x.SurveyItemId == SurveyItem.Id)
                     .GroupBy(n => n.AnswerValue)
                     .Select(n => new AnswerResponse
@@ -366,6 +371,23 @@ else
                         Responses = n.Count()
                     }
                     ).OrderBy(n => n.OptionLabel).ToList();
+            }
+
+            if(ColAnswerResponse.Count > 10)
+            {
+                // Only take top 10 
+                NewDTOSurveyItem.AnswerResponses = ColAnswerResponse
+                    .OrderByDescending(x => x.Responses)
+                    .Take(10).ToList();
+
+                // Put remaining items in "Other"
+                var ColOtherItems = ColAnswerResponse.OrderByDescending(x => x.Responses).Skip(10).ToList();
+                var SumOfOther = ColOtherItems.Sum(x => x.Responses);
+                NewDTOSurveyItem.AnswerResponses.Add(new AnswerResponse() { OptionLabel = "Other", Responses = SumOfOther });
+            }
+            else
+            {
+                NewDTOSurveyItem.AnswerResponses = ColAnswerResponse;
             }
 
             SurveyResultsCollection.Add(NewDTOSurveyItem);
