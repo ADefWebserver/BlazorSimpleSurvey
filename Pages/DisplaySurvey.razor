@@ -15,99 +15,107 @@ else
 {
     @if (ExistingSurveys.Value == true)
     {
-        <RadzenDropDown TValue="DTOSurvey"
-                        Data="@colSurveys"
-                        TextProperty="SurveyName"
-                        @bind-Value="SelectedSurvey"
-                        Change="@(args => SelectedSurveyChange(args))" />
-
+        <div>
+            <RadzenDropDown TValue="DTOSurvey"
+                            Data="@colSurveys"
+                            TextProperty="SurveyName"
+                            @bind-Value="SelectedSurvey"
+                            Change="@(args => SelectedSurveyChange(args))" />
+        </div>
         <br />
-        <hr />
-        @if (ShowSurveyComplete)
-        {
-            <h4>Responses Saved - Survey Complete</h4>
-        }
-        else
-        {
-        <RadzenTemplateForm TItem="DTOSurvey" Data="@SelectedSurvey" Submit="@SaveSurvey">
-            <div>
-                @foreach (var SurveyItem in SelectedSurvey.SurveyItem.OrderBy(x => x.Position))
-                {
-                    <div class="row">
-                        <div class="col-md-9" style="text-align: left;margin-bottom: 20px">
-                            <b>@SurveyItem.ItemLabel</b>
-                            <br />
-                            @if (SurveyItem.ItemType == "Text Box")
+        <RadzenTabs>
+            <Tabs>
+                <RadzenTabsItem Text="Survey">
+                    @if (ShowSurveyComplete)
+                    {
+                        <h4>Responses Saved - Survey Complete</h4>
+                    }
+                    else
+                    {
+                        <RadzenTemplateForm TItem="DTOSurvey" Data="@SelectedSurvey" Submit="@SaveSurvey">
+                            <div>
+                                @foreach (var SurveyItem in SelectedSurvey.SurveyItem.OrderBy(x => x.Position))
+                                {
+                                    <div class="row">
+                                        <div class="col-md-9" style="text-align: left;margin-bottom: 20px">
+                                            <b>@SurveyItem.ItemLabel</b>
+                                            <br />
+                                            @if (SurveyItem.ItemType == "Text Box")
+                                            {
+                                                <RadzenTextBox MaxLength="4000" Name="@SurveyItem.Id.ToString()"
+                                                               @bind-Value="@SurveyItem.AnswerValueString" />
+                                            }
+                                            @if (SurveyItem.ItemType == "Text Area")
+                                            {
+                                                <RadzenTextArea MaxLength="4000" Name="@SurveyItem.Id.ToString()"
+                                                                @bind-Value="@SurveyItem.AnswerValueString" />
+                                            }
+                                            @if (SurveyItem.ItemType == "Date")
+                                            {
+                                                <RadzenDatePicker DateFormat="d" Name="@SurveyItem.Id.ToString()"
+                                                                  @bind-Value="@SurveyItem.AnswerValueDateTime"
+                                                                  TValue="DateTime?" ShowTime="false" />
+                                            }
+                                            @if (SurveyItem.ItemType == "Date Time")
+                                            {
+                                                <RadzenDatePicker TValue="DateTime?" Name="@SurveyItem.Id.ToString()"
+                                                                  @bind-Value="@SurveyItem.AnswerValueDateTime"
+                                                                  ShowTime="true" />
+                                            }
+                                            @if (SurveyItem.ItemType == "Dropdown")
+                                            {
+                                                <RadzenDropDown AllowClear="true" TValue="string" Name="@SurveyItem.Id.ToString()"
+                                                                Data="@SurveyItem.SurveyItemOption.OrderBy(x => x.Id)"
+                                                                TextProperty="OptionLabel" ValueProperty="OptionLabel"
+                                                                @bind-Value="@SurveyItem.AnswerValueString"
+                                                                Style="width:300px;" />
+                                            }
+                                            @if (SurveyItem.ItemType == "Multi-Select Dropdown")
+                                            {
+                                                <RadzenDropDown Name="@SurveyItem.Id.ToString()"
+                                                                TValue="IEnumerable<string>"
+                                                                Multiple="true"
+                                                                AllowClear="true"
+                                                                AllowFiltering="true"
+                                                                @bind-Value="SurveyItem.AnswerValueList"
+                                                                Placeholder="Select..."
+                                                                Data="@SurveyItem.SurveyItemOption"
+                                                                TextProperty="OptionLabel"
+                                                                ValueProperty="OptionLabel"
+                                                                Style="width:300px;" />
+                                            }
+                                            @if (SurveyItem.Required == 1)
+                                            {
+                                                <br /><RadzenRequiredValidator Component="@SurveyItem.Id.ToString()"
+                                                                               Text="Required" Popup="false"
+                                                                               Style="position: absolute" />
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            @if (isAuthenticated)
                             {
-                                <RadzenTextBox MaxLength="4000" Name="@SurveyItem.Id.ToString()"
-                                               @bind-Value="@SurveyItem.AnswerValueString" />
+                                <div class="row">
+                                    <RadzenButton ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
+                                </div>
                             }
-                            @if (SurveyItem.ItemType == "Text Area")
+                            else
                             {
-                                <RadzenTextArea MaxLength="4000" Name="@SurveyItem.Id.ToString()"
-                                                @bind-Value="@SurveyItem.AnswerValueString" />
+                                <h4>You must <a href="AzureADB2C/Account/SignIn">Log in</a> to take a Survey</h4>
                             }
-                            @if (SurveyItem.ItemType == "Date")
-                            {
-                                <RadzenDatePicker DateFormat="d" Name="@SurveyItem.Id.ToString()"
-                                                  @bind-Value="@SurveyItem.AnswerValueDateTime"
-                                                  TValue="DateTime?" ShowTime="false" />
-                            }
-                            @if (SurveyItem.ItemType == "Date Time")
-                            {
-                                <RadzenDatePicker TValue="DateTime?" Name="@SurveyItem.Id.ToString()"
-                                                  @bind-Value="@SurveyItem.AnswerValueDateTime"
-                                                  ShowTime="true" />
-                            }
-                            @if (SurveyItem.ItemType == "Dropdown")
-                            {
-                                <RadzenDropDown AllowClear="true" TValue="string" Name="@SurveyItem.Id.ToString()"
-                                                Data="@SurveyItem.SurveyItemOption.OrderBy(x => x.Id)"
-                                                TextProperty="OptionLabel" ValueProperty="OptionLabel"
-                                                @bind-Value="@SurveyItem.AnswerValueString" 
-                                                Style="width:300px;"/>
-                            }
-                            @if (SurveyItem.ItemType == "Multi-Select Dropdown")
-                            {
-                                <RadzenDropDown Name="@SurveyItem.Id.ToString()"
-                                                TValue="IEnumerable<string>"
-                                                Multiple="true"
-                                                AllowClear="true"
-                                                AllowFiltering="true"
-                                                @bind-Value="SurveyItem.AnswerValueList"
-                                                Placeholder="Select..."
-                                                Data="@SurveyItem.SurveyItemOption"
-                                                TextProperty="OptionLabel"
-                                                ValueProperty="OptionLabel" 
-                                                Style="width:300px;" />
-                            }
-                            @if (SurveyItem.Required == 1)
-                            {
-                                <br /><RadzenRequiredValidator Component="@SurveyItem.Id.ToString()"
-                                                               Text="Required" Popup="false"
-                                                               Style="position: absolute" />
-                            }
-                        </div>
-                    </div>
-                }
-            </div>
-            @if (isAuthenticated)
-            {
-                <div class="row">
-                    <RadzenButton ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
-                </div>
-            }
-            else
-            {
-                <h4>You must <a href="AzureADB2C/Account/SignIn">Log in</a> to take a Survey</h4>
-            }
-        </RadzenTemplateForm>
-        }
-        @if (SelectedSurvey.SurveyItem.Count == 0)
-        {
-            <h4>No Survey Items</h4>
-        }
-        <br />
+                        </RadzenTemplateForm>
+                    }
+                    @if (SelectedSurvey.SurveyItem.Count == 0)
+                    {
+                        <h4>No Survey Items</h4>
+                    }
+                </RadzenTabsItem>
+                <RadzenTabsItem Text="Results">
+                    <p>Survey Results Go Here</p>
+                </RadzenTabsItem>
+            </Tabs>
+        </RadzenTabs>
     }
 }
 
