@@ -27,10 +27,16 @@ namespace BlazorSimpleSurvey.Data
         public IEnumerable<string> AnswerValueList { get; set; }
         public DateTime? AnswerValueDateTime { get; set; }
         public List<DTOSurveyItemOption> SurveyItemOption { get; set; }
+        public List<AnswerResponse> AnswerResponses { get; set; }
     }
     public partial class DTOSurveyItemOption
     {
         public int Id { get; set; }
         public string OptionLabel { get; set; }
+    }
+    public class AnswerResponse
+    {
+        public string OptionLabel { get; set; }
+        public double Responses { get; set; }
     }
 }

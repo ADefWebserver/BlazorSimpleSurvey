@@ -120,12 +120,22 @@ else
                                             Data="@SurveyResults"
                                             LoadData="@LoadSurveyResultsData"
                                             PageSize="1" WrapItems="true" AllowPaging="true"
-                                            TItem="SurveyItem">
+                                            TItem="DTOSurveyItem">
                                 <Template Context="item">
                                     <RadzenCard Style="height:300px">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <h2>@item.ItemLabel</h2>
+                                                <RadzenChart>
+                                                    <RadzenDonutSeries Data="@item.AnswerResponses"
+                                                                       CategoryProperty="OptionLabel"
+                                                                       ValueProperty="Responses">
+                                                        <TitleTemplate>
+                                                            <div class="rz-donut-content">
+                                                                <div>@item.ItemLabel</div>
+                                                            </div>
+                                                        </TitleTemplate>
+                                                    </RadzenDonutSeries>
+                                                </RadzenChart>
                                             </div>
                                         </div>
                                     </RadzenCard>
@@ -299,7 +309,7 @@ else
     // Survey Results
 
     int SurveyResultsCount;
-    IEnumerable<SurveyItem> SurveyResults;
+    IEnumerable<DTOSurveyItem> SurveyResults;
 
     async Task LoadSurveyResultsData(LoadDataArgs args)
     {
@@ -319,12 +329,54 @@ else
             query = query.OrderBy(args.OrderBy);
         }
 
-        SurveyResults = query.Skip(args.Skip.Value).Take(args.Top.Value).ToList();
+        var Results = query.Skip(args.Skip.Value).Take(args.Top.Value).ToList();
+
+        List<DTOSurveyItem> SurveyResultsCollection = new List<DTOSurveyItem>();
+
+        foreach (var SurveyItem in Results)
+        {
+            DTOSurveyItem NewDTOSurveyItem = new DTOSurveyItem();
+
+            NewDTOSurveyItem.Id = SurveyItem.Id;
+            NewDTOSurveyItem.ItemLabel = SurveyItem.ItemLabel;
+            NewDTOSurveyItem.ItemType = SurveyItem.ItemType;
+            NewDTOSurveyItem.Position = SurveyItem.Position;
+            NewDTOSurveyItem.Required = SurveyItem.Required;
+
+            if ((SurveyItem.ItemType == "Date") || (SurveyItem.ItemType == "Date Time"))
+            {
+                NewDTOSurveyItem.AnswerResponses = dbContext.SurveyAnswer
+                    .Where(x => x.SurveyItemId == SurveyItem.Id)
+                    .GroupBy(n => n.AnswerValueDateTime)
+                    .Select(n => new AnswerResponse
+                    {
+                        OptionLabel = n.Key.Value.ToString(),
+                        Responses = n.Count()
+                    }
+                    ).OrderBy(n => n.OptionLabel).ToList();
+            }
+            else
+            {
+                NewDTOSurveyItem.AnswerResponses = dbContext.SurveyAnswer
+                    .Where(x => x.SurveyItemId == SurveyItem.Id)
+                    .GroupBy(n => n.AnswerValue)
+                    .Select(n => new AnswerResponse
+                    {
+                        OptionLabel = n.Key,
+                        Responses = n.Count()
+                    }
+                    ).OrderBy(n => n.OptionLabel).ToList();
+            }
+
+            SurveyResultsCollection.Add(NewDTOSurveyItem);
+        }
 
         SurveyResultsCount = dbContext.SurveyItem
             .Where(x => x.Survey == SelectedSurvey.Id)
             .Where(x => x.ItemType != "Text Area")
             .Count();
+
+        SurveyResults = SurveyResultsCollection;
 
         await InvokeAsync(StateHasChanged);
     }
