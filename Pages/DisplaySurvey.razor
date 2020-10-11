@@ -1,10 +1,12 @@
 ﻿@page "/displaysurvey"
 @using Models;
 @using System.Linq;
+@using Microsoft.EntityFrameworkCore;
 @using System.Linq.Dynamic.Core
 @using BlazorSimpleSurvey.Data;
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject Radzen.DialogService dialogService
+@inject SimpleSurveyContext dbContext
 @inherits OwningComponentBase<SimpleSurveyService>
 @strError
 @if (ExistingSurveys == null)
@@ -111,8 +113,26 @@ else
                         <h4>No Survey Items</h4>
                     }
                 </RadzenTabsItem>
-                <RadzenTabsItem Text="Results">
-                    <p>Survey Results Go Here</p>
+                <RadzenTabsItem Text="Responses">
+                    <RadzenPanel AllowCollapse="false" Style="margin-bottom: 10px">
+                        <ChildContent>
+                            <RadzenDataList Count="@SurveyResultsCount"
+                                            Data="@SurveyResults"
+                                            LoadData="@LoadSurveyResultsData"
+                                            PageSize="1" WrapItems="true" AllowPaging="true"
+                                            TItem="SurveyItem">
+                                <Template Context="item">
+                                    <RadzenCard Style="height:300px">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <h2>@item.ItemLabel</h2>
+                                            </div>
+                                        </div>
+                                    </RadzenCard>
+                                </Template>
+                            </RadzenDataList>
+                        </ChildContent>
+                    </RadzenPanel>
                 </RadzenTabsItem>
             </Tabs>
         </RadzenTabs>
@@ -182,6 +202,15 @@ else
         ShowSurveyComplete = false;
         colSurveys = new List<DTOSurvey>();
         await RefreshSurveys(SelectedSurvey.Id);
+
+        // Refresh results
+        LoadDataArgs args = new LoadDataArgs();
+        args.Filter = null;
+        args.OrderBy = null;
+        args.Skip = 0;
+        args.Top = 1;
+
+        await LoadSurveyResultsData(args);
     }
 
     // Refresh RefreshSurveys
@@ -265,5 +294,38 @@ else
             item.AnswerValueDateTime = null;
             item.AnswerValueList = null;
         }
+    }
+
+    // Survey Results
+
+    int SurveyResultsCount;
+    IEnumerable<SurveyItem> SurveyResults;
+
+    async Task LoadSurveyResultsData(LoadDataArgs args)
+    {
+        var query = dbContext.SurveyItem
+            .Where(x => x.Survey == SelectedSurvey.Id)
+            .Where(x => x.ItemType != "Text Area")
+            .Include(x => x.SurveyItemOption)
+            .OrderBy(x => x.Position).AsQueryable();
+
+        if (!string.IsNullOrEmpty(args.Filter))
+        {
+            query = query.Where(args.Filter);
+        }
+
+        if (!string.IsNullOrEmpty(args.OrderBy))
+        {
+            query = query.OrderBy(args.OrderBy);
+        }
+
+        SurveyResults = query.Skip(args.Skip.Value).Take(args.Top.Value).ToList();
+
+        SurveyResultsCount = dbContext.SurveyItem
+            .Where(x => x.Survey == SelectedSurvey.Id)
+            .Where(x => x.ItemType != "Text Area")
+            .Count();
+
+        await InvokeAsync(StateHasChanged);
     }
 }
