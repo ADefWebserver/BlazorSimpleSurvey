@@ -7,6 +7,27 @@
 * [Blazor Multi-Tenant Azure B2C](https://blazorhelpwebsite.com/ViewBlogPost/42)
 * [Blazor Azure B2C User And Group Management](https://blazorhelpwebsite.com/ViewBlogPost/43)
 
+## Features
+
+* Unlimited Surveys
+* Unlimited Survey Questions
+* Survey responses in pie charts 
+* Survey Question Types
+  * Text Box
+  * Text Area
+  * Date
+  * Date Time
+  * Dropdown
+  * Multi-Select Dropdown
+* Azure B2C Integration
+* View Azure B2C Authorization Claims
+* Administration
+  * User Management
+  * Search and edit Users in Azure B2C Tenant
+  * Custom designate Azure B2C group as Administration Group 
+* Activity Logs
+
+
 ## Set-Up:
 
 ### Database Set-up
