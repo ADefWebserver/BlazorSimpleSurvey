@@ -1,7 +1,7 @@
 ![Blazor Simple Survey Logo Large](BlazorSimpleSurveyLogo_Large.png)
 ## Live Example: 
 #### [Blazor Simple Survey (https://blazorsimplesurvey.azurewebsites.net/)](https://blazorsimplesurvey.azurewebsites.net/)
-
+![Animation](https://user-images.githubusercontent.com/1857799/95696373-ac419300-0bef-11eb-945d-85ba107e50e6.gif)
 ## Articles:
 
 * [Blazor Multi-Tenant Azure B2C](https://blazorhelpwebsite.com/ViewBlogPost/42)
