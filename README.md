@@ -45,6 +45,9 @@ You can get the sample Azure B2C Custom policy .xml files in the **!AzureB2CConf
 
 ### Screen Shots
 
-![Image 001](https://user-images.githubusercontent.com/1857799/93725999-4cb01480-fb68-11ea-93b8-7e33c6899048.png)
-![Image 002](https://user-images.githubusercontent.com/1857799/93726000-4d48ab00-fb68-11ea-88ae-44e1cf4d5a98.png)
-![Image 003](https://user-images.githubusercontent.com/1857799/93726001-4de14180-fb68-11ea-8bf2-e847fd44ffee.png)
+![ScreenShot-001](https://user-images.githubusercontent.com/1857799/95694318-50bed780-0be6-11eb-9ed1-97bc5b1945b6.png)
+![ScreenShot-002](https://user-images.githubusercontent.com/1857799/95694320-51576e00-0be6-11eb-89fb-6568eeb4a8d3.png)
+![ScreenShot-003](https://user-images.githubusercontent.com/1857799/95694322-51576e00-0be6-11eb-9b49-9c863fd24548.png)
+![ScreenShot-004](https://user-images.githubusercontent.com/1857799/95694314-50264100-0be6-11eb-90ae-83470d69f803.png)
+![ScreenShot-005](https://user-images.githubusercontent.com/1857799/95694316-50bed780-0be6-11eb-8366-cb7811b2057b.png)
+![ScreenShot-006](https://user-images.githubusercontent.com/1857799/95694317-50bed780-0be6-11eb-9ed8-f2dd4a62b58a.png)
