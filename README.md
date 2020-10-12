@@ -23,7 +23,7 @@
 * View Azure B2C Authorization Claims
 * Administration
   * User Management
-  * Search and edit Users in Azure B2C Tenant
+  * Search and edit users in Azure B2C Tenant
   * Custom designate Azure B2C group as Administration Group 
 * Activity Logs
 
