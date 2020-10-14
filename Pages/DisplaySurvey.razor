@@ -346,11 +346,11 @@ else
             NewDTOSurveyItem.Position = SurveyItem.Position;
             NewDTOSurveyItem.Required = SurveyItem.Required;
 
-            List<AnswerResponse> ColAnswerResponse;
+            List<AnswerResponse> ColAnswerResponse = new List<AnswerResponse>();
 
             if ((SurveyItem.ItemType == "Date") || (SurveyItem.ItemType == "Date Time"))
             {
-                ColAnswerResponse = dbContext.SurveyAnswer
+                var TempColAnswerResponse = dbContext.SurveyAnswer
                     .Where(x => x.SurveyItemId == SurveyItem.Id)
                     .GroupBy(n => n.AnswerValueDateTime)
                     .Select(n => new AnswerResponse
@@ -359,6 +359,27 @@ else
                         Responses = n.Count()
                     }
                     ).OrderBy(n => n.OptionLabel).ToList();
+
+                foreach (var item in TempColAnswerResponse)
+                {
+                    string ShortDate = item.OptionLabel;
+
+                    try
+                    {
+                        DateTime dtTempDate = Convert.ToDateTime(item.OptionLabel);
+                        ShortDate = dtTempDate.ToShortDateString();
+                    }
+                    catch 
+                    {
+                        // use orginal string
+                    }
+
+                    ColAnswerResponse.Add(
+                        new AnswerResponse {
+                            OptionLabel = ShortDate,
+                            Responses = item.Responses }
+                        );
+                }
             }
             else
             {

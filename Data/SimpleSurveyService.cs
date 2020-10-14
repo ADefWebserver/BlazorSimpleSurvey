@@ -74,10 +74,10 @@ namespace BlazorSimpleSurvey.Data
 
                 return Task.FromResult(objSurvey);
             }
-            catch (Exception ex)
+            catch
             {
                 DetachAllEntities();
-                throw ex;
+                throw;
             }
         }
         #endregion
@@ -97,10 +97,10 @@ namespace BlazorSimpleSurvey.Data
 
                 return Task.FromResult(ExistingSurvey);
             }
-            catch (Exception ex)
+            catch
             {
                 DetachAllEntities();
-                throw ex;
+                throw;
             }
         }
         #endregion
@@ -190,10 +190,10 @@ namespace BlazorSimpleSurvey.Data
 
                 return Task.FromResult(objSurveyItem);
             }
-            catch (Exception ex)
+            catch
             {
                 DetachAllEntities();
-                throw ex;
+                throw;
             }
         }
         #endregion
@@ -219,10 +219,10 @@ namespace BlazorSimpleSurvey.Data
 
                 return Task.FromResult(ExistingSurveyItem);
             }
-            catch (Exception ex)
+            catch
             {
                 DetachAllEntities();
-                throw ex;
+                throw;
             }
         }
         #endregion
@@ -305,10 +305,10 @@ namespace BlazorSimpleSurvey.Data
 
                 return Task.FromResult(true);
             }
-            catch (Exception ex)
+            catch
             {
                 DetachAllEntities();
-                throw ex;
+                throw;
             }
         }
         #endregion
