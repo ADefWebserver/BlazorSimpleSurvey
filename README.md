@@ -4,6 +4,7 @@
 ![Animation](https://user-images.githubusercontent.com/1857799/95696373-ac419300-0bef-11eb-945d-85ba107e50e6.gif)
 ## Articles:
 
+* [Blazor Simple Survey: Creating Dynamic Surveys](https://blazorhelpwebsite.com/ViewBlogPost/44)
 * [Blazor Multi-Tenant Azure B2C](https://blazorhelpwebsite.com/ViewBlogPost/42)
 * [Blazor Azure B2C User And Group Management](https://blazorhelpwebsite.com/ViewBlogPost/43)
 
