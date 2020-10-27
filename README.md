@@ -5,7 +5,7 @@
 ## Articles:
 
 * [Blazor Simple Survey: Creating Dynamic Surveys](https://blazorhelpwebsite.com/ViewBlogPost/44)
-* [Blazor Multi-Tenant Azure B2C](https://blazorhelpwebsite.com/ViewBlogPost/42)
+* [Blazor and Azure B2C: The Big Picture](https://blazorhelpwebsite.com/ViewBlogPost/42)
 * [Blazor Azure B2C User And Group Management](https://blazorhelpwebsite.com/ViewBlogPost/43)
 
 ## Features
