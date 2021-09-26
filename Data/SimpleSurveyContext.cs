@@ -31,7 +31,7 @@ namespace BlazorSimpleSurvey.Data
                 entity.HasKey(e => e.LogId);
 
                 entity.HasIndex(e => e.LogType)
-                    .HasName("IX_Logs");
+                    .HasDatabaseName("IX_Logs");
 
                 entity.Property(e => e.LogDate).HasColumnType("datetime");
 

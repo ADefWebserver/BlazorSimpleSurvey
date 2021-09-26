@@ -90,9 +90,9 @@
 
             var user = authState.User;
 
-            var UserID = 
+            var UserID =
                 user.Claims.FirstOrDefault(
-                    c => c.Type == 
+                    c => c.Type ==
                     "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?
                     .Value;
 
@@ -116,10 +116,17 @@
     {
         if (result != null)
         {
-            if (result)
+            try
             {
-                Task.Run(Search);
+                if (result)
+                {
+                    Task.Run(Search);
+                }
             }
+            catch
+            {
+            }
+
             StateHasChanged();
         }
     }
@@ -173,7 +180,7 @@
 
         if (AdministrationGroup != "")
         {
-            isAdmin = 
+            isAdmin =
                 (colGroups
                 .Where(x => x.displayName.ToLower() == AdministrationGroup.ToLower())
                 .FirstOrDefault() != null);
