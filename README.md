@@ -1,4 +1,4 @@
-![Blazor Simple Survey Logo Large](BlazorSimpleSurveyLogo_Large.png)
+![Blazor Simple Survey Logo Large](https://user-images.githubusercontent.com/1857799/141389995-aabd3af0-a083-4c17-836b-a45c81925469.png)
 ## Live Example: 
 #### [Blazor Simple Survey (https://blazorsimplesurvey.azurewebsites.net/)](https://blazorsimplesurvey.azurewebsites.net/)
 ![Animation](https://user-images.githubusercontent.com/1857799/95696373-ac419300-0bef-11eb-945d-85ba107e50e6.gif)
