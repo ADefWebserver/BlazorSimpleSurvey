@@ -56,10 +56,10 @@ public class ProtectedApiCallHelper
     /// security token to call the Web API</param>
     /// <param name="processResult">Callback used to process the result 
     /// of the call to the Web API</param>
-    public async Task CallWebApiAndProcessResultASync(
+    public async Task? CallWebApiAndProcessResultASync(
         string webApiUrl,
         string accessToken,
-        Action<JObject> processResult)
+        Action<JObject?> processResult)
     {
         if (!string.IsNullOrEmpty(accessToken))
         {

@@ -13,16 +13,20 @@
     </Authorized>
 </AuthorizeView>
 @code {
-    private string identityprovider;
+    private string? identityprovider;
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
         var user = authState.User;
-        if (user.Identity.IsAuthenticated)
+
+        if (user.Identity != null)
         {
-            identityprovider = user.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/identityprovider")?.Value;
+            if (user.Identity.IsAuthenticated)
+            {
+                identityprovider = user.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/identityprovider")?.Value;
+            }
         }
     }
 }

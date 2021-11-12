@@ -1,20 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <UserSecretsId>aspnet-BlazorSimpleSurvey-B0F344E2-7F38-4C06-9C2F-57F33F3073F6</UserSecretsId>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>aspnet-BlazorSimpleSurvey-3E69748D-FFF9-494F-BA27-26E025C276E5</UserSecretsId>
+    <WebProject_DirectoryAccessLevelKey>0</WebProject_DirectoryAccessLevelKey>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.10" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Graph.Auth" Version="1.0.0-preview.5" />
-    <PackageReference Include="Microsoft.Graph.Beta" Version="0.29.0-preview" />
-    <PackageReference Include="Microsoft.Identity.Web" Version="1.17.0" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.17.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
-    <PackageReference Include="Radzen.Blazor" Version="3.10.1" />
-    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="5.2.13" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" NoWarn="NU1605" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.0" NoWarn="NU1605" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.0" />
+	<PackageReference Include="Microsoft.Graph.Auth" Version="1.0.0-preview.5" />
+	<PackageReference Include="Microsoft.Graph.Beta" Version="0.29.0-preview" />
+	<PackageReference Include="Microsoft.Identity.Web" Version="1.20.0" />
+	<PackageReference Include="Microsoft.Identity.Web.UI" Version="1.20.0" />
+	<PackageReference Include="Radzen.Blazor" Version="3.12.0" />
+	<PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="6.13.0" />	  
   </ItemGroup>
 
 </Project>

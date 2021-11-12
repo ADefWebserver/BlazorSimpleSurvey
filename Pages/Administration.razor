@@ -6,6 +6,7 @@
 @inject ProtectedApiCallHelper ProtectedApiCallHelper
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject DialogService dialogService
+@implements IDisposable
 <h3>Administration</h3>
 @strError
 @if (isAdmin)
@@ -185,5 +186,11 @@
                 .Where(x => x.displayName.ToLower() == AdministrationGroup.ToLower())
                 .FirstOrDefault() != null);
         }
+    }
+
+    public void Dispose()
+    {
+        // The DialogService is a singleton so it is advisable to unsubscribe.
+        dialogService.OnClose -= DialogClose;
     }
 }

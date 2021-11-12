@@ -1,40 +1,9 @@
-﻿@using Microsoft.Identity.Web
-@using Microsoft.Extensions.Options
-@inject IOptionsMonitor<MicrosoftIdentityOptions> microsoftIdentityOptions
-@inject AuthenticationStateProvider AuthenticationStateProvider
-
-<AuthorizeView>
+﻿<AuthorizeView>
     <Authorized>
-        @if (canEditProfile)
-        {
-            <a href="MicrosoftIdentity/Account/EditProfile">Hello, @FirstName!</a>
-        }
-        else
-        {
-            <text>Hello, @FirstName!</text>
-        }
+        Hello, @context.User.Identity?.Name!
         <a href="MicrosoftIdentity/Account/SignOut">Log out</a>
     </Authorized>
     <NotAuthorized>
         <a href="MicrosoftIdentity/Account/SignIn">Log in</a>
     </NotAuthorized>
 </AuthorizeView>
-
-@code {
-    private bool canEditProfile;
-    string FirstName = "";
-
-    protected override async Task OnInitializedAsync()
-    {
-        var options = microsoftIdentityOptions.CurrentValue;
-        canEditProfile = !string.IsNullOrEmpty(options.EditProfilePolicyId);
-
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-
-        var user = authState.User;
-        if (user.Identity.IsAuthenticated)
-        {
-            FirstName = user.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname")?.Value;
-        }
-    }
-}

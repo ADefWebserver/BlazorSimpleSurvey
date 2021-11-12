@@ -19,10 +19,10 @@ else
     {
         <div>
             <RadzenDropDown TValue="DTOSurvey"
-                            Data="@colSurveys"
-                            TextProperty="SurveyName"
-                            @bind-Value="SelectedSurvey"
-                            Change="@(args => SelectedSurveyChange(args))" />
+                    Data="@colSurveys"
+                    TextProperty="SurveyName"
+                    @bind-value="SelectedSurvey"
+                    Change="@(args => SelectedSurveyChange(args))" />
         </div>
         <br />
         <RadzenTabs>
@@ -45,52 +45,54 @@ else
                                             @if (SurveyItem.ItemType == "Text Box")
                                             {
                                                 <RadzenTextBox MaxLength="4000" Name="@SurveyItem.Id.ToString()"
-                                                               @bind-Value="@SurveyItem.AnswerValueString" />
+                                           @bind-Value="@SurveyItem.AnswerValueString" />
                                             }
                                             @if (SurveyItem.ItemType == "Text Area")
                                             {
                                                 <RadzenTextArea MaxLength="4000" Name="@SurveyItem.Id.ToString()"
-                                                                @bind-Value="@SurveyItem.AnswerValueString" />
+                                            @bind-Value="@SurveyItem.AnswerValueString" />
                                             }
                                             @if (SurveyItem.ItemType == "Date")
                                             {
                                                 <RadzenDatePicker DateFormat="d" Name="@SurveyItem.Id.ToString()"
-                                                                  @bind-Value="@SurveyItem.AnswerValueDateTime"
-                                                                  TValue="DateTime?" ShowTime="false" />
+                                              @bind-Value="@SurveyItem.AnswerValueDateTime"
+                                              TValue="DateTime?" ShowTime="false" />
                                             }
                                             @if (SurveyItem.ItemType == "Date Time")
                                             {
                                                 <RadzenDatePicker TValue="DateTime?" Name="@SurveyItem.Id.ToString()"
-                                                                  @bind-Value="@SurveyItem.AnswerValueDateTime"
-                                                                  ShowTime="true" />
+                                              @bind-Value=@SurveyItem.AnswerValueDateTime
+                                              ShowTime="true" />
                                             }
                                             @if (SurveyItem.ItemType == "Dropdown")
                                             {
                                                 <RadzenDropDown AllowClear="true" TValue="string" Name="@SurveyItem.Id.ToString()"
-                                                                Data="@SurveyItem.SurveyItemOption.OrderBy(x => x.Id)"
-                                                                TextProperty="OptionLabel" ValueProperty="OptionLabel"
-                                                                @bind-Value="@SurveyItem.AnswerValueString"
-                                                                Style="width:300px;" />
+                                            Data="@SurveyItem.SurveyItemOption.OrderBy(x => x.Id)"
+                                            TextProperty="OptionLabel" ValueProperty="OptionLabel"
+                                            @bind-Value="@SurveyItem.AnswerValueString"
+                                            Style="width:300px;" />
                                             }
                                             @if (SurveyItem.ItemType == "Multi-Select Dropdown")
                                             {
                                                 <RadzenDropDown Name="@SurveyItem.Id.ToString()"
-                                                                TValue="IEnumerable<string>"
-                                                                Multiple="true"
-                                                                AllowClear="true"
-                                                                AllowFiltering="true"
-                                                                @bind-Value="SurveyItem.AnswerValueList"
-                                                                Placeholder="Select..."
-                                                                Data="@SurveyItem.SurveyItemOption"
-                                                                TextProperty="OptionLabel"
-                                                                ValueProperty="OptionLabel"
-                                                                Style="width:300px;" />
+                                            TValue="IEnumerable<string>"
+                                            Multiple="true"
+                                            AllowClear="true"
+                                            AllowFiltering="true"
+                                            @bind-Value="SurveyItem.AnswerValueList"
+                                            Placeholder="Select..."
+                                            Data="@SurveyItem.SurveyItemOption"
+                                            TextProperty="OptionLabel"
+                                            ValueProperty="OptionLabel"
+                                            Style="width:300px;" />
                                             }
                                             @if (SurveyItem.Required == 1)
                                             {
-                                                <br /><RadzenRequiredValidator Component="@SurveyItem.Id.ToString()"
-                                                                               Text="Required" Popup="false"
-                                                                               Style="position: absolute" />
+                                                <br />
+
+                                                <RadzenRequiredValidator Component="@SurveyItem.Id.ToString()"
+                                                           Text="Required" Popup="false"
+                                                           Style="position: absolute" />
                                             }
                                         </div>
                                     </div>
@@ -117,18 +119,18 @@ else
                     <RadzenPanel AllowCollapse="false" Style="margin-bottom: 10px">
                         <ChildContent>
                             <RadzenDataList Count="@SurveyResultsCount"
-                                            Data="@SurveyResults"
-                                            LoadData="@LoadSurveyResultsData"
-                                            PageSize="1" WrapItems="true" AllowPaging="true"
-                                            TItem="DTOSurveyItem">
+                                    Data="@SurveyResults"
+                                    LoadData="@LoadSurveyResultsData"
+                                    PageSize="1" WrapItems="true" AllowPaging="true"
+                                    TItem="DTOSurveyItem">
                                 <Template Context="item">
                                     <RadzenCard Style="height:300px">
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <RadzenChart>
                                                     <RadzenDonutSeries Data="@item.AnswerResponses"
-                                                                       CategoryProperty="OptionLabel"
-                                                                       ValueProperty="Responses">
+                                                               CategoryProperty="OptionLabel"
+                                                               ValueProperty="Responses">
                                                         <TitleTemplate>
                                                             <div class="rz-donut-content">
                                                                 <div>@item.ItemLabel</div>
@@ -168,18 +170,21 @@ else
 
             user = authState.User;
 
-            if (user.Identity.IsAuthenticated != false)
+            if (user.Identity != null)
             {
-                isAuthenticated = true;
+                if (user.Identity.IsAuthenticated != false)
+                {
+                    isAuthenticated = true;
 
-                var Objectidentifier = user.Claims
-                    .FirstOrDefault(c =>
-                    c.Type ==
-                    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+                    var Objectidentifier = user.Claims
+                        .FirstOrDefault(c =>
+                        c.Type ==
+                        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
 
-                UserId = @Service.GetAllUsersAsync()
+                    UserId = @Service.GetAllUsersAsync()
                     .Where(x => x.Objectidentifier == Objectidentifier)
                     .FirstOrDefault().Id;
+                }
             }
 
             var Surveys = await @Service.GetAllSurveysAsync();
@@ -354,10 +359,10 @@ else
                     .Where(x => x.SurveyItemId == SurveyItem.Id)
                     .GroupBy(n => n.AnswerValueDateTime)
                     .Select(n => new AnswerResponse
-                    {
-                        OptionLabel = n.Key.Value.ToString(),
-                        Responses = n.Count()
-                    }
+                        {
+                            OptionLabel = n.Key.Value.ToString(),
+                            Responses = n.Count()
+                        }
                     ).OrderBy(n => n.OptionLabel).ToList();
 
                 foreach (var item in TempColAnswerResponse)
@@ -369,15 +374,17 @@ else
                         DateTime dtTempDate = Convert.ToDateTime(item.OptionLabel);
                         ShortDate = dtTempDate.ToShortDateString();
                     }
-                    catch 
+                    catch
                     {
                         // use orginal string
                     }
 
                     ColAnswerResponse.Add(
-                        new AnswerResponse {
-                            OptionLabel = ShortDate,
-                            Responses = item.Responses }
+                        new AnswerResponse
+                            {
+                                OptionLabel = ShortDate,
+                                Responses = item.Responses
+                            }
                         );
                 }
             }
@@ -387,16 +394,16 @@ else
                     .Where(x => x.SurveyItemId == SurveyItem.Id)
                     .GroupBy(n => n.AnswerValue)
                     .Select(n => new AnswerResponse
-                    {
-                        OptionLabel = n.Key,
-                        Responses = n.Count()
-                    }
+                        {
+                            OptionLabel = n.Key,
+                            Responses = n.Count()
+                        }
                     ).OrderBy(n => n.OptionLabel).ToList();
             }
 
-            if(ColAnswerResponse.Count > 10)
+            if (ColAnswerResponse.Count > 10)
             {
-                // Only take top 10 
+                // Only take top 10
                 NewDTOSurveyItem.AnswerResponses = ColAnswerResponse
                     .OrderByDescending(x => x.Responses)
                     .Take(10).ToList();

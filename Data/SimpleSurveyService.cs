@@ -46,8 +46,8 @@ namespace BlazorSimpleSurvey.Data
         }
         #endregion
 
-        #region public Task<Survey> GetSurvey(int Id)
-        public Task<Survey> GetSurvey(int Id)
+        #region public Task<Survey?> GetSurvey(int Id)
+        public Task<Survey?> GetSurvey(int Id)
         {
             return Task.FromResult(_context.Survey
                 .Include(x => x.SurveyItem)
@@ -82,8 +82,8 @@ namespace BlazorSimpleSurvey.Data
         }
         #endregion
 
-        #region public Task<Survey> UpdateSurveyAsync(Survey objExistingSurvey)
-        public Task<Survey> UpdateSurveyAsync(Survey objExistingSurvey)
+        #region public Task<Survey?> UpdateSurveyAsync(Survey objExistingSurvey)
+        public Task<Survey?> UpdateSurveyAsync(Survey objExistingSurvey)
         {
             try
             {
@@ -91,7 +91,10 @@ namespace BlazorSimpleSurvey.Data
                                     .Where(x => x.Id == objExistingSurvey.Id)
                                     .FirstOrDefault();
 
-                ExistingSurvey.SurveyName = objExistingSurvey.SurveyName;
+                if (ExistingSurvey != null)
+                {
+                    ExistingSurvey.SurveyName = objExistingSurvey.SurveyName;
+                }
 
                 _context.SaveChanges();
 
@@ -140,8 +143,8 @@ namespace BlazorSimpleSurvey.Data
         }
         #endregion
 
-        #region public Task<SurveyItem> GetSurveyItemAsync(int SurveyItemId)
-        public Task<SurveyItem> GetSurveyItemAsync(int SurveyItemId)
+        #region public Task<SurveyItem?> GetSurveyItemAsync(int SurveyItemId)
+        public Task<SurveyItem?> GetSurveyItemAsync(int SurveyItemId)
         {
             return Task.FromResult(_context.SurveyItem
                 .Where(x => x.Id == SurveyItemId)
@@ -198,22 +201,25 @@ namespace BlazorSimpleSurvey.Data
         }
         #endregion
 
-        #region public Task<SurveyItem> UpdateSurveyItemAsync(SurveyItem objExistingSurveyItem)
-        public Task<SurveyItem> UpdateSurveyItemAsync(SurveyItem objExistingSurveyItem)
+        #region public Task<SurveyItem?> UpdateSurveyItemAsync(SurveyItem objExistingSurveyItem)
+        public Task<SurveyItem?> UpdateSurveyItemAsync(SurveyItem objExistingSurveyItem)
         {
             try
             {
                 var ExistingSurveyItem = _context.SurveyItem
-                                    .Where(x => x.Id == objExistingSurveyItem.Id)
-                                    .Include(x => x.SurveyItemOption)
-                                    .FirstOrDefault();
+                                        .Where(x => x.Id == objExistingSurveyItem.Id)
+                                        .Include(x => x.SurveyItemOption)
+                                        .FirstOrDefault();
 
-                ExistingSurveyItem.ItemLabel = objExistingSurveyItem.ItemLabel;
-                ExistingSurveyItem.ItemType = objExistingSurveyItem.ItemType;
-                ExistingSurveyItem.ItemValue = objExistingSurveyItem.ItemValue;
-                ExistingSurveyItem.Required = objExistingSurveyItem.Required;
+                if (ExistingSurveyItem != null)
+                {
+                    ExistingSurveyItem.ItemLabel = objExistingSurveyItem.ItemLabel;
+                    ExistingSurveyItem.ItemType = objExistingSurveyItem.ItemType;
+                    ExistingSurveyItem.ItemValue = objExistingSurveyItem.ItemValue;
+                    ExistingSurveyItem.Required = objExistingSurveyItem.Required;
 
-                ExistingSurveyItem.SurveyItemOption = objExistingSurveyItem.SurveyItemOption;
+                    ExistingSurveyItem.SurveyItemOption = objExistingSurveyItem.SurveyItemOption;
+                }
 
                 _context.SaveChanges();
 
@@ -256,49 +262,52 @@ namespace BlazorSimpleSurvey.Data
         {
             try
             {
-                List<SurveyAnswer> SurveyAnswers = new List<SurveyAnswer>(); 
+                List<SurveyAnswer> SurveyAnswers = new List<SurveyAnswer>();
 
-                foreach (var SurveyItem in paramDTOSurvey.SurveyItem)
+                if (paramDTOSurvey.SurveyItem != null)
                 {
-                    // Delete possible existing answer
-                    var ExistingAnswers = _context.SurveyAnswer
-                        .Where(x => x.SurveyItemId == SurveyItem.Id)
-                        .Where(x => x.UserId == paramDTOSurvey.UserId)
-                        .ToList();
-
-                    if(ExistingAnswers != null)
+                    foreach (var SurveyItem in paramDTOSurvey.SurveyItem)
                     {
-                        _context.SurveyAnswer.RemoveRange(ExistingAnswers);
-                        _context.SaveChanges();
-                    }
+                        // Delete possible existing answer
+                        var ExistingAnswers = _context.SurveyAnswer
+                            .Where(x => x.SurveyItemId == SurveyItem.Id)
+                            .Where(x => x.UserId == paramDTOSurvey.UserId)
+                            .ToList();
 
-                    // Save Answer
-
-                    if (SurveyItem.ItemType != "Multi-Select Dropdown")
-                    {
-                        SurveyAnswer NewSurveyAnswer = new SurveyAnswer();
-
-                        NewSurveyAnswer.AnswerValue = SurveyItem.AnswerValueString;
-                        NewSurveyAnswer.AnswerValueDateTime = SurveyItem.AnswerValueDateTime;
-                        NewSurveyAnswer.SurveyItemId = SurveyItem.Id;
-                        NewSurveyAnswer.UserId = paramDTOSurvey.UserId;
-
-                        _context.SurveyAnswer.Add(NewSurveyAnswer);
-                        _context.SaveChanges();
-                    }
-
-                    if (SurveyItem.AnswerValueList != null)
-                    {
-                        foreach (var item in SurveyItem.AnswerValueList)
+                        if (ExistingAnswers != null)
                         {
-                            SurveyAnswer NewSurveyAnswerValueList = new SurveyAnswer();
-
-                            NewSurveyAnswerValueList.AnswerValue = item;
-                            NewSurveyAnswerValueList.SurveyItemId = SurveyItem.Id;
-                            NewSurveyAnswerValueList.UserId = paramDTOSurvey.UserId;
-
-                            _context.SurveyAnswer.Add(NewSurveyAnswerValueList);
+                            _context.SurveyAnswer.RemoveRange(ExistingAnswers);
                             _context.SaveChanges();
+                        }
+
+                        // Save Answer
+
+                        if (SurveyItem.ItemType != "Multi-Select Dropdown")
+                        {
+                            SurveyAnswer NewSurveyAnswer = new SurveyAnswer();
+
+                            NewSurveyAnswer.AnswerValue = SurveyItem.AnswerValueString;
+                            NewSurveyAnswer.AnswerValueDateTime = SurveyItem.AnswerValueDateTime;
+                            NewSurveyAnswer.SurveyItemId = SurveyItem.Id;
+                            NewSurveyAnswer.UserId = paramDTOSurvey.UserId;
+
+                            _context.SurveyAnswer.Add(NewSurveyAnswer);
+                            _context.SaveChanges();
+                        }
+
+                        if (SurveyItem.AnswerValueList != null)
+                        {
+                            foreach (var item in SurveyItem.AnswerValueList)
+                            {
+                                SurveyAnswer NewSurveyAnswerValueList = new SurveyAnswer();
+
+                                NewSurveyAnswerValueList.AnswerValue = item;
+                                NewSurveyAnswerValueList.SurveyItemId = SurveyItem.Id;
+                                NewSurveyAnswerValueList.UserId = paramDTOSurvey.UserId;
+
+                                _context.SurveyAnswer.Add(NewSurveyAnswerValueList);
+                                _context.SaveChanges();
+                            }
                         }
                     }
                 }
