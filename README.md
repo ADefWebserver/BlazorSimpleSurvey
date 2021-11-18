@@ -36,7 +36,7 @@
 * Edit *appsettings.json* to set the database connection
 
 ### Azure B2C Setup
-* Follow the directions in: [Azure AD B2C Quickstart with Visual Studio & Blazor](https://medium.com/marcus-tee-anytime/azure-ad-b2c-quickstart-with-visual-studio-blazor-563efdff6fdd) to set-up a Azure AD B2C Tenant
+* Follow the directions in: [Creating A Blazor Server Azure B2C App](https://blazorhelpwebsite.com/ViewBlogPost/55) to set-up a Azure AD B2C Tenant
 * Copy the settings to the appsettings.json file (AzureAdB2C section). 
 
 ### Azure B2C Management Configuration
