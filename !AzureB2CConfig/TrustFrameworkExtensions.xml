@@ -232,7 +232,7 @@
           <ClaimsProviderSelections>
             <ClaimsProviderSelection TargetClaimsExchangeId="GoogleExchange" />
             <ClaimsProviderSelection TargetClaimsExchangeId="MicrosoftAccountExchange" />
-            <ClaimsProviderSelection TargetClaimsExchangeId="TwitterExchange" />
+       <!-- <ClaimsProviderSelection TargetClaimsExchangeId="TwitterExchange" /> -->
             <ClaimsProviderSelection TargetClaimsExchangeId="AzureADExchange" />
           </ClaimsProviderSelections>
         </OrchestrationStep>
